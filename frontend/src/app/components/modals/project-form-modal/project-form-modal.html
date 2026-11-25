@@ -1,0 +1,125 @@
+<div class="modal-backdrop">
+  <form class="modal" (submit)="submit($event)" novalidate>
+    <div class="modal-header">
+      <h2 class="modal-title">{{ isEditing() ? 'Editar proyecto' : 'Publicar proyecto' }}</h2>
+      <button type="button" class="modal-close" (click)="closed.emit()">✕</button>
+    </div>
+ 
+    @if (isEditing() && !project()) {
+      <p class="text-muted">Cargando datos del proyecto…</p>
+    } @else {
+      <div>
+        <label class="label" for="title">Título *</label>
+        <input class="field" id="title" name="title" maxlength="80" placeholder="Ej. Portafolio Web Interactivo"
+               [value]="project()?.title ?? ''" (input)="count($event, 'title')">
+        <p class="hint row"><span>5 a 80 caracteres</span><span>{{ titleLength() }}/80</span></p>
+      </div>
+ 
+      <div class="two">
+        <div>
+          <label class="label" for="nickname">Apodo o abreviatura *</label>
+          <input class="field" id="nickname" name="nickname" maxlength="20" placeholder="PORTWEB" [value]="project()?.nickname ?? ''">
+          <p class="hint">3 a 20: letras, números, espacios, guion y punto</p>
+        </div>
+        <div>
+          <label class="label" for="projectTypeId">Tipo de proyecto *</label>
+          <select class="field" id="projectTypeId" name="projectTypeId">
+            <option value="">Selecciona un tipo</option>
+            @for (type of types(); track type.id) {
+              <option [value]="type.id" [selected]="type.id === project()?.projectTypeId">{{ type.name }}</option>
+            }
+          </select>
+        </div>
+      </div>
+ 
+      <div>
+        <label class="label" for="description">Descripción *</label>
+        <textarea class="field" id="description" name="description" maxlength="2000" rows="5"
+                  placeholder="¿Qué hace, para quién es y cómo está hecho?" [value]="project()?.description ?? ''"
+                  (input)="count($event, 'description')"></textarea>
+        <p class="hint row"><span>Mínimo 50 caracteres</span><span>{{ descriptionLength() }}/2000</span></p>
+      </div>
+ 
+      <div>
+        <label class="label" for="repositoryUrl">Enlace del repositorio público *</label>
+        <input class="field" id="repositoryUrl" name="repositoryUrl" placeholder="https://github.com/usuario/repositorio" [value]="project()?.repositoryUrl ?? ''">
+        <p class="hint">Solo github.com, gitlab.com o bitbucket.org · un repositorio solo se publica una vez</p>
+      </div>
+ 
+      <div>
+        <label class="label" for="demoUrl">Enlace de demostración (opcional)</label>
+        <input class="field" id="demoUrl" name="demoUrl" placeholder="https://…" [value]="project()?.demoUrl ?? ''">
+        <p class="hint">https, distinto al repositorio</p>
+      </div>
+ 
+      <!-- Imágenes -->
+      <div>
+        <span class="label">Imágenes * <span class="hint inline">(1 a 4 · jpg, png o webp · máx. 2 MB c/u · mín. 400 × 300 px)</span></span>
+        <div class="images">
+          @if (isEditing()) {
+            @for (image of currentImages(); track image.id; let i = $index) {
+              <div class="image">
+                @if (imageUrl(image.storagePath); as url) { <img [src]="url" alt=""> }
+                @if (i === 0) { <span class="chip chip-yellow cover-tag">Portada</span> }
+                @if (currentImages().length > 1) {
+                  <button type="button" class="remove" (click)="removeCurrentImage(image)">✕</button>
+                }
+              </div>
+            }
+          } @else {
+            @for (image of newImages(); track $index; let i = $index) {
+              <div class="image">
+                <img [src]="image" alt="">
+                @if (i === 0) { <span class="chip chip-yellow cover-tag">Portada</span> }
+                <button type="button" class="remove" (click)="removeNewImage(i)">✕</button>
+              </div>
+            }
+          }
+          @if (totalImages() < 4) {
+            <label class="image add">
+              + Agregar
+              <input type="file" accept="image/jpeg,image/png,image/webp" multiple hidden (change)="pickImages($event)">
+            </label>
+          }
+        </div>
+        @if (imageError()) { <p class="hint error">{{ imageError() }}</p> }
+        <p class="hint">La primera imagen es la portada.</p>
+      </div>
+ 
+      <!-- Tecnologías -->
+      <div>
+        <span class="label">Tecnologías (1 a {{ maxTechs }}) · {{ selectedTechs().length }} de {{ maxTechs }}</span>
+        @if (selectedTechs().length > 0) {
+          <div class="chips">
+            @for (id of selectedTechs(); track id) { <span class="chip chip-blue">{{ techName(id) }}</span> }
+          </div>
+        }
+        <input class="field search" type="text" placeholder="Buscar en el catálogo: Angular, Python, Docker…" (input)="searchTech($event)">
+        <div class="tech-list">
+          @for (technology of technologies(); track technology.id) {
+            <label class="checkbox" [hidden]="!matches(technology)">
+              <input type="checkbox" [checked]="isSelected(technology.id)" (change)="toggleTech($event, technology.id)"> {{ technology.name }}
+            </label>
+          }
+        </div>
+      </div>
+ 
+      <div class="tags">
+        <span class="label">Etiquetas</span>
+        <label class="checkbox"><input type="checkbox" name="seekingFeedback" [checked]="project()?.seekingFeedback ?? false"> Busco retroalimentación</label>
+        <label class="checkbox"><input type="checkbox" name="openToCollaborate" [checked]="project()?.openToCollaborate ?? false"> Abierto a colaborar</label>
+      </div>
+ 
+      @if (!isEditing()) {
+        <label class="checkbox"><input type="checkbox" name="authorship"> Confirmo que el proyecto es mío o tengo permiso para mostrarlo *</label>
+      }
+ 
+      @if (error()) { <p class="alert-error">{{ error() }}</p> }
+ 
+      <div class="modal-actions">
+        <button type="button" class="btn btn-outline" (click)="closed.emit()">Cancelar</button>
+        <button type="submit" class="btn btn-primary" [disabled]="sending()">{{ isEditing() ? 'Guardar cambios' : 'Publicar proyecto' }}</button>
+      </div>
+    }
+  </form>
+</div>

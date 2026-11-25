@@ -1,0 +1,179 @@
+<div class="container detail">
+  @if (loading()) {
+    <p class="text-muted">Cargando proyecto…</p>
+  } @else if (error()) {
+    <div class="card empty">
+      <p>{{ error() }}</p>
+      <a routerLink="/explore" class="btn btn-outline">Ir a Explorar</a>
+    </div>
+  } @else if (project(); as p) {
+    <p class="breadcrumb text-muted">
+      <a routerLink="/">Inicio</a> › <a routerLink="/explore">Explorar</a> › {{ p.title }}
+    </p>
+ 
+    @if (p.status !== 'published') {
+      <p class="alert-error">
+        {{ p.status === 'hidden' ? 'Oculto por el administrador: ' + (p.hiddenReason || 'sin motivo') : 'Este proyecto está desactivado y solo tú lo ves.' }}
+      </p>
+    }
+    @if (message()) {
+      <p class="alert-ok">{{ message() }}</p>
+    }
+ 
+    <div class="top">
+      <!-- Galería -->
+      <div class="gallery">
+        <button type="button" class="main-image" (click)="openViewer(selectedImage())">
+          @if (imageUrls()[selectedImage()]; as url) {
+            <img [src]="url" [alt]="p.title">
+          }
+          <span class="image-label">Imagen {{ selectedImage() + 1 }} de {{ p.images.length }}{{ selectedImage() === 0 ? ' (portada)' : '' }}</span>
+        </button>
+        <div class="thumbs">
+          @for (image of p.images; track image.id; let i = $index) {
+            <button type="button" class="thumb" [class.active]="i === selectedImage()" (click)="selectedImage.set(i)">
+              @if (imageUrl(image.storagePath); as url) { <img [src]="url" alt=""> }
+            </button>
+          }
+        </div>
+      </div>
+ 
+      <!-- Datos principales -->
+      <div class="info">
+        @if (p.isFeatured) { <span class="chip chip-yellow">DESTACADO</span> }
+        <h1 class="title">{{ p.title }}</h1>
+        <p class="text-muted">{{ p.nickname }} · {{ p.typeName }}</p>
+ 
+        <p class="owner">
+          <span class="avatar small">{{ initials(p.ownerFullName) }}</span>
+          <a [routerLink]="['/u', p.ownerUsername]">&#64;{{ p.ownerUsername }}</a>
+          <span class="text-muted">· Publicado el {{ formatDate(p.publishedAt) }}</span>
+        </p>
+ 
+        <p class="rating">
+          <span class="stars big">{{ stars(p.avgOverall) }}</span>
+          <span class="average">{{ score(p.avgOverall) }}</span>
+          <span class="text-muted">{{ p.ratingsCount }} calificaciones · {{ p.savesCount }} guardados</span>
+        </p>
+ 
+        <div class="chips">
+          @if (p.seekingFeedback) { <span class="chip chip-pink">Busco retroalimentación</span> }
+          @if (p.openToCollaborate) { <span class="chip chip-green">Abierto a colaborar</span> }
+        </div>
+        <div class="chips">
+          @for (technology of p.technologies; track technology.id) {
+            <span class="chip chip-tech">{{ technology.name }}</span>
+          }
+        </div>
+ 
+        <a class="btn btn-primary btn-block" [href]="p.repositoryUrl" target="_blank" rel="noopener">Ver repositorio ({{ platformName(p.repositoryPlatform) }})</a>
+        @if (p.demoUrl) {
+          <a class="btn btn-outline btn-block" [href]="p.demoUrl" target="_blank" rel="noopener">Probar demostración</a>
+        }
+ 
+        @if (isOwner()) {
+          <div class="actions">
+            <a routerLink="/my-account/projects" class="btn btn-outline">Editar en Mis proyectos</a>
+            @if (p.status === 'published') {
+              <button type="button" class="btn btn-outline" (click)="showFeature.set(true)">Destacar</button>
+            }
+          </div>
+        } @else {
+          <div class="actions">
+            <button type="button" class="btn btn-outline" (click)="toggleSave()">{{ isSaved() ? '♥ Guardado' : '♡ Guardar' }}</button>
+            <button type="button" class="btn btn-outline" (click)="openRate()">★ {{ myRating() ? 'Editar calificación' : 'Calificar' }}</button>
+            <button type="button" class="btn btn-outline" (click)="openReport('project', p.id, p.title + ' (' + p.nickname + ')')">⚑ Reportar</button>
+          </div>
+        }
+      </div>
+    </div>
+ 
+    <section class="card section">
+      <h2 class="section-title">Descripción</h2>
+      <p class="text-muted description">{{ p.description }}</p>
+    </section>
+ 
+    @if (isOwner()) {
+      <section class="card section">
+        <h2 class="section-title small-title">Insignia para tu README <span class="chip chip-tech">Solo visible para el dueño</span></h2>
+        <app-badge-snippet [projectId]="p.id" [nickname]="p.nickname" [average]="score(p.avgOverall)" />
+      </section>
+    }
+ 
+    <section class="card section">
+      <h2 class="section-title">Calificaciones por criterio
+        <span class="summary">{{ score(p.avgOverall) }} {{ stars(p.avgOverall) }} · {{ p.ratingsCount }} calificaciones</span>
+      </h2>
+      @for (criterion of criteria(); track criterion.name) {
+        <div class="bar-row">
+          <span>{{ criterion.name }}</span>
+          <div class="bar"><div class="bar-fill" [style.width.%]="criterion.value * 20"></div></div>
+          <span class="bar-value">{{ criterion.value.toFixed(1) }}</span>
+        </div>
+      }
+      <p class="hint">Promedio general = promedio de los 5 criterios (todos obligatorios).</p>
+    </section>
+ 
+    <section class="card section">
+      <div class="comments-head">
+        <h2 class="section-title">Comentarios ({{ totalRatings() }})</h2>
+        <select class="field sort" (change)="changeSort($event)">
+          <option value="recent">Más recientes</option>
+          <option value="highest">Mejor calificados</option>
+          <option value="lowest">Peor calificados</option>
+        </select>
+      </div>
+ 
+      @if (!isOwner()) {
+        <div class="cta">
+          <p>¿Ya lo probaste? Califícalo en 5 criterios y deja tu comentario.</p>
+          <button type="button" class="btn btn-primary" (click)="openRate()">Calificar</button>
+        </div>
+      }
+ 
+      @for (item of ratings(); track item.id) {
+        <div class="comment">
+          <span class="avatar small">{{ initials(item.authorFullName) }}</span>
+          <div class="comment-body">
+            <p class="comment-head">
+              <a [routerLink]="['/u', item.authorUsername]">&#64;{{ item.authorUsername }}</a>
+              <span class="stars">{{ stars(item.average) }}</span>
+              <strong>{{ score(item.average) }}</strong>
+              <span class="text-muted">· {{ formatDate(item.createdAt) }}{{ item.isEdited ? ' (editado)' : '' }}</span>
+              @if (item.comment && !item.commentHidden && item.userId !== authService.user()?.id) {
+                <button type="button" class="btn-text report-link" (click)="openReport('comment', item.id, 'Comentario de @' + item.authorUsername)">⚑ Reportar</button>
+              }
+            </p>
+            @if (item.commentHidden) {
+              <p class="text-muted">Comentario oculto por el administrador.</p>
+            } @else if (item.comment) {
+              <p>{{ item.comment }}</p>
+            }
+          </div>
+        </div>
+      } @empty {
+        <p class="text-muted">Todavía no hay calificaciones.</p>
+      }
+ 
+      @if (ratings().length < totalRatings()) {
+        <button type="button" class="btn btn-outline more" (click)="loadRatings(ratingsPage() + 1)">Ver más comentarios</button>
+      }
+    </section>
+ 
+    <!-- Ventanas modales -->
+    @if (showRate()) {
+      <app-rate-modal [projectId]="p.id" [projectTitle]="p.title" [myRating]="myRating()"
+                      (closed)="showRate.set(false)" (saved)="onRated($event)" />
+    }
+    @if (report(); as r) {
+      <app-report-modal [targetType]="r.type" [targetId]="r.id" [targetLabel]="r.label"
+                        (closed)="report.set(null)" (sent)="onReported($event)" />
+    }
+    @if (showViewer()) {
+      <app-image-viewer [images]="imageUrls()" [start]="selectedImage()" (closed)="showViewer.set(false)" />
+    }
+    @if (showFeature()) {
+      <app-feature-modal [projectId]="p.id" (closed)="showFeature.set(false)" />
+    }
+  }
+</div>

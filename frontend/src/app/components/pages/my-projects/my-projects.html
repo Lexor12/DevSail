@@ -1,0 +1,101 @@
+<div class="container account">
+  <app-account-menu active="projects" />
+ 
+  <section>
+    <h1 class="page-title">Mis proyectos</h1>
+ 
+    @if (message()) { <p class="alert-ok spaced">{{ message() }}</p> }
+ 
+    @if (loading()) {
+      <p class="text-muted">Cargando…</p>
+    } @else if (error()) {
+      <p class="alert-error">{{ error() }}</p>
+    } @else if (data(); as d) {
+      <div class="plan-banner">
+        @if (d.isPro) {
+          <p>Plan Pro: proyectos sin límite ({{ d.publishedCount }} publicados)</p>
+        } @else {
+          <p>Plan gratuito: {{ d.publishedCount }} de {{ d.freeLimit }} proyectos publicados</p>
+          <button type="button" class="btn btn-outline" (click)="showProPlan.set(true)">Contratar Plan Pro (sin límite)</button>
+        }
+        <button type="button" class="btn btn-primary" (click)="openCreate()">+ Publicar proyecto</button>
+      </div>
+ 
+      @if (d.projects.length === 0) {
+        <div class="card empty">
+          <p>Todavía no publicas proyectos.</p>
+          <button type="button" class="btn btn-primary" (click)="openCreate()">Publicar mi primer proyecto</button>
+        </div>
+      } @else {
+        <div class="table-wrap">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Portada</th><th>Título / apodo</th><th>Estado</th><th>Promedio</th><th>Calif.</th>
+                <th>Guardados</th><th>Visitas</th><th>Destacado</th><th></th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (project of d.projects; track project.id) {
+                <tr>
+                  <td>
+                    <div class="cover">@if (imageUrl(project.coverPath); as url) { <img [src]="url" alt=""> }</div>
+                  </td>
+                  <td><a [routerLink]="['/projects', project.id]">{{ project.title }} / {{ project.nickname }}</a></td>
+                  <td>{{ statusText(project) }}</td>
+                  <td>{{ project.ratingsCount > 0 ? score(project.avgOverall) + ' ★' : '—' }}</td>
+                  <td>{{ project.ratingsCount }}</td>
+                  <td>{{ project.savesCount }}</td>
+                  <td>
+                    @if (d.isPro) { {{ project.totalVisits }} } @else { <span class="chip chip-yellow">PRO</span> }
+                  </td>
+                  <td>{{ project.featuredEndsAt ? 'Hasta ' + formatDate(project.featuredEndsAt) : '—' }}</td>
+                  <td>
+                    <!-- Menú de acciones por fila -->
+                    <details class="menu">
+                      <summary class="btn btn-outline btn-sm">⋮</summary>
+                      <div class="menu-list">
+                        @if (project.status !== 'hidden') {
+                          <button type="button" (click)="openEdit(project)">Editar</button>
+                        }
+                        @if (project.status === 'published' && !project.featuredEndsAt) {
+                          <button type="button" (click)="featureFor.set(project)">Destacar</button>
+                        }
+                        <button type="button" (click)="badgeFor.set(project)">Copiar insignia</button>
+                        @if (d.isPro) {
+                          <a routerLink="/my-account/stats" [queryParams]="{ project: project.id }">Ver estadísticas</a>
+                        }
+                        @if (project.status !== 'hidden') {
+                          <button type="button" (click)="toggleStatus(project)">{{ project.status === 'published' ? 'Desactivar' : 'Reactivar' }}</button>
+                        }
+                        <button type="button" class="danger" (click)="deleting.set(project)">Eliminar</button>
+                      </div>
+                    </details>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+ 
+      <p class="hint spaced-top">Estados: Publicado · Desactivado (lo apaga el dueño o el sistema al vencer el Plan Pro) · Oculto (moderación, muestra el motivo del administrador).</p>
+    }
+  </section>
+</div>
+ 
+@if (showForm()) {
+  <app-project-form-modal [projectId]="editingId()" (closed)="showForm.set(false)" (saved)="done($event)" />
+}
+@if (deleting(); as project) {
+  <app-delete-project-modal [project]="project" (closed)="deleting.set(null)" (deleted)="done($event)" />
+}
+@if (badgeFor(); as project) {
+  <app-badge-modal [projectId]="project.id" [nickname]="project.nickname" [average]="score(project.avgOverall)" (closed)="badgeFor.set(null)" />
+}
+@if (featureFor(); as project) {
+  <app-feature-modal [projectId]="project.id" (closed)="featureFor.set(null)" />
+}
+@if (showProPlan()) {
+  <app-pro-plan-modal (closed)="showProPlan.set(false)" />
+}
