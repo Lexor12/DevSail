@@ -10,6 +10,8 @@ const ratingRepo = require('../services/repositories/rating.service');
 const visitRepo = require('../services/repositories/visit.service');
 const proRepo = require('../services/repositories/proSubscription.service');
 const featuredRepo = require('../services/repositories/featured.service');
+const userRepo = require('../services/repositories/user.service');
+const { repositoryExists } = require('../utils/repositoryCheck');
 const storageService = require('../services/bucket/storage.service');
 const { attachMediaUrl, buildMediaUrl } = require('../utils/mediaUrl');
 const {
@@ -25,6 +27,22 @@ const FREE_PROJECTS_LIMIT = 3;
 const MAX_PROJECT_IMAGES = 4;
 const MAX_IMAGE_BYTES = 2 * 1024 * 1024; // 2 MB por captura
 const MIN_IMAGE_SIZE = { width: 400, height: 300 };
+
+//Esta función permite comparar dos enlaces sin importar mayusculas ni la diagonal final
+function sameUrl(a, b) {
+    return a.trim().replace(/\/+$/, '').toLowerCase() === b.trim().replace(/\/+$/, '').toLowerCase();
+}
+
+// "Abierto a colaborar" solo se permite si el perfil tiene al menos un enlace
+async function hasProfileLink(userId) {
+    const user = await userRepo.getUserById(userId);
+    if (!user) return false;
+    const links = [
+        user.linkLinkedin, user.linkWebsite, user.linkGithub, user.linkGitlab,
+        user.linkBitbucket, user.linkInstagram, user.linkYoutube
+    ];
+    return links.some(link => typeof link === 'string' && link.trim() !== '');
+}
 
 // Carga destacados, mejor calificados y recientes para el inicio
 async function getHomeProjects(req, res) {
@@ -240,6 +258,15 @@ async function createProject(req, res) {
         if (cleanDemoUrl && !isValidHttpUrl(cleanDemoUrl, 255)) {
             return res.status(400).json({ message: 'La URL de demostración no es válida.' });
         }
+        // La demostración debe ser distinta al repositorio
+        if (cleanDemoUrl && sameUrl(cleanDemoUrl, repositoryUrl)) {
+            return res.status(400).json({ message: 'El enlace de demostración debe ser distinto al del repositorio.' });
+        }
+
+        // "Abierto a colaborar" pide al menos un enlace de contacto en el perfil
+        if (Boolean(openToCollaborate) && !(await hasProfileLink(req.user.id))) {
+            return res.status(400).json({ message: 'Para marcar "Abierto a colaborar" agrega al menos un enlace en tu perfil (Mis datos).' });
+        }
 
         // Deben ser de 1 a 5 tecnologias sin repetir
         if (!Array.isArray(technologyIds) || technologyIds.length < 1 || technologyIds.length > 5) {
@@ -285,6 +312,11 @@ async function createProject(req, res) {
         const duplicateRepo = await projectRepo.getProjectByRepositoryUrl(cleanRepoUrl);
         if (duplicateRepo) {
             return res.status(409).json({ message: 'Ese repositorio ya fue publicado anteriormente en DevSail.' });
+        }
+
+        // Revisamos en GitHub, GitLab o Bitbucket que el repositorio exista y sea publico
+        if (!(await repositoryExists(cleanRepoUrl, platform))) {
+            return res.status(400).json({ message: 'No encontramos ese repositorio. Revisa que exista y que sea público.' });
         }
 
         // Primero creamos el proyecto para tener su ID y la carpeta de sus fotos
@@ -387,6 +419,16 @@ async function updateProject(req, res) {
         if (cleanDemoUrl && !isValidHttpUrl(cleanDemoUrl, 255)) {
             return res.status(400).json({ message: 'La URL de demostración no es válida.' });
         }
+        
+        // La demostración debe ser distinta al repositorio
+        if (cleanDemoUrl && sameUrl(cleanDemoUrl, repositoryUrl)) {
+            return res.status(400).json({ message: 'El enlace de demostración debe ser distinto al del repositorio.' });
+        }
+
+        // "Abierto a colaborar" pide al menos un enlace de contacto en el perfil
+        if (Boolean(openToCollaborate) && !(await hasProfileLink(req.user.id))) {
+            return res.status(400).json({ message: 'Para marcar "Abierto a colaborar" agrega al menos un enlace en tu perfil (Mis datos).' });
+        }
 
         if (!Array.isArray(technologyIds) || technologyIds.length < 1 || technologyIds.length > 5) {
             return res.status(400).json({ message: 'Debes elegir entre 1 y 5 tecnologías.' });
@@ -411,7 +453,10 @@ async function updateProject(req, res) {
         if (duplicateRepo && duplicateRepo.id !== projectId) {
             return res.status(409).json({ message: 'Otro proyecto ya tiene registrado ese repositorio.' });
         }
-
+        // Solo revisamos que exista si cambio el enlace del repositorio
+        if (!sameUrl(cleanRepoUrl, project.repositoryUrl) && !(await repositoryExists(cleanRepoUrl, platform))) {
+            return res.status(400).json({ message: 'No encontramos ese repositorio. Revisa que exista y que sea público.' });
+        }
         await client.query('BEGIN');
 
         await projectRepo.updateProject(projectId, {
@@ -697,6 +742,46 @@ async function deleteProject(req, res) {
     }
 }
 
+//Esta función sirve para mostrar los datos de la insignia para el README, esta los lee shields.io con su formato "endpoint"
+// Es publica y siempre responde 200 porque shields.io solo pinta respuestas exitosas
+async function getProjectBadge(req, res) {
+    const badge = {
+        schemaVersion: 1,
+        label: 'DevSail',
+        message: 'no disponible',
+        color: 'lightgrey'
+    };
+    try {
+        const projectId = req.params.id;
+        if (!isValidUuid(projectId)) {
+            return res.status(200).json(badge);
+        }
+
+        const project = await projectRepo.getProjectById(projectId);
+        // Si se elimino, se desactivo o se oculto, la insignia dice "no disponible"
+        if (!project || project.status !== 'published') {
+            return res.status(200).json(badge);
+        }
+
+        badge.label = `DevSail ${project.nickname}`;
+        badge.color = 'F5B83D';
+        if (project.ratingsCount > 0) {
+            const average = Number(project.avgOverall).toFixed(1);
+            const word = project.ratingsCount === 1 ? 'calificación' : 'calificaciones';
+            badge.message = `${average} ★ · ${project.ratingsCount} ${word}`;
+        } else {
+            badge.message = 'sin calificaciones';
+        }
+
+        // shields.io guarda la imagen 5 minutos, asi no consulta la BD en cada visita al README
+        res.set('Cache-Control', 'public, max-age=300');
+        return res.status(200).json(badge);
+    } catch (error) {
+        console.error('Error en getProjectBadge:', error);
+        return res.status(200).json(badge);
+    }
+}
+
 module.exports = {
     getHomeProjects,
     searchProjects,
@@ -708,5 +793,6 @@ module.exports = {
     reorderProjectImages,
     deleteProjectImage,
     toggleProjectStatus,
-    deleteProject
+    deleteProject,
+    getProjectBadge
 };

@@ -9,5 +9,5 @@ import { RouterLink } from '@angular/router';
   styleUrl: './account-menu.css'
 })
 export class AccountMenu {
-  active = input.required<'data' | 'projects' | 'saved' | 'plan' | 'stats'>();
+  active = input.required<'data' | 'projects' | 'saved' | 'plan' | 'stats' | 'delete'>();
 }

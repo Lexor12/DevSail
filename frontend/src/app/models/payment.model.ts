@@ -35,9 +35,8 @@ export interface OrderResponse {
 }
 
 // Estadísticas
-
 export interface DailyVisits {
-    date: string;     // año, mes y día
+    date: string;// año, mes y día
     visits: number;
 }
 
@@ -57,4 +56,26 @@ export interface Analytics {
     days: number;
     dailySeries: DailyVisits[];
     projectsBreakdown: ProjectVisits[];
+}
+
+// Es un pago normal con el usuario que lo hizo
+export interface AdminPayment extends Payment {
+    username: string | null;
+}
+
+export interface IncomeFilters {
+    dateFrom: string;
+    dateTo: string;
+    concept: string;
+    status: string;
+    username: string;
+    page: number;
+}
+
+export interface IncomeResponse {
+    payments: AdminPayment[];
+    total: number;
+    summary: { completedAmount: number; completedCount: number };
+    page: number;
+    pageSize: number;
 }

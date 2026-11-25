@@ -1,0 +1,89 @@
+<div class="container">
+    <h1 class="page-title">Ingresos</h1>
+    <form class="card filters" (submit)="applyFilters($event)">
+        <label>
+        <span class="label">Desde</span>
+        <input class="field" type="date" name="dateFrom" [value]="filters().dateFrom">
+        </label>
+        <label>
+        <span class="label">Hasta</span>
+        <input class="field" type="date" name="dateTo" [value]="filters().dateTo">
+        </label>
+        <label>
+        <span class="label">Concepto</span>
+        <select class="field" name="concept">
+            <option value="">Todos</option>
+            <option value="pro_plan">Plan Pro</option>
+            <option value="featured_7">Destacado 7 días</option>
+            <option value="featured_30">Destacado 30 días</option>
+        </select>
+        </label>
+        <label>
+        <span class="label">Estado</span>
+        <select class="field" name="status">
+            <option value="">Todos</option>
+            <option value="completed">Completado</option>
+            <option value="pending">Pendiente</option>
+            <option value="cancelled">Cancelado</option>
+            <option value="failed">Fallido</option>
+        </select>
+        </label>
+        <label>
+        <span class="label">Usuario</span>
+        <input class="field" type="text" name="username" placeholder="usuario" [value]="filters().username">
+        </label>
+        <button type="submit" class="btn btn-primary">Filtrar</button>
+    </form>
+
+    <div class="stats-row spaced">
+        <div class="card stat">
+        <p class="stat-value">{{ money(completedAmount()) }}</p>
+        <p class="stat-label">Cobrado (MXN)</p>
+        </div>
+        <div class="card stat">
+        <p class="stat-value">{{ completedCount() }}</p>
+        <p class="stat-label">Pagos completados</p>
+        </div>
+        <div class="card stat">
+        <p class="stat-value">{{ total() }}</p>
+        <p class="stat-label">Pagos con estos filtros</p>
+        </div>
+    </div>
+
+    @if (loading()) {
+        <p class="text-muted">Cargando pagos…</p>
+    } @else if (error()) {
+        <p class="alert-error">{{ error() }}</p>
+    } @else if (payments().length === 0) {
+        <div class="card empty"><p class="text-muted">No hay pagos con esos filtros.</p></div>
+    } @else {
+        <div class="table-wrap">
+        <table class="table">
+            <thead>
+            <tr>
+                <th>Fecha</th><th>Usuario</th><th>Concepto</th><th>Proyecto</th><th>Monto</th><th>Orden de PayPal</th><th>Estado</th>
+            </tr>
+            </thead>
+            <tbody>
+            @for (payment of payments(); track payment.id) {
+                <tr>
+                <td>{{ formatDate(payment.createdAt) }}</td>
+                <td>{{ payment.username ? '@' + payment.username : 'cuenta eliminada' }}</td>
+                <td>{{ conceptText(payment.concept) }}</td>
+                <td>{{ payment.projectNickname || '—' }}</td>
+                <td>{{ money(payment.amount) }}</td>
+                <td class="order">{{ payment.paypalOrderId }}</td>
+                <td [class.ok]="payment.status === 'completed'">{{ statusText(payment.status) }}</td>
+                </tr>
+            }
+            </tbody>
+        </table>
+        </div>
+
+        <div class="pager">
+        <button type="button" class="btn btn-outline btn-sm" [disabled]="filters().page === 1" (click)="changePage(filters().page - 1)">Anterior</button>
+        <span class="text-muted">Página {{ filters().page }} de {{ lastPage() }}</span>
+        <button type="button" class="btn btn-outline btn-sm" [disabled]="filters().page >= lastPage()" (click)="changePage(filters().page + 1)">Siguiente</button>
+        </div>
+    }
+</div>

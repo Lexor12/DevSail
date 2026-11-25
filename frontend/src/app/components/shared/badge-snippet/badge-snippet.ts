@@ -18,11 +18,10 @@ export class BadgeSnippet {
   format = signal<'markdown' | 'html'>('markdown');
   copied = signal(false);
 
+  // shields.io pide al backend el texto de la insignia: nombre corto, promedio y total
   private imageLink = computed(() =>
-    'https://img.shields.io/badge/dynamic/json?color=F5B83D' +
-    '&label=' + encodeURIComponent('DevSail ' + this.nickname()) +
-    '&query=' + encodeURIComponent('$.project.avgOverall') +
-    '&url=' + encodeURIComponent(`${API_URL}/projects/${this.projectId()}`)
+    'https://img.shields.io/endpoint?url=' +
+    encodeURIComponent(`${API_URL}/projects/${this.projectId()}/badge`)
   );
 
   private pageLink = computed(() => `${window.location.origin}/projects/${this.projectId()}`);

@@ -10,7 +10,7 @@ import { CatalogService } from '../../../services/catalog.service';
 import { SearchFilters, SearchResult } from '../../../models/project.model';
 import { ProjectType, Technology } from '../../../models/catalog.model';
 import { EMPTY_FILTERS, formToQueryParams, queryParamsToFilters } from '../../../utils/filters';
- 
+
 // Pantalla de resultados de búsqueda
 // Los filtros viven en la dirección, así se pueden compartir y recargar
 @Component({
@@ -24,16 +24,15 @@ export class Explore implements OnInit {
   result = signal<SearchResult | null>(null);
   loading = signal(true);
   error = signal('');
- 
+
   private types = signal<ProjectType[]>([]);
   private technologies = signal<Technology[]>([]);
- 
+
   readonly sortOptions = [
     { value: 'recent', text: 'Más recientes' },
     { value: 'rated', text: 'Mejor calificados' },
     { value: 'saved', text: 'Más guardados' }
   ];
- 
   // Etiquetas de filtros activos armadas con lo que trae la dirección
   activeFilters = computed<ActiveFilter[]>(() => {
     const f = this.filters();
@@ -55,14 +54,14 @@ export class Explore implements OnInit {
     if (f.featured) list.push({ key: 'featured', text: 'Solo destacados' });
     return list;
   });
- 
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private projectService: ProjectService,
     private catalogService: CatalogService
   ) {}
- 
+
   ngOnInit(): void {
     this.catalogService.getProjectCatalogs().subscribe({
       next: (catalogs) => {
@@ -70,7 +69,7 @@ export class Explore implements OnInit {
         this.technologies.set(catalogs.technologies);
       }
     });
- 
+
     // Cada vez que cambia la dirección se vuelve a buscar
     this.route.queryParamMap.subscribe(params => {
       const filters = queryParamsToFilters(params);
@@ -78,7 +77,7 @@ export class Explore implements OnInit {
       this.search(filters);
     });
   }
- 
+
   private search(filters: SearchFilters): void {
     this.loading.set(true);
     this.error.set('');
@@ -94,7 +93,7 @@ export class Explore implements OnInit {
       }
     });
   }
- 
+
   // Al buscar, aplicar filtros o cambiar el orden se lee todo el formulario
   apply(event: Event): void {
     event.preventDefault();
@@ -103,11 +102,11 @@ export class Explore implements OnInit {
     if (this.filters().pageSize !== 12) params['pageSize'] = this.filters().pageSize;
     this.router.navigate(['/explore'], { queryParams: params });
   }
- 
+
   changeSort(event: Event): void {
     (event.target as HTMLSelectElement).form?.requestSubmit();
   }
- 
+
   removeFilter(filter: ActiveFilter): void {
     const params: Params = { ...this.route.snapshot.queryParams, page: null };
     if (filter.key === 'technologies') {
@@ -121,17 +120,17 @@ export class Explore implements OnInit {
     }
     this.router.navigate(['/explore'], { queryParams: params });
   }
- 
+
   // Quita los filtros pero conserva el texto buscado
   clearFilters(): void {
     const q = this.filters().q;
     this.router.navigate(['/explore'], { queryParams: q ? { q } : {} });
   }
- 
+
   changePage(page: number): void {
     this.router.navigate(['/explore'], { queryParams: { page }, queryParamsHandling: 'merge' });
   }
- 
+
   changePageSize(pageSize: number): void {
     this.router.navigate(['/explore'], { queryParams: { pageSize, page: null }, queryParamsHandling: 'merge' });
   }

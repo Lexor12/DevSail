@@ -1,0 +1,37 @@
+<div class="container account">
+    <app-account-menu active="delete" />
+    <section>
+        <h1 class="page-title">Zona de peligro</h1>
+
+        <div class="card box">
+        <h2 class="danger-title">Eliminar mi cuenta</h2>
+        <p>Al eliminar tu cuenta se borran para siempre:</p>
+        <ul class="list text-muted">
+            <li>Tu perfil, foto y enlaces</li>
+            <li>Tus proyectos con sus imágenes, calificaciones y visitas</li>
+            <li>Las calificaciones y comentarios que hiciste</li>
+            <li>Tus proyectos guardados</li>
+        </ul>
+        <p class="text-muted">Tu Plan Pro y tus destacados terminan sin reembolso. Tus pagos y reportes se conservan sin tus datos personales. Te llegará un correo de aviso.</p>
+
+        <form #form class="form" (submit)="deleteAccount($event)" (input)="check(form)" (change)="check(form)" novalidate>
+            <div>
+            <label class="label" for="password">Escribe tu contraseña para confirmar</label>
+            <input class="field" type="password" id="password" name="password" autocomplete="current-password">
+            </div>
+
+            <label class="checkbox">
+            <input type="checkbox" name="understood">
+            Entiendo que esta acción no se puede deshacer
+            </label>
+
+            @if (error()) { <p class="alert-error">{{ error() }}</p> }
+
+            <button type="submit" class="btn btn-danger" [disabled]="!password() || !understood() || sending()">
+            {{ sending() ? 'Eliminando…' : 'Eliminar mi cuenta' }}
+            </button>
+        </form>
+        </div>
+    </section>
+</div>
+

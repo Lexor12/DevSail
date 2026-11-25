@@ -14,7 +14,7 @@ async function createFeatured(projectId, durationDays, paymentId, db = pool) {
         SELECT
             $1,
             $3,
-            $2,
+            $2::int,
             GREATEST(NOW(), calc.base_end),
             GREATEST(NOW(), calc.base_end) + ($2::int * INTERVAL '1 day'),
             CASE WHEN calc.base_end > NOW() THEN 'scheduled' ELSE 'active' END

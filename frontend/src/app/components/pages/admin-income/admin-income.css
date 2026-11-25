@@ -1,0 +1,38 @@
+.filters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 16px;
+    padding: 20px;
+}
+
+.filters label {
+    min-width: 160px;
+}
+
+.spaced {
+    margin: 22px 0;
+}
+
+.order {
+    font-size: 13px;
+    color: var(--text-muted);
+}
+
+.ok {
+    color: var(--green);
+}
+
+.empty {
+    padding: 32px;
+    text-align: center;
+}
+
+.pager {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    margin-top: 20px;
+}
+

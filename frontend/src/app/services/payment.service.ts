@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { API_URL } from '../config/api';
-import { Analytics, MyPayments, OrderResponse, PaymentConcept } from '../models/payment.model';
+import { Analytics, IncomeFilters, IncomeResponse, MyPayments, OrderResponse, PaymentConcept } from '../models/payment.model';
 
 type Message = { message: string };
 
@@ -38,5 +38,16 @@ export class PaymentService {
 
     cancelOrder(orderId: string): Observable<Message> {
         return this.http.post<Message>(`${this.api}/paypal/cancel-order`, { orderId });
+    }
+
+    // Ingresos para el administrador, solo se mandan los filtros con valor
+    getIncome(filters: IncomeFilters): Observable<IncomeResponse> {
+        let params = new HttpParams().set('page', filters.page).set('pageSize', 10);
+        if (filters.dateFrom) params = params.set('dateFrom', filters.dateFrom);
+        if (filters.dateTo) params = params.set('dateTo', filters.dateTo);
+        if (filters.concept) params = params.set('concept', filters.concept);
+        if (filters.status) params = params.set('status', filters.status);
+        if (filters.username) params = params.set('username', filters.username);
+        return this.http.get<IncomeResponse>(`${API_URL}/admin/income`, { params });
     }
 }

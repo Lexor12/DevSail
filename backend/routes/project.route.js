@@ -16,6 +16,9 @@ router.get('/my-projects', verifyToken, allowRoles('developer'), projectControll
 // Publica un proyecto nuevo
 router.post('/', verifyToken, allowRoles('developer'), projectController.createProject);
 
+// Insignia publica para el README
+router.get('/:id/badge', projectController.getProjectBadge);
+
 // Detalle de un proyecto, optionalAuth permite saber si es el dueño o un visitante
 router.get('/:id', optionalAuth, projectController.getProjectDetail);
 

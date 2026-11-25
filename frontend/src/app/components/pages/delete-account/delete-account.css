@@ -1,0 +1,31 @@
+.box {
+    padding: 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    border-color: var(--red);
+}
+
+.danger-title {
+    color: var(--red-text);
+    font-size: 22px;
+    font-weight: 500;
+}
+
+.list {
+    padding-left: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    max-width: 420px;
+}
+
+.btn-danger {
+    align-self: flex-start;
+}

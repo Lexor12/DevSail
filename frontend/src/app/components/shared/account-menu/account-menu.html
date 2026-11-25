@@ -5,5 +5,5 @@
   <a routerLink="/my-account/saved" [class.active]="active() === 'saved'">Guardados</a>
   <a routerLink="/my-account/plan" [class.active]="active() === 'plan'">Plan y pagos</a>
   <a routerLink="/my-account/stats" [class.active]="active() === 'stats'">Estadísticas <span class="chip chip-yellow">PRO</span></a>
-  <a routerLink="/my-account/delete" class="danger">Zona de peligro</a>
+  <a routerLink="/my-account/delete" class="danger" [class.active]="active() === 'delete'">Eliminar Cuenta</a>
 </nav>

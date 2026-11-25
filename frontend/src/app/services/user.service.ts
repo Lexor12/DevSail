@@ -43,4 +43,10 @@ export class UserService {
     changePassword(data: PasswordData): Observable<Message> {
         return this.http.put<Message>(`${API_URL}/auth/change-password`, data);
     }
+
+    //Este método permite borrar la cuenta, se confirma con la contraseña
+    // DELETE no lleva cuerpo por defecto, por eso se manda en body
+    deleteAccount(password: string): Observable<Message> {
+        return this.http.delete<Message>(`${this.api}/me`, { body: { password } });
+    }
 }
