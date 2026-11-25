@@ -1,3 +1,5 @@
+const { buildMediaUrl } = require('../utils/mediaUrl');
+
 //Calificacion de un proyecto con los campos de la tabla ratings
 class Rating {
     constructor(
@@ -38,6 +40,7 @@ class ProjectCommentItem {
         this.authorUsername = authorUsername;
         this.authorFullName = authorFullName;
         this.authorAvatarPath = authorAvatarPath;
+        this.authorAvatarUrl = buildMediaUrl(authorAvatarPath);
         this.scoreDesign = scoreDesign;
         this.scoreUsefulness = scoreUsefulness;
         this.scoreCodeQuality = scoreCodeQuality;

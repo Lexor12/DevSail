@@ -5,7 +5,7 @@ import { RatingService } from '../../../services/rating.service';
 import { AuthService } from '../../../services/auth.service';
 import { ProjectDetailData } from '../../../models/project-detail.model';
 import { Rating, RatingItem } from '../../../models/rating.model';
-import { formatDate, imageUrl, initials, score, stars } from '../../../utils/format';
+import { formatDate, initials, score, stars } from '../../../utils/format';
 import { BadgeSnippet } from '../../shared/badge-snippet/badge-snippet';
 import { RateModal } from '../../modals/rate-modal/rate-modal';
 import { ReportModal } from '../../modals/report-modal/report-modal';
@@ -48,7 +48,6 @@ export class ProjectDetail implements OnInit {
   readonly score = score;
   readonly initials = initials;
   readonly formatDate = formatDate;
-  readonly imageUrl = imageUrl;
  
   // Las 5 barras de calificaciones por criterio
   criteria = computed(() => {
@@ -171,8 +170,8 @@ export class ProjectDetail implements OnInit {
     return names[platform] ?? platform;
   }
  
-  // Direcciones de las imágenes para el visor, null si aún no hay bucket
+  // Direcciones de las imágenes para el visor
   imageUrls(): (string | null)[] {
-    return (this.project()?.images ?? []).map(image => imageUrl(image.storagePath));
+    return (this.project()?.images ?? []).map(image => image.url);
   }
 }

@@ -314,7 +314,8 @@ async function login(req, res) {
                 fullName: user.fullName,
                 username: user.username,
                 role: user.role,
-                avatarPath: user.avatarPath
+                avatarPath: user.avatarPath,
+                avatarUrl: user.avatarUrl
             }
         });
     } catch (error) {
@@ -347,7 +348,8 @@ async function getSession(req, res) {
             username: user.username,
             email: user.email,
             role: user.role,
-            avatarPath: user.avatarPath
+            avatarPath: user.avatarPath,
+            avatarUrl: user.avatarUrl
         });
     } catch (error) {
         console.error('Error en getSession:', error);

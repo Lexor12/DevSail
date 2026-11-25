@@ -1,3 +1,5 @@
+const { buildMediaUrl } = require('../utils/mediaUrl');
+
 // Representa un proyecto de la base de datos y se usa para crearlo, editarlo o eliminarlo
 class Project {
     constructor(
@@ -51,6 +53,7 @@ class ProjectCard {
         this.typeCode = typeCode;
         this.typeName = typeName;
         this.coverPath = coverPath;
+        this.coverUrl = buildMediaUrl(coverPath);
         this.avgOverall = avgOverall;
         this.ratingsCount = ratingsCount;
         this.seekingFeedback = seekingFeedback;
@@ -77,6 +80,7 @@ class ProjectDetail {
         this.ownerUsername = ownerUsername;
         this.ownerFullName = ownerFullName;
         this.ownerAvatarPath = ownerAvatarPath;
+        this.ownerAvatarUrl = buildMediaUrl(ownerAvatarPath);
         this.projectTypeId = projectTypeId;
         this.typeCode = typeCode;
         this.typeName = typeName;
@@ -117,6 +121,7 @@ class OwnerProject {
         this.status = status;
         this.hiddenReason = hiddenReason;
         this.coverPath = coverPath;
+        this.coverUrl = buildMediaUrl(coverPath);
         this.avgOverall = avgOverall;
         this.ratingsCount = ratingsCount;
         this.savesCount = savesCount;

@@ -39,7 +39,7 @@
               @for (project of d.projects; track project.id) {
                 <tr>
                   <td>
-                    <div class="cover">@if (imageUrl(project.coverPath); as url) { <img [src]="url" alt=""> }</div>
+                    <div class="cover">@if (project.coverUrl) { <img [src]="project.coverUrl" alt=""> }</div>
                   </td>
                   <td><a [routerLink]="['/projects', project.id]">{{ project.title }} / {{ project.nickname }}</a></td>
                   <td>{{ statusText(project) }}</td>

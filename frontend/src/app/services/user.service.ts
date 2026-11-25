@@ -31,8 +31,8 @@ export class UserService {
     }
 
     // image es la foto en base64
-    updateAvatar(image: string): Observable<{ message: string; avatarPath: string }> {
-        return this.http.post<{ message: string; avatarPath: string }>(`${this.api}/me/avatar`, { image });
+    updateAvatar(image: string): Observable<{ message: string; avatarUrl: string }> {
+        return this.http.post<{ message: string; avatarUrl: string }>(`${this.api}/me/avatar`, { image });
     }
 
     removeAvatar(): Observable<Message> {

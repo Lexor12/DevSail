@@ -22,7 +22,9 @@ const env = {
     supabase: {
         url: process.env.SUPABASE_URL,
         serviceKey: process.env.SUPABASE_SERVICE_KEY,
-        bucket: process.env.SUPABASE_BUCKET
+        bucket: process.env.SUPABASE_BUCKET,
+        // Direccion publica del bucket, se antepone a las rutas guardadas en la base de datos
+        mediaBaseUrl: process.env.SUPABASE_MEDIA_BASE_URL
     },
     mail: {
         user: process.env.MAIL_USER,
@@ -32,13 +34,7 @@ const env = {
         baseUrl: process.env.PAYPAL_BASE_URL,
         clientId: process.env.PAYPAL_CLIENT_ID,
         clientSecret: process.env.PAYPAL_CLIENT_SECRET
-    },
-    supabase: {
-    url: process.env.SUPABASE_URL,
-    serviceKey: process.env.SUPABASE_SERVICE_KEY,
-    bucket: process.env.SUPABASE_BUCKET,
-    mediaBaseUrl: process.env.SUPABASE_MEDIA_BASE_URL
-    },
+    }
 };
 
 module.exports = { env };

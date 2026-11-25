@@ -5,7 +5,7 @@ export interface ProjectSummary {
     nickname: string;
     typeCode: string;
     typeName: string;
-    coverPath: string | null;
+    coverUrl: string | null;
     avgOverall: number | string | null;
     ratingsCount: number;
     seekingFeedback: boolean;

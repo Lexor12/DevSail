@@ -17,7 +17,7 @@ export interface RatingItem {
   userId: string;
   authorUsername: string;
   authorFullName: string;
-  authorAvatarPath: string | null;
+  authorAvatarUrl: string | null;
   average: number;
   comment: string | null;
   isEdited: boolean;

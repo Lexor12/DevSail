@@ -1,3 +1,5 @@
+const { buildMediaUrl } = require('../utils/mediaUrl');
+
 // Cuenta completa de la tabla users, se usa en auth y al editar la cuenta
 class User {
     constructor(
@@ -16,6 +18,7 @@ class User {
         this.verifiedAt = verifiedAt; // puede ser null
         this.bio = bio; // puede ser null
         this.avatarPath = avatarPath; // ruta en Supabase Storage, con null se muestran las iniciales
+        this.avatarUrl = buildMediaUrl(avatarPath);
         this.linkLinkedin = linkLinkedin;
         this.linkWebsite = linkWebsite;
         this.linkGithub = linkGithub;
@@ -56,6 +59,7 @@ class PublicProfile {
         this.username = username;
         this.bio = bio;
         this.avatarPath = avatarPath;
+        this.avatarUrl = buildMediaUrl(avatarPath);
         this.linkLinkedin = linkLinkedin;
         this.linkWebsite = linkWebsite;
         this.linkGithub = linkGithub;

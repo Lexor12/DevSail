@@ -7,8 +7,8 @@
         <div class="card box">
             <!-- Foto -->
             <div class="photo">
-            @if (imageUrl(a.avatarPath); as url) {
-                <img class="avatar big" [src]="url" alt="Foto de perfil">
+            @if (a.avatarUrl) {
+                <img class="avatar big" [src]="a.avatarUrl" alt="Foto de perfil">
             } @else {
                 <span class="avatar big">{{ initials(a.fullName) }}</span>
             }
@@ -18,7 +18,7 @@
                     Cambiar foto
                     <input type="file" accept="image/jpeg,image/png,image/webp" hidden (change)="changePhoto($event)">
                 </label>
-                @if (a.avatarPath) {
+                @if (a.avatarUrl) {
                     <button type="button" class="btn btn-outline" (click)="removePhoto()">Quitar foto</button>
                 }
                 </div>

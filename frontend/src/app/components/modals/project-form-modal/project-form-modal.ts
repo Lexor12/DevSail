@@ -3,7 +3,7 @@ import { ProjectService } from '../../../services/project.service';
 import { CatalogService } from '../../../services/catalog.service';
 import { ProjectType, Technology } from '../../../models/catalog.model';
 import { ProjectDetailData, ProjectImage } from '../../../models/project-detail.model';
-import { imageUrl, readFileAsBase64 } from '../../../utils/format';
+import { readFileAsBase64 } from '../../../utils/format';
  
 const MAX_IMAGES = 4;
 const MAX_IMAGE_MB = 2;
@@ -37,7 +37,6 @@ export class ProjectFormModal implements OnInit {
   sending = signal(false);
  
   readonly maxTechs = MAX_TECHNOLOGIES;
-  readonly imageUrl = imageUrl;
  
   constructor(private projectService: ProjectService, private catalogService: CatalogService) {}
  

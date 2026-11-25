@@ -2,7 +2,7 @@ import { Component, OnInit, signal } from '@angular/core';
 import { UserService } from '../../../services/user.service';
 import { AuthService } from '../../../services/auth.service';
 import { MyAccount } from '../../../models/user.model';
-import { imageUrl, initials, readFileAsBase64 } from '../../../utils/format';
+import { initials, readFileAsBase64 } from '../../../utils/format';
 import { AccountMenu } from '../../shared/account-menu/account-menu';
 
 //Sección de Mi cuenta con los datos y la seguridad
@@ -25,7 +25,6 @@ export class AccountData implements OnInit {
   saving = signal(false);
 
   readonly initials = initials;
-  readonly imageUrl = imageUrl;
 
   // Enlaces opcionales del perfil con su nombre, etiqueta y ejemplo
   readonly links = [

@@ -6,8 +6,8 @@
     </div>
   } @else if (profile(); as p) {
     <div class="card header-card">
-      @if (imageUrl(p.avatarPath); as url) {
-        <img class="avatar big" [src]="url" [alt]="p.fullName">
+      @if (p.avatarUrl) {
+        <img class="avatar big" [src]="p.avatarUrl" [alt]="p.fullName">
       } @else {
         <span class="avatar big">{{ initials(p.fullName) }}</span>
       }

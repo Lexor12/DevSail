@@ -6,7 +6,7 @@ export interface User {
     username: string;
     email?: string;
     role: 'developer' | 'admin';
-    avatarPath?: string | null;
+    avatarUrl?: string | null;
 }
 
 // Respuesta al iniciar sesión o verificar el correo
@@ -32,7 +32,7 @@ export interface ProfileInfo {
     fullName: string;
     username: string;
     bio: string | null;
-    avatarPath: string | null;
+    avatarUrl: string | null;
     linkLinkedin: string | null;
     linkWebsite: string | null;
     linkGithub: string | null;
@@ -61,7 +61,7 @@ export interface MyAccount {
     username: string;
     email: string;
     bio: string | null;
-    avatarPath: string | null;
+    avatarUrl: string | null;
     linkLinkedin: string | null;
     linkWebsite: string | null;
     linkGithub: string | null;

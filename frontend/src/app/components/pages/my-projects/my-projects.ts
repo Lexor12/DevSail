@@ -2,7 +2,7 @@ import { Component, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ProjectService } from '../../../services/project.service';
 import { MyProjectsResponse, OwnerProject } from '../../../models/project-detail.model';
-import { formatDate, imageUrl, score } from '../../../utils/format';
+import { formatDate, score } from '../../../utils/format';
 import { AccountMenu } from '../../shared/account-menu/account-menu';
 import { ProjectFormModal } from '../../modals/project-form-modal/project-form-modal';
 import { DeleteProjectModal } from '../../modals/delete-project-modal/delete-project-modal';
@@ -33,7 +33,6 @@ export class MyProjects implements OnInit {
  
   readonly score = score;
   readonly formatDate = formatDate;
-  readonly imageUrl = imageUrl;
  
   constructor(private projectService: ProjectService, private route: ActivatedRoute, private router: Router) {}
  

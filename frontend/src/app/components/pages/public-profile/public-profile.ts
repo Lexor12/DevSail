@@ -4,7 +4,7 @@ import { UserService } from '../../../services/user.service';
 import { AuthService } from '../../../services/auth.service';
 import { ProfileInfo, ProfileStats } from '../../../models/user.model';
 import { ProjectSummary } from '../../../models/project.model';
-import { imageUrl, initials, score } from '../../../utils/format';
+import { initials, score } from '../../../utils/format';
 import { ProjectCard } from '../../cards/project-card/project-card';
 
 // Pantalla de perfil público
@@ -23,7 +23,6 @@ export class PublicProfile implements OnInit {
   sort = 'recent';
 
   readonly initials = initials;
-  readonly imageUrl = imageUrl;
   readonly score = score;
 
   // Solo los enlaces que llenó la persona

@@ -16,6 +16,7 @@ const {
     isValidLength,
     isValidProfileLink
 } = require('../utils/validators');
+const { buildMediaUrl } = require('../utils/mediaUrl');
 
 // Limite de 1 MB para la foto de perfil
 const MAX_AVATAR_BYTES = 1 * 1024 * 1024;
@@ -67,6 +68,7 @@ async function getMyAccount(req, res) {
             email: user.email,
             bio: user.bio,
             avatarPath: user.avatarPath,
+            avatarUrl: user.avatarUrl,
             linkLinkedin: user.linkLinkedin,
             linkWebsite: user.linkWebsite,
             linkGithub: user.linkGithub,
@@ -193,7 +195,8 @@ async function updateAvatar(req, res) {
 
         return res.status(200).json({
             message: 'Foto de perfil actualizada.',
-            avatarPath: newAvatarPath
+            avatarPath: newAvatarPath,
+            avatarUrl: buildMediaUrl(newAvatarPath)
         });
     } catch (error) {
         console.error('Error en updateAvatar:', error);

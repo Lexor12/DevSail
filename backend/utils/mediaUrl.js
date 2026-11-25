@@ -9,8 +9,9 @@ function buildMediaUrl(storagePath) {
     const baseUrl = (env.supabase.mediaBaseUrl || '').replace(/\/+$/, '');
     const cleanPath = String(storagePath).replace(/^\/+/, '');
 
+    // Sin la variable no hay forma de armar la direccion, el frontend muestra el recuadro vacio
     if (!baseUrl) {
-        return cleanPath;
+        return null;
     }
     return `${baseUrl}/${cleanPath}`;
 }

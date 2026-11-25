@@ -32,7 +32,7 @@
         <div class="thumbs">
           @for (image of p.images; track image.id; let i = $index) {
             <button type="button" class="thumb" [class.active]="i === selectedImage()" (click)="selectedImage.set(i)">
-              @if (imageUrl(image.storagePath); as url) { <img [src]="url" alt=""> }
+              @if (image.url) { <img [src]="image.url" alt=""> }
             </button>
           }
         </div>

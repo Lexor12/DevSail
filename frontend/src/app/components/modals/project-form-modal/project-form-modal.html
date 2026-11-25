@@ -59,7 +59,7 @@
           @if (isEditing()) {
             @for (image of currentImages(); track image.id; let i = $index) {
               <div class="image">
-                @if (imageUrl(image.storagePath); as url) { <img [src]="url" alt=""> }
+                @if (image.url) { <img [src]="image.url" alt=""> }
                 @if (i === 0) { <span class="chip chip-yellow cover-tag">Portada</span> }
                 @if (currentImages().length > 1) {
                   <button type="button" class="remove" (click)="removeCurrentImage(image)">✕</button>

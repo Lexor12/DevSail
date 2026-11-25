@@ -3,7 +3,7 @@ import { Rating } from './rating.model';
 export interface ProjectImage {
   id: string;
   projectId: string;
-  storagePath: string;
+  url: string | null;
   position: number;
 }
  
@@ -18,7 +18,7 @@ export interface ProjectDetailData {
   ownerId: string;
   ownerUsername: string;
   ownerFullName: string;
-  ownerAvatarPath: string | null;
+  ownerAvatarUrl: string | null;
   projectTypeId: string;
   typeCode: string;
   typeName: string;
@@ -61,7 +61,7 @@ export interface OwnerProject {
   nickname: string;
   status: 'published' | 'deactivated' | 'hidden';
   hiddenReason: string | null;
-  coverPath: string | null;
+  coverUrl: string | null;
   avgOverall: number | string | null;
   ratingsCount: number;
   savesCount: number;

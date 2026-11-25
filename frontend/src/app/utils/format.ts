@@ -1,5 +1,3 @@
-import { IMAGES_URL } from '../config/api';
- 
 // Funciones pequeñas para mostrar datos en varias pantallas
 // Saca las iniciales, de Eso Tilin a ET
 export function initials(name: string | null | undefined): string {
@@ -26,11 +24,6 @@ export function stars(value: number | string | null | undefined): string {
 // El promedio llega como texto y se muestra con un decimal, o 0.0 si no hay
 export function score(value: number | string | null | undefined): string {
   return Number(value ?? 0).toFixed(1);
-}
- 
-// Pasa de la ruta del bucket a la dirección completa, null si no hay bucket
-export function imageUrl(path: string | null | undefined): string | null {
-  return path && IMAGES_URL ? IMAGES_URL + path : null;
 }
  
 // Convierte el archivo elegido a base64 porque así lo pide el backend
