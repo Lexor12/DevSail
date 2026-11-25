@@ -1,0 +1,21 @@
+.wrapper {
+  display: flex;
+  justify-content: center;
+  padding-top: 40px;
+}
+
+.box {
+  width: 100%;
+  max-width: 480px;
+  padding: 32px;
+  border-radius: 16px;
+}
+
+@media (max-width: 600px) {
+  .wrapper {
+    padding-top: 8px;
+  }
+  .box {
+    padding: 24px 18px;
+  }
+}

@@ -1,1 +1,22 @@
-<p>project-section works!</p>
+<section class="section">
+  <div class="heading">
+    <h2 class="title">{{ title() }}</h2>
+    <!-- Aquí la página mete el chip "Patrocinado", las pestañas Semana/Mes o el texto gris -->
+    <ng-content />
+    @if (seeAll()) {
+      <a class="see-all" routerLink="/explore" [queryParams]="seeAll()">Ver todos →</a>
+    }
+  </div>
+
+  @if (loading()) {
+    <p class="text-muted">Cargando proyectos…</p>
+  } @else {
+    <div class="grid">
+      @for (project of projects(); track project.id) {
+        <app-project-card [project]="project" [showFeatured]="kind() === 'featured'" />
+      } @empty {
+        <p class="text-muted empty">Todavía no hay proyectos en esta sección.</p>
+      }
+    </div>
+  }
+</section>

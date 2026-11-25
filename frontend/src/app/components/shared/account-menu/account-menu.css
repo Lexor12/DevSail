@@ -1,0 +1,37 @@
+.menu {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 20px 16px;
+}
+
+.title {
+  margin: 0 0 8px 4px;
+  font-size: 20px;
+  font-weight: 500;
+}
+
+a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 20px;
+  border-radius: var(--radius);
+  color: var(--text-muted);
+  font-size: 16px;
+}
+
+a:hover {
+  color: var(--text);
+  text-decoration: none;
+}
+
+a.active {
+  background: var(--surface-2);
+  color: var(--text);
+  font-weight: 500;
+}
+
+.danger {
+  color: var(--red-text);
+}

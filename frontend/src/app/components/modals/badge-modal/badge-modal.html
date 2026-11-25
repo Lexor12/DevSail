@@ -1,0 +1,13 @@
+<div class="modal-backdrop">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 class="modal-title">Insignia de {{ nickname() }}</h2>
+      <button type="button" class="modal-close" (click)="closed.emit()">✕</button>
+    </div>
+    <p class="text-muted">Pega este fragmento en el README de tu repositorio.</p>
+    <app-badge-snippet [projectId]="projectId()" [nickname]="nickname()" [average]="average()" />
+    <div class="modal-actions">
+      <button type="button" class="btn btn-outline" (click)="closed.emit()">Cerrar</button>
+    </div>
+  </div>
+</div>

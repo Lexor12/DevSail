@@ -1,0 +1,13 @@
+.bar {
+  display: flex;
+  gap: 12px;
+}
+
+.field {
+  flex: 1;
+}
+
+.btn {
+  height: 46px;
+  padding: 0 22px;
+}

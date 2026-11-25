@@ -1,1 +1,44 @@
-<p>verify-code works!</p>
+<div class="container wrapper">
+  <section class="card box">
+    <div class="icon">&#64;</div>
+    <h1 class="title">Verifica tu correo</h1>
+
+    @if (email()) {
+      <p class="text-muted">Enviamos un código de 6 dígitos a {{ maskedEmail() }}</p>
+
+      <form class="form" (submit)="verify($event)">
+        <app-code-input (changed)="code.set($event)" />
+
+        <p class="text-muted">
+          @if (expired()) {
+            <span class="expired">El código venció. Pide uno nuevo.</span>
+          } @else {
+            El código vence en
+            <app-countdown [seconds]="codeSeconds" [restart]="restart()" (finished)="expired.set(true)" />
+          }
+        </p>
+        <p class="text-muted">Intentos: {{ attempts() }} de {{ maxAttempts }}</p>
+
+        @if (error()) { <p class="alert-error">{{ error() }}</p> }
+        @if (message()) { <p class="alert-ok">{{ message() }}</p> }
+
+        <button type="submit" class="btn btn-primary btn-block"
+                [disabled]="code().length !== 6 || sending() || expired() || attempts() === 0">
+          {{ sending() ? 'Verificando…' : 'Verificar' }}
+        </button>
+
+        <button type="button" class="btn-text" [disabled]="!canResend()" (click)="resend()">
+          @if (canResend()) {
+            Reenviar código
+          } @else {
+            Reenviar código (disponible en
+            <app-countdown [seconds]="resendSeconds" [restart]="restart()" (finished)="canResend.set(true)" />)
+          }
+        </button>
+      </form>
+    } @else {
+      <p class="text-muted">No sabemos a qué correo mandar el código.</p>
+      <a routerLink="/auth/register" class="btn btn-primary btn-block">Ir al registro</a>
+    }
+  </section>
+</div>

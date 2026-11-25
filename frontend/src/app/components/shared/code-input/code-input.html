@@ -1,1 +1,8 @@
-<p>code-input works!</p>
+<div class="boxes" #container (paste)="paste($event)">
+  @for (digit of digits(); track $index) {
+    <input class="digit" [class.filled]="digit !== ''" type="text" inputmode="numeric" maxlength="1"
+           autocomplete="one-time-code" [attr.aria-label]="'Dígito ' + ($index + 1)"
+           (input)="type($event, $index)" (keydown)="keyDown($event, $index)">
+  }
+</div>
+<input type="hidden" name="code" [value]="code()">

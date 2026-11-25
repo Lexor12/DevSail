@@ -1,0 +1,39 @@
+.paginator {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.numbers {
+  display: flex;
+  gap: 6px;
+}
+
+.number {
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.number.current {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+}
+
+.number:disabled {
+  color: var(--text-dim);
+  cursor: not-allowed;
+}
+
+.page-size {
+  width: 160px;
+  height: 38px;
+  font-size: 14px;
+}

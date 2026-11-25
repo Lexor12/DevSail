@@ -1,1 +1,17 @@
-<p>paginator works!</p>
+<div class="paginator">
+  <p class="text-muted">Mostrando {{ from() }}–{{ to() }} de {{ total() }}</p>
+
+  <div class="numbers">
+    <button type="button" class="number" [disabled]="page() === 1" (click)="pageChange.emit(page() - 1)" aria-label="Página anterior">‹</button>
+    @for (n of pages(); track n) {
+      <button type="button" class="number" [class.current]="n === page()" (click)="pageChange.emit(n)">{{ n }}</button>
+    }
+    <button type="button" class="number" [disabled]="page() === totalPages()" (click)="pageChange.emit(page() + 1)" aria-label="Página siguiente">›</button>
+  </div>
+
+  <select class="field page-size" aria-label="Resultados por página" (change)="changeSize($event)">
+    @for (size of sizes; track size) {
+      <option [value]="size" [selected]="size === pageSize()">{{ size }} por página</option>
+    }
+  </select>
+</div>

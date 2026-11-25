@@ -1,0 +1,9 @@
+<nav class="card menu">
+  <p class="title">Mi cuenta</p>
+  <a routerLink="/my-account/data" [class.active]="active() === 'data'">Mis datos y seguridad</a>
+  <a routerLink="/my-account/projects" [class.active]="active() === 'projects'">Mis proyectos</a>
+  <a routerLink="/my-account/saved" [class.active]="active() === 'saved'">Guardados</a>
+  <a routerLink="/my-account/plan" [class.active]="active() === 'plan'">Plan y pagos</a>
+  <a routerLink="/my-account/stats" [class.active]="active() === 'stats'">Estadísticas <span class="chip chip-yellow">PRO</span></a>
+  <a routerLink="/my-account/delete" class="danger">Zona de peligro</a>
+</nav>

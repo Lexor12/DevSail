@@ -1,1 +1,488 @@
-/* You can add global styles to this file, and also import other style files */
+/* Estilos globales de DevSail: colores de los mockups y clases que comparten todos los componentes */
+:root {
+  --bg: #0F1117;
+  --surface: #181B22;
+  --surface-2: #232733;
+  --border: #2C313C;
+  --border-soft: #262B36;
+  --navy: #0B1530;
+  --primary: #1B6EF3;
+  --primary-hover: #3B82F6;
+  --link: #4C8DF6;
+  --text: #E6E9EF;
+  --text-muted: #9AA3B2;
+  --text-dim: #6B7383;
+  --yellow: #F5B83D;
+  --red: #DC2626;
+  --red-text: #F87171;
+  --green: #34D399;
+  --green-bg: #0B3B33;
+  --pink: #F5A3DC;
+  --pink-bg: #4D0D44;
+  --radius: 8px;
+  --radius-card: 12px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Plus Jakarta Sans', 'Segoe UI', sans-serif;
+  font-size: 15px;
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: var(--link);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+h1, h2, h3 {
+  margin: 0;
+  font-weight: 600;
+}
+
+p {
+  margin: 0;
+}
+
+button, input, select, textarea {
+  font-family: inherit;
+  font-size: inherit;
+}
+
+/* Contenedor centrado que usan todas las páginas */
+.container {
+  width: 100%;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0 32px;
+}
+
+/* Botones */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 40px;
+  padding: 0 20px;
+  border-radius: var(--radius);
+  border: 1px solid transparent;
+  font-weight: 500;
+  color: var(--text);
+  cursor: pointer;
+  white-space: nowrap;
+  text-decoration: none;
+}
+
+.btn:hover {
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background: var(--primary-hover);
+}
+
+.btn-outline {
+  background: var(--bg);
+  border-color: var(--border);
+}
+
+.btn-outline:hover {
+  border-color: #3A4050;
+}
+
+.btn-block {
+  width: 100%;
+}
+
+.btn:disabled {
+  background: #1E3A6E;
+  color: #7F97C4;
+  cursor: not-allowed;
+}
+
+.btn-text {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--link);
+  cursor: pointer;
+}
+
+.btn-text:disabled {
+  color: var(--text-dim);
+  cursor: not-allowed;
+}
+
+/* Campos de formulario */
+.label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.field {
+  width: 100%;
+  height: 46px;
+  padding: 0 16px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  outline: none;
+}
+
+.field::placeholder {
+  color: var(--text-dim);
+}
+
+.field:focus {
+  border-color: var(--primary);
+}
+
+.field.invalid {
+  border-color: var(--red-text);
+}
+
+.hint {
+  margin-top: 6px;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.hint.error {
+  color: var(--red-text);
+}
+
+/* Flecha propia para los select, igual a la de los mockups */
+select.field {
+  appearance: none;
+  padding-right: 34px;
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239AA3B2' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+}
+
+select.field option {
+  background: var(--surface);
+  color: var(--text);
+}
+
+.checkbox {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  color: var(--text);
+}
+
+.checkbox input {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  accent-color: var(--primary);
+  cursor: pointer;
+}
+
+/* Tarjetas y avisos */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+}
+
+.alert-error {
+  padding: 14px 18px;
+  border: 1px solid var(--red-text);
+  border-radius: var(--radius);
+  color: var(--red-text);
+}
+
+/* Etiquetas de colores (chips) */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+.chip-tech {
+  background: var(--surface-2);
+  border: 1px solid #2F3542;
+  color: #C9CED8;
+}
+
+.chip-pink {
+  background: var(--pink-bg);
+  color: var(--pink);
+}
+
+.chip-green {
+  background: var(--green-bg);
+  color: var(--green);
+}
+
+.chip-yellow {
+  background: var(--yellow);
+  color: #1A1406;
+}
+
+.chip-blue {
+  background: #14284F;
+  color: #8AB4FF;
+}
+
+.text-muted {
+  color: var(--text-muted);
+}
+
+.stars {
+  color: var(--yellow);
+  letter-spacing: 1px;
+}
+
+/* Rejilla de tarjetas de proyecto */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 22px;
+}
+
+@media (max-width: 1000px) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .container {
+    padding: 0 16px;
+  }
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ================= Agregado en el sprint de las pantallas 06 a 12 ================= */
+
+/* Botones extra */
+.btn-danger {
+  background: var(--red);
+  color: #fff;
+}
+
+.btn-paypal {
+  background: #FFC439;
+  color: #003087;
+  font-weight: 600;
+}
+
+.btn-sm {
+  height: 34px;
+  padding: 0 14px;
+  font-size: 14px;
+}
+
+/* Aviso verde de éxito */
+.alert-ok {
+  padding: 12px 16px;
+  border: 1px solid #1E6B55;
+  border-radius: var(--radius);
+  color: var(--green);
+}
+
+/* Áreas de texto con el mismo estilo que los campos */
+textarea.field {
+  height: auto;
+  min-height: 96px;
+  padding: 14px 16px;
+  resize: vertical;
+  line-height: 1.5;
+}
+
+/* Círculo con iniciales o foto */
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.avatar.small {
+  width: 32px;
+  height: 32px;
+  font-size: 12px;
+}
+
+/* Ventanas modales: fondo oscuro + tarjeta centrada */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 60px 16px;
+  overflow-y: auto;
+  background: rgba(5, 7, 11, 0.75);
+}
+
+.modal {
+  width: 100%;
+  max-width: 560px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 32px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.modal-title {
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.modal-close {
+  padding: 0;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.modal-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Mi cuenta: menú lateral + contenido */
+.account {
+  display: grid;
+  grid-template-columns: 260px minmax(0, 1fr);
+  gap: 32px;
+  align-items: start;
+  padding-top: 40px;
+}
+
+.page-title {
+  margin-bottom: 22px;
+  font-size: 32px;
+  font-weight: 500;
+}
+
+/* Formularios a dos columnas */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.form-grid .full {
+  grid-column: 1 / -1;
+}
+
+/* Tablas */
+.table-wrap {
+  overflow-x: auto;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th {
+  padding: 16px 20px;
+  background: var(--surface-2);
+  color: var(--text-muted);
+  font-size: 14px;
+  font-weight: 500;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.table td {
+  padding: 16px 20px;
+  border-top: 1px solid var(--border);
+}
+
+.table tr:first-child td {
+  border-top: none;
+}
+
+/* Cajas con un número grande (perfil y estadísticas) */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 16px;
+}
+
+.stat {
+  padding: 20px 24px;
+}
+
+.stat-value {
+  font-size: 32px;
+  font-weight: 500;
+}
+
+.stat-label {
+  margin-top: 4px;
+  color: var(--text-muted);
+}
+
+@media (max-width: 860px) {
+  .account {
+    grid-template-columns: 1fr;
+    padding-top: 16px;
+  }
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+  .modal {
+    padding: 24px 18px;
+  }
+}

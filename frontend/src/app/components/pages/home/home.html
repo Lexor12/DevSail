@@ -1,1 +1,38 @@
-<p>home works!</p>
+<section class="hero">
+  <div class="container">
+    <h1 class="title">Descubre, califica y comparte proyectos de software</h1>
+
+    <form class="search" (submit)="search($event)">
+      <app-search-bar class="bar" />
+      <app-filter-panel mode="horizontal" />
+    </form>
+  </div>
+</section>
+
+<div class="container">
+  @if (error()) {
+    <p class="alert-error spaced">{{ error() }}</p>
+  }
+
+  <app-project-section title="Proyectos destacados" kind="featured" [projects]="featured()"
+                       [loading]="loading()" [seeAll]="{ featured: 'true' }">
+    <span class="chip chip-yellow">Patrocinado</span>
+    <span class="note">Pagados · hasta 12 · orden aleatorio en cada carga</span>
+  </app-project-section>
+
+  <app-project-section title="Mejor valorados" kind="top-rated" [projects]="topRated()"
+                       [loading]="loading() || loadingTopRated()" [seeAll]="{ sort: 'rated' }">
+    <app-tabs [options]="periods" [selected]="period()" (changed)="changePeriod($event)" />
+    <span class="note">Mín. 3 calificaciones en el periodo · {{ topRated().length }} proyectos</span>
+  </app-project-section>
+
+  <app-project-section title="Más recientes" kind="latest" [projects]="latest()"
+                       [loading]="loading()" [seeAll]="{}" />
+
+  @if (!authService.user()) {
+    <div class="cta">
+      <p>¿Tienes un proyecto? Publícalo gratis (hasta 3) y recibe retroalimentación.</p>
+      <a routerLink="/auth/register" class="btn btn-primary">Crear cuenta</a>
+    </div>
+  }
+</div>

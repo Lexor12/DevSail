@@ -1,0 +1,85 @@
+<div class="container profile-page">
+  @if (error()) {
+    <div class="card empty">
+      <p>{{ error() }}</p>
+      <a routerLink="/explore" class="btn btn-outline">Ir a Explorar</a>
+    </div>
+  } @else if (profile(); as p) {
+    <div class="card header-card">
+      @if (imageUrl(p.avatarPath); as url) {
+        <img class="avatar big" [src]="url" [alt]="p.fullName">
+      } @else {
+        <span class="avatar big">{{ initials(p.fullName) }}</span>
+      }
+
+      <div class="data">
+        <h1 class="name">{{ p.fullName }} @if (p.isPro) { <span class="chip chip-yellow">PRO</span> }</h1>
+        <p class="text-muted">&#64;{{ p.username }} · Miembro desde {{ memberSince(p.createdAt) }}</p>
+        @if (p.bio) { <p>{{ p.bio }}</p> }
+        @if (links().length > 0) {
+          <p class="links">
+            @for (link of links(); track link.name; let last = $last) {
+              <a [href]="link.url" target="_blank" rel="noopener">{{ link.name }}: {{ shortLink(link.url) }}</a>
+              @if (!last) { <span class="text-muted"> · </span> }
+            }
+          </p>
+        }
+      </div>
+
+      @if (authService.user()?.username === p.username) {
+        <a routerLink="/my-account/data" class="btn btn-outline">Editar perfil</a>
+      }
+    </div>
+
+    @if (stats(); as s) {
+      <div class="stats-row">
+        <div class="card stat"><p class="stat-value">{{ s.publishedProjects }}</p><p class="stat-label">Proyectos</p></div>
+        <div class="card stat"><p class="stat-value">{{ score(s.avgRating) }} ★</p><p class="stat-label">Calificación promedio</p></div>
+        <div class="card stat"><p class="stat-value">{{ s.ratingsReceived }}</p><p class="stat-label">Calificaciones recibidas</p></div>
+        <div class="card stat"><p class="stat-value">{{ s.savesReceived }}</p><p class="stat-label">Guardados recibidos</p></div>
+        <div class="card stat"><p class="stat-value">{{ s.ratingsGiven }}</p><p class="stat-label">Calificaciones dadas</p></div>
+      </div>
+
+      <div class="two">
+        <div class="card box">
+          <p class="box-title">Proyecto mejor valorado</p>
+          @if (s.bestProject; as best) {
+            <a [routerLink]="['/projects', best.id]">{{ best.nickname }} · {{ best.title }} ★ {{ score(best.avgOverall) }}</a>
+          } @else {
+            <p class="text-muted">Aún sin calificaciones</p>
+          }
+        </div>
+        <div class="card box">
+          <p class="box-title">Tecnologías más usadas</p>
+          <div class="chips">
+            @for (technology of s.topTechnologies; track technology) {
+              <span class="chip chip-tech">{{ technology }}</span>
+            } @empty {
+              <span class="text-muted">—</span>
+            }
+          </div>
+        </div>
+      </div>
+    }
+
+    <p class="hint">No se muestran: correo, pagos, guardados, visitas ni proyectos ocultos.</p>
+
+    <div class="portfolio-head">
+      <h2 class="portfolio-title">Portafolio ({{ projects().length }})</h2>
+      <select class="field sort" (change)="changeSort($event)">
+        <option value="recent">Más recientes</option>
+        <option value="rated">Mejor valorados</option>
+      </select>
+    </div>
+
+    <div class="grid">
+      @for (project of projects(); track project.id) {
+        <app-project-card [project]="project" />
+      } @empty {
+        <p class="text-muted">Todavía no publica proyectos.</p>
+      }
+    </div>
+  } @else {
+    <p class="text-muted">Cargando perfil…</p>
+  }
+</div>

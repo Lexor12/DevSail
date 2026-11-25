@@ -1,0 +1,25 @@
+<div class="viewer" (keydown.escape)="closed.emit()" tabindex="0">
+  <button type="button" class="close" (click)="closed.emit()">✕</button>
+
+  <div class="stage">
+    <button type="button" class="arrow" (click)="previous()">‹</button>
+    <div class="image">
+      @if (images()[index()]; as url) {
+        <img [src]="url" alt="">
+      } @else {
+        <span class="text-muted">Imagen {{ index() + 1 }} de {{ images().length }}</span>
+      }
+    </div>
+    <button type="button" class="arrow" (click)="next()">›</button>
+  </div>
+
+  <p class="counter">{{ index() + 1 }} / {{ images().length }}</p>
+
+  <div class="thumbs">
+    @for (url of images(); track $index; let i = $index) {
+      <button type="button" class="thumb" [class.active]="i === index()" (click)="index.set(i)">
+        @if (url) { <img [src]="url" alt=""> }
+      </button>
+    }
+  </div>
+</div>

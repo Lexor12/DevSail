@@ -1,1 +1,35 @@
-<p>project-card works!</p>
+<a class="card project-card" [routerLink]="['/projects', project().id]">
+  <div class="cover">
+    @if (cover()) {
+      <img [src]="cover()" [alt]="'Portada de ' + project().title" loading="lazy">
+    }
+    @if (showFeatured() && project().isFeatured) {
+      <span class="chip chip-yellow featured">DESTACADO</span>
+    }
+  </div>
+
+  <div class="body">
+    <h3 class="title">{{ project().title }}</h3>
+    <p class="text-muted">{{ project().nickname }} · {{ project().typeName }}</p>
+
+    @if (project().technologies.length > 0) {
+      <div class="technologies">
+        @for (technology of project().technologies.slice(0, 3); track technology) {
+          <span class="chip chip-tech">{{ technology }}</span>
+        }
+      </div>
+    }
+
+    <p class="rating">
+      <span class="stars">{{ stars() }}</span>
+      {{ average().toFixed(1) }} ({{ project().ratingsCount }})
+    </p>
+
+    @if (project().seekingFeedback || project().openToCollaborate) {
+      <div class="tags">
+        @if (project().seekingFeedback) { <span class="chip chip-pink">Busco retroalimentación</span> }
+        @if (project().openToCollaborate) { <span class="chip chip-green">Abierto a colaborar</span> }
+      </div>
+    }
+  </div>
+</a>

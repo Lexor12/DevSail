@@ -1,0 +1,32 @@
+<div class="container account">
+  <app-account-menu active="saved" />
+
+  <section>
+    <h1 class="page-title">Guardados ({{ projects().length }})</h1>
+
+    <select class="field sort" (change)="changeSort($event)">
+      <option value="recent">Guardado más reciente</option>
+      <option value="rated">Mejor valorados</option>
+    </select>
+
+    @if (loading()) {
+      <p class="text-muted">Cargando…</p>
+    } @else if (error()) {
+      <p class="alert-error">{{ error() }}</p>
+    } @else {
+      <div class="grid three">
+        @for (project of projects(); track project.id) {
+          <div class="item">
+            <app-project-card [project]="project" />
+            <button type="button" class="btn btn-outline btn-block" (click)="remove(project)">Quitar</button>
+          </div>
+        } @empty {
+          <div class="card empty">
+            <p>Aún no guardas proyectos.</p>
+            <a routerLink="/explore" class="btn btn-primary">Explorar</a>
+          </div>
+        }
+      </div>
+    }
+  </section>
+</div>

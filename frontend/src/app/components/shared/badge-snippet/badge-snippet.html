@@ -1,0 +1,15 @@
+<div class="snippet">
+  <span class="badge"><strong>DevSail</strong> <span class="score">{{ nickname() }} ★ {{ average() }}</span></span>
+
+  <div class="tabs">
+    <button type="button" class="btn btn-sm" [class.btn-primary]="format() === 'markdown'" [class.btn-outline]="format() !== 'markdown'" (click)="format.set('markdown')">Markdown</button>
+    <button type="button" class="btn btn-sm" [class.btn-primary]="format() === 'html'" [class.btn-outline]="format() !== 'html'" (click)="format.set('html')">HTML</button>
+  </div>
+
+  <p class="code">{{ code() }}</p>
+
+  <div class="row">
+    <button type="button" class="btn btn-primary btn-sm" (click)="copy()">{{ copied() ? '¡Copiado!' : 'Copiar' }}</button>
+    <span class="hint">Se actualiza sola al cambiar la calificación.</span>
+  </div>
+</div>

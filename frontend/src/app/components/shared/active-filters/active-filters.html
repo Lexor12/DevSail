@@ -1,1 +1,8 @@
-<p>active-filters works!</p>
+@if (filters().length > 0) {
+  <div class="active">
+    @for (filter of filters(); track filter.key + (filter.value ?? '')) {
+      <button type="button" class="chip chip-blue remove" (click)="remove.emit(filter)">{{ filter.text }} ✕</button>
+    }
+    <button type="button" class="btn-text clear" (click)="clearAll.emit()">Limpiar todo</button>
+  </div>
+}

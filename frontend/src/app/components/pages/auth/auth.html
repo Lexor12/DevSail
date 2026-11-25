@@ -1,1 +1,11 @@
-<p>auth works!</p>
+<div class="container wrapper">
+  <section class="card box">
+    <app-tabs variant="full" [options]="options" [selected]="mode()" (changed)="changeMode($event)" />
+
+    @if (mode() === 'login') {
+      <app-login-form />
+    } @else {
+      <app-register-form />
+    }
+  </section>
+</div>

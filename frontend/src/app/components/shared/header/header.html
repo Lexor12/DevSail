@@ -1,1 +1,23 @@
-<p>header works!</p>
+<header class="header">
+  <a routerLink="/" class="logo" (click)="menuOpen.set(false)">
+    <img src="logo-devsail.svg" alt="DevSail" width="112" height="73">
+  </a>
+
+  <nav class="menu" [class.open]="menuOpen()" (click)="menuOpen.set(false)">
+    <a routerLink="/explore" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Explorar</a>
+    <a routerLink="/explore" [queryParams]="{ featured: 'true' }">Destacados</a>
+    <a routerLink="/my-account/plan">Plan Pro</a>
+
+    <div class="actions">
+      @if (authService.user()) {
+        <a routerLink="/my-account/data" class="btn btn-outline">Mi cuenta <span class="arrow">▾</span></a>
+        <a routerLink="/my-account/projects" [queryParams]="{ new: 'true' }" class="btn btn-primary">+ Publicar proyecto</a>
+      } @else {
+        <a routerLink="/auth/login" class="btn btn-outline">Iniciar Sesión</a>
+        <a routerLink="/auth/register" class="btn btn-primary">Registrarse</a>
+      }
+    </div>
+  </nav>
+
+  <button type="button" class="btn btn-outline menu-button" aria-label="Abrir menú" (click)="toggleMenu()">☰</button>
+</header>

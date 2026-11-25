@@ -1,0 +1,66 @@
+:host {
+  display: block;
+}
+
+.project-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  color: var(--text);
+}
+
+.project-card:hover {
+  text-decoration: none;
+  border-color: #3A4050;
+}
+
+.cover {
+  position: relative;
+  height: 142px;
+  background: var(--navy);
+}
+
+.cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.featured {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px 15px 18px;
+}
+
+.title {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.body .text-muted {
+  font-size: 14px;
+}
+
+.technologies, .tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.rating {
+  margin-top: 4px;
+  font-size: 14px;
+  color: var(--yellow);
+}
+
+.tags {
+  margin-top: 6px;
+}

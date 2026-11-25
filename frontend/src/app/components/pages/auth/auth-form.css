@@ -1,0 +1,86 @@
+/* Estilos que comparten los formularios de iniciar sesión y registro */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  margin-top: 26px;
+}
+
+.title {
+  font-size: 30px;
+  font-weight: 600;
+}
+
+.with-button {
+  position: relative;
+}
+
+.with-button .field {
+  padding-right: 90px;
+}
+
+.show {
+  position: absolute;
+  top: 0;
+  right: 16px;
+  height: 46px;
+  font-weight: 500;
+}
+
+.forgot {
+  align-self: flex-start;
+  margin-top: -6px;
+}
+
+.submit {
+  height: 42px;
+  font-size: 16px;
+}
+
+.bottom {
+  text-align: center;
+  color: var(--text-muted);
+}
+
+.counter {
+  position: absolute;
+  top: 0;
+  right: 16px;
+  height: 46px;
+  display: flex;
+  align-items: center;
+  color: var(--link);
+  font-weight: 500;
+}
+
+.rules {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  margin-top: 8px;
+  font-size: 13px;
+}
+
+.ok {
+  color: var(--green);
+}
+
+.missing {
+  color: var(--red-text);
+}
+
+.checkbox {
+  font-size: 15px;
+  color: var(--text-muted);
+  align-items: flex-start;
+}
+
+.checkbox input {
+  margin-top: 2px;
+}
+
+.note {
+  margin-top: -10px;
+  font-size: 13px;
+  color: var(--text-muted);
+}
