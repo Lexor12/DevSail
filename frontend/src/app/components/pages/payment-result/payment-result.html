@@ -1,0 +1,30 @@
+<div class="container wrapper">
+    <section class="card box">
+        @switch (state()) {
+        @case ('loading') {
+            <p class="text-muted">Confirmando tu pago con PayPal…</p>
+        }
+        @case ('success') {
+            <div class="icon ok">✓</div>
+            <h1 class="title">¡Pago confirmado!</h1>
+            <p class="text-muted">{{ message() }} Te enviamos el comprobante a tu correo.</p>
+            <a routerLink="/my-account/plan" class="btn btn-primary">Ir a Plan y pagos</a>
+            <a routerLink="/my-account/projects" class="btn btn-outline">Ir a Mis proyectos</a>
+        }
+        @case ('cancelled') {
+            <div class="icon cancel">✕</div>
+            <h1 class="title">Cancelaste el pago en PayPal</h1>
+            <p class="text-muted">No se hizo ningún cobro. No se activa ningún servicio; el pago queda como Cancelado en el historial.</p>
+            <a routerLink="/my-account/plan" class="btn btn-primary">Intentar de nuevo</a>
+            <a routerLink="/my-account/plan" class="btn btn-outline">Ir a Plan y pagos</a>
+        }
+        @case ('failed') {
+            <div class="icon warn">!</div>
+            <h1 class="title">No pudimos confirmar tu pago</h1>
+            <p class="text-muted">{{ message() || 'No se activa ningún servicio.' }} Si PayPal te cobró, escribe a facturas&#64;devsail.mx con tu número de orden{{ orderId() ? ' (' + orderId() + ')' : '' }}.</p>
+            <a routerLink="/my-account/plan" class="btn btn-primary">Ver historial de pagos</a>
+            <a routerLink="/my-account/plan" class="btn btn-outline">Ir a Plan y pagos</a>
+        }
+        }
+    </section>
+</div>

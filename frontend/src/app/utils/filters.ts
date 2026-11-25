@@ -1,6 +1,6 @@
 import { ParamMap, Params } from '@angular/router';
 import { SearchFilters } from '../models/project.model';
- 
+
 // Valores por defecto de la búsqueda
 export const EMPTY_FILTERS: SearchFilters = {
   q: '',

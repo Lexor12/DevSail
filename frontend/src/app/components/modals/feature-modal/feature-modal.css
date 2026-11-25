@@ -1,0 +1,23 @@
+.options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.option {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    cursor: pointer;
+}
+
+.option.selected {
+    border: 2px solid var(--primary);
+}
+
+.option input {
+    accent-color: var(--primary);
+}

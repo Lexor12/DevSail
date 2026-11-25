@@ -1,0 +1,82 @@
+<div class="container account">
+    <app-account-menu active="plan" />
+    <section>
+        <h1 class="page-title">Plan y pagos</h1>
+
+        @if (error()) {
+        <p class="alert-error">{{ error() }}</p>
+        } @else if (data(); as d) {
+        <div class="plans">
+            <div class="card plan">
+            <p class="plan-name">Gratuito {{ d.isPro ? '' : '(actual)' }}</p>
+            <p class="price">$0</p>
+            <p>✓ Hasta 3 proyectos</p>
+            <p>✓ Calificar, comentar y guardar</p>
+            <p class="off">✗ Estadísticas de visitas</p>
+            <p class="off">✗ Distintivo Pro</p>
+            </div>
+
+            <div class="card plan pro">
+            <p class="plan-name">Plan Pro {{ d.isPro ? '(actual)' : '' }}</p>
+            <p class="price">${{ d.prices.pro_plan.amount }} MXN / {{ d.prices.pro_plan.days }} días</p>
+            <p>✓ Proyectos sin límite</p>
+            <p>✓ Estadísticas de visitas</p>
+            <p>✓ Distintivo Pro en tu perfil</p>
+            <p>✓ Sin cobro automático</p>
+            @if (d.isPro) {
+                <p class="hint">Vigente hasta {{ formatDate(d.proEndsAt) }}</p>
+                <button type="button" class="btn btn-primary btn-block" (click)="showProPlan.set(true)">Renovar</button>
+            } @else {
+                <button type="button" class="btn btn-primary btn-block" (click)="showProPlan.set(true)">Contratar Plan Pro</button>
+            }
+            </div>
+        </div>
+
+        <div class="card featured">
+            <div class="featured-head">
+            <h2 class="section-title">Destacados vigentes</h2>
+            <button type="button" class="btn btn-primary" (click)="showFeature.set(true)">Destacar un proyecto</button>
+            </div>
+            @for (project of featured(); track project.id) {
+            <p><span class="chip chip-yellow">Quedan {{ daysLeft(project.featuredEndsAt) }} días</span>
+                {{ project.nickname }} · {{ project.title }} — hasta el {{ formatDate(project.featuredEndsAt) }}</p>
+            } @empty {
+            <p class="text-muted">No tienes proyectos destacados en este momento.</p>
+            }
+        </div>
+
+        <h2 class="section-title history">Historial de pagos</h2>
+        <div class="table-wrap">
+            <table class="table">
+            <thead>
+                <tr><th>Fecha</th><th>Concepto</th><th>Proyecto</th><th>Monto</th><th>Orden de PayPal</th><th>Estado</th></tr>
+            </thead>
+            <tbody>
+                @for (payment of d.payments; track payment.id) {
+                <tr>
+                    <td>{{ formatDate(payment.createdAt) }}</td>
+                    <td>{{ conceptText(payment) }}</td>
+                    <td>{{ payment.projectNickname ?? '—' }}</td>
+                    <td>${{ payment.amount.toFixed(2) }} {{ payment.currency }}</td>
+                    <td>{{ payment.paypalOrderId }}</td>
+                    <td>{{ statusText(payment) }}</td>
+                </tr>
+                } @empty {
+                <tr><td colspan="6" class="text-muted">Todavía no tienes pagos.</td></tr>
+                }
+            </tbody>
+            </table>
+        </div>
+        <p class="hint note">Para solicitar factura, escribe a facturas&#64;devsail.mx con tu número de orden. Montos en pesos mexicanos. Los fallidos no activan ningún servicio.</p>
+        } @else {
+        <p class="text-muted">Cargando…</p>
+        }
+    </section>
+    </div>
+
+    @if (showProPlan()) {
+    <app-pro-plan-modal (closed)="showProPlan.set(false)" />
+    }
+    @if (showFeature()) {
+    <app-feature-modal (closed)="showFeature.set(false)" />
+}

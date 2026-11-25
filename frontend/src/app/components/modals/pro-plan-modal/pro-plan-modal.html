@@ -1,0 +1,31 @@
+<div class="modal-backdrop">
+    <div class="modal">
+        <div class="modal-header">
+        <h2 class="modal-title">Contratar Plan Pro</h2>
+        <button type="button" class="modal-close" (click)="closed.emit()">✕</button>
+        </div>
+
+        <div class="plan">
+        <p class="text-muted">Plan Pro · 30 días</p>
+        <p class="price">$119.00 MXN</p>
+        </div>
+
+        <div class="benefits">
+        <p>✓ Proyectos sin límite</p>
+        <p>✓ Estadísticas de visitas por proyecto</p>
+        <p>✓ Distintivo Pro en tu perfil</p>
+        <p>✓ Sin cobro automático: renuevas cuando quieras</p>
+        </div>
+
+        <p class="hint">Si ya tienes Pro vigente, los 30 días se suman a tu fecha de fin.</p>
+
+        <label class="checkbox"><input type="checkbox" (change)="toggleTerms($event)"> Acepto los Términos y condiciones del servicio</label>
+
+        @if (error()) { <p class="alert-error">{{ error() }}</p> }
+
+        <button type="button" class="btn btn-paypal btn-block" [disabled]="!accepted() || sending()" (click)="pay()">
+        {{ sending() ? 'Redirigiendo…' : 'Pagar con PayPal' }}
+        </button>
+        <p class="hint">Serás redirigido a PayPal para pagar; DevSail no recibe datos de tu tarjeta.</p>
+    </div>
+</div>

@@ -1,7 +1,6 @@
 //El service solo se comunica con la API de PayPal, las reglas de la compra las decide el controller
 const {env} = require('../../config/env.js')
-const BASE_URL = env.PAYPAL_BASE_URL
-
+const BASE_URL = env.paypal.baseUrl
 async function obtainToken() {
     //Aqui declaramos las credenciales que usaremos, estas son del Sandbox
     const clientID=env.paypal.clientId

@@ -16,17 +16,17 @@
       </button>
     </div>
   </div>
- 
+
   <!-- Abre la ventana M01 Recuperar contraseña cuando se programe -->
   <button type="button" class="btn-text forgot">¿Olvidaste tu contraseña?</button>
- 
+
   @if (error()) {
     <p class="alert-error">{{ error() }}</p>
   }
- 
+
   <button type="submit" class="btn btn-primary btn-block submit" [disabled]="sending()">
     {{ sending() ? 'Entrando…' : 'Entrar' }}
   </button>
- 
+
   <p class="bottom">¿No tienes cuenta? <a routerLink="/auth/register">Regístrate gratis</a></p>
 </form>

@@ -1,0 +1,78 @@
+<div class="container account">
+    <app-account-menu active="stats" />
+
+    <section>
+        <h1 class="page-title">Estadísticas de visitas</h1>
+
+        @if (notPro()) {
+        <div class="card locked">
+            <p>Las estadísticas de visitas son exclusivas del Plan Pro.</p>
+            <button type="button" class="btn btn-primary" (click)="showProPlan.set(true)">Contratar Plan Pro</button>
+        </div>
+        } @else if (error()) {
+        <p class="alert-error">{{ error() }}</p>
+        } @else if (data(); as d) {
+        <div class="filters">
+            <select class="field" (change)="changeProject($event)">
+            <option value="">Proyecto: Todos</option>
+            @for (project of d.projectsBreakdown; track project.projectId) {
+                <option [value]="project.projectId" [selected]="project.projectId === projectId()">Proyecto: {{ project.nickname }}</option>
+            }
+            </select>
+            <select class="field" (change)="changeDays($event)">
+            <option value="7" [selected]="days() === 7">Periodo: Últimos 7 días</option>
+            <option value="30" [selected]="days() === 30">Periodo: Últimos 30 días</option>
+            <option value="90" [selected]="days() === 90">Periodo: Últimos 90 días</option>
+            </select>
+        </div>
+
+        <div class="stats-row">
+            <div class="card stat"><p class="stat-value">{{ totals().total }}</p><p class="stat-label">Visitas totales</p></div>
+            <div class="card stat"><p class="stat-value">{{ totals().week }}</p><p class="stat-label">Últimos 7 días</p></div>
+            <div class="card stat"><p class="stat-value">{{ totals().month }}</p><p class="stat-label">Últimos 30 días</p></div>
+            <div class="card stat"><p class="stat-value">{{ totals().saves }}</p><p class="stat-label">Guardados</p></div>
+        </div>
+
+        <!-- Gráfica de barras hecha con divs: la altura es el porcentaje contra el día con más visitas -->
+        <div class="card chart">
+            <h2 class="section-title">Visitas por día ({{ days() }} días)</h2>
+            <div class="bars">
+            @for (bar of bars(); track bar.date) {
+                <div class="bar" [style.height.%]="(bar.visits / maxVisits()) * 100" [title]="shortDate(bar.date) + ': ' + bar.visits + ' visitas'"></div>
+            }
+            </div>
+            <div class="axis text-muted">
+            <span>{{ shortDate(bars()[0].date) }}</span>
+            <span>{{ shortDate(bars()[bars().length - 1].date) }}</span>
+            </div>
+        </div>
+
+        <div class="table-wrap">
+            <table class="table">
+            <thead>
+                <tr><th>Proyecto</th><th>Visitas 7 días</th><th>Visitas 30 días</th><th>Total</th><th>Guardados</th><th>Calificaciones</th></tr>
+            </thead>
+            <tbody>
+                @for (project of d.projectsBreakdown; track project.projectId) {
+                <tr>
+                    <td>{{ project.title }} ({{ project.nickname }})</td>
+                    <td>{{ project.visits7d }}</td>
+                    <td>{{ project.visits30d }}</td>
+                    <td>{{ project.totalVisits }}</td>
+                    <td>{{ project.savesCount }}</td>
+                    <td>{{ project.ratingsCount }}</td>
+                </tr>
+                }
+            </tbody>
+            </table>
+        </div>
+        <p class="hint note">Cada apertura del detalle cuenta como una visita. No cuenta al dueño con sesión iniciada ni guarda IP.</p>
+        } @else {
+        <p class="text-muted">Cargando…</p>
+        }
+    </section>
+    </div>
+
+    @if (showProPlan()) {
+    <app-pro-plan-modal (closed)="showProPlan.set(false)" />
+}

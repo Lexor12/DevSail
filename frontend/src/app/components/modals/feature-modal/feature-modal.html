@@ -1,0 +1,47 @@
+<div class="modal-backdrop">
+    <form class="modal" (submit)="pay($event)">
+        <div class="modal-header">
+        <h2 class="modal-title">Destacar proyecto</h2>
+        <button type="button" class="modal-close" (click)="closed.emit()">✕</button>
+        </div>
+
+        <div>
+        <label class="label" for="projectId">Proyecto *</label>
+        <select class="field" id="projectId" name="projectId">
+            <option value="">Selecciona un proyecto</option>
+            @for (project of projects(); track project.id) {
+            <option [value]="project.id" [selected]="project.id === projectId()">{{ project.nickname }} · {{ project.title }}</option>
+            }
+        </select>
+        <p class="hint">Los proyectos ocultos o desactivados no aparecen en la lista.</p>
+        </div>
+
+        <div>
+        <span class="label">Duración *</span>
+        <div class="options">
+            <label class="option" [class.selected]="duration() === 'featured_7'">
+            <input type="radio" name="duration" value="featured_7" checked (change)="chooseDuration($event)">
+            <span><strong>7 días</strong><br><span class="text-muted">$149.00 MXN</span></span>
+            </label>
+            <label class="option" [class.selected]="duration() === 'featured_30'">
+            <input type="radio" name="duration" value="featured_30" (change)="chooseDuration($event)">
+            <span><strong>30 días</strong><br><span class="text-muted">$399.00 MXN</span></span>
+            </label>
+        </div>
+        </div>
+
+        <p class="text-muted">Tu proyecto aparecerá en «Proyectos destacados» del inicio. Si ya tiene un destacado vigente, el nuevo inicia cuando termine.</p>
+        <p class="hint">Sin reembolso si eliminas el proyecto o si se oculta por incumplir las reglas.</p>
+
+        <label class="checkbox"><input type="checkbox" (change)="toggleTerms($event)"> Acepto los Términos y condiciones del servicio</label>
+
+        @if (error()) { <p class="alert-error">{{ error() }}</p> }
+
+        <button type="submit" class="btn btn-paypal btn-block" [disabled]="!accepted() || sending()">
+        {{ sending() ? 'Redirigiendo…' : 'Pagar con PayPal' }}
+        </button>
+        <div class="modal-actions">
+        <button type="button" class="btn btn-outline" (click)="closed.emit()">Cancelar</button>
+        </div>
+    </form>
+</div>

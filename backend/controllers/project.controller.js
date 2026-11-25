@@ -11,6 +11,7 @@ const visitRepo = require('../services/repositories/visit.service');
 const proRepo = require('../services/repositories/proSubscription.service');
 const featuredRepo = require('../services/repositories/featured.service');
 const storageService = require('../services/bucket/storage.service');
+const { attachMediaUrl, buildMediaUrl } = require('../utils/mediaUrl');
 const {
     isValidLength,
     isValidHttpUrl,
@@ -36,9 +37,9 @@ async function getHomeProjects(req, res) {
             projectRepo.getTopRatedProjects(period, 3, 8),
             projectRepo.getLatestProjects(12)
         ]);*/
-        const featured = projectRepo.getFeaturedProjects(12)
-        const topRated = projectRepo.getTopRatedProjects(period, 3, 8)
-        const latest = projectRepo.getLatestProjects(12)
+        const featured = await projectRepo.getFeaturedProjects(12)
+        const topRated = await projectRepo.getTopRatedProjects(period, 3, 8)
+        const latest = await projectRepo.getLatestProjects(12)
 
         return res.status(200).json({
             featured,
@@ -136,7 +137,7 @@ async function getProjectDetail(req, res) {
             imageRepo.getImagesByProject(projectId),
             techRepo.getTechnologiesByProject(projectId)
         ]);
-        project.images = images;
+        project.images = images.map(attachMediaUrl);
         project.technologies = technologies;
 
         // Si hay sesion iniciada, revisamos si ya lo guardo o si ya lo califico para pintar bien los botones
@@ -470,9 +471,13 @@ async function addProjectImage(req, res) {
             return res.status(400).json({ message: 'Este proyecto ya tiene el máximo de 4 imágenes.' });
         }
 
+        if (typeof image !== 'string' || !image.trim()) {
+            return res.status(400).json({ message: 'Debes enviar una imagen válida.' });
+        }
+
         let decoded;
         try {
-            decoded = storageService.decodeAndValidateImage(images[i], MAX_IMAGE_BYTES, MIN_IMAGE_SIZE);
+            decoded = storageService.decodeAndValidateImage(image, MAX_IMAGE_BYTES, MIN_IMAGE_SIZE);
         } catch (imgError) {
             return res.status(400).json({ message: imgError.message });
         }
@@ -491,6 +496,7 @@ async function addProjectImage(req, res) {
             image: {
                 id: newImageId,
                 storagePath,
+                url: buildMediaUrl(storagePath),
                 position: currentCount + 1
             }
         });

@@ -1,0 +1,54 @@
+.filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 22px;
+}
+
+.filters .field {
+    width: 260px;
+}
+
+.chart {
+    margin: 24px 0;
+    padding: 26px;
+}
+
+.section-title {
+    font-size: 22px;
+    font-weight: 500;
+}
+
+.bars {
+    display: flex;
+    align-items: flex-end;
+    gap: 4px;
+    height: 200px;
+    margin-top: 24px;
+}
+
+.bar {
+    flex: 1;
+    min-height: 2px;
+    background: var(--primary);
+    border-radius: 3px 3px 0 0;
+}
+
+.axis {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 12px;
+    font-size: 13px;
+}
+
+.locked {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 30px;
+}
+
+.note {
+    margin-top: 14px;
+}
