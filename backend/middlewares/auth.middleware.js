@@ -3,7 +3,7 @@
 const jwt = require('jsonwebtoken');
 const { env } = require('../config/env');
 const { SessionUser } = require('../models/user.model');
-const userRepo = require('../services/repositories/user.repository');
+const userRepo = require('../services/repositories/user.service');
 
 //obliga a que el usuario tenga sesion iniciada mediante la cookie httpOnly
 async function verifyToken(req, res, next) {

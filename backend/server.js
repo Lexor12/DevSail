@@ -3,6 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const { env } = require('./config/env');
+const swaggerUi = require('swagger-ui-express');
 
 const authRoutes = require('./routes/auth.route');
 const userRoutes = require('./routes/user.route');
@@ -13,15 +14,23 @@ const reportRoutes = require('./routes/report.route');
 const paymentRoutes = require('./routes/payment.route');
 const adminRoutes = require('./routes/admin.route');
 
-const proRepo = require('./services/repositories/proSubscription.repository');
-const featuredRepo = require('./services/repositories/featured.repository');
-const projectRepo = require('./services/repositories/project.repository');
+//Aqui corregi el nombre de las rutas de los archivos, ya que no es repository, sino service
+const proRepo = require('./services/repositories/proSubscription.service');
+const featuredRepo = require('./services/repositories/featured.service');
+const projectRepo = require('./services/repositories/project.service');
+
+const { swaggerDocument } = require('./config/swagger');
 
 const app = express();
 
 // Necesario en Render para que Express confie en el proxy HTTPS y las cookies secure funcionen bien
 if (env.isProduction) {
     app.set('trust proxy', 1);
+}
+
+// Habilitamos Swagger solo en desarrollo para probar endpoints desde http://localhost:3000/api-docs
+if (!env.isProduction) {
+    app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 }
 
 // Permitimos peticiones desde el frontend con envio de cookies (credentials: true)
