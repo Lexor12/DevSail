@@ -1,6 +1,7 @@
 const {Pool}=require('pg'); 
+const { env } = require('./env');
 const pool = new Pool({
-    connectionString: process.env.SESSION_POOLER_SUPABASE_URL,
+    connectionString: env.databaseUrl,
     ssl: {
     rejectUnauthorized: false
     },
