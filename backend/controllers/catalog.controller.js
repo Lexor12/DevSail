@@ -5,10 +5,10 @@ const catalogRepo = require('../services/repositories/catalog.service');
 // Devuelve los 7 tipos de proyecto y todas las tecnologias en una sola llamada
 async function getProjectCatalogs(req, res) {
     try {
-        const [projectTypes, technologies] = await Promise.all([
-            catalogRepo.getAllProjectTypes(),
-            catalogRepo.getAllTechnologies()
-        ]);
+        //Primero obtenemos todos los tipos de Proyectos
+        const projectTypes = await catalogRepo.getAllProjectTypes();
+        //Despues obtenemos todos las tecnologias disponibles
+        const technologies = await catalogRepo.getAllTechnologies();
 
         return res.status(200).json({
             projectTypes,

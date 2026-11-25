@@ -176,7 +176,7 @@ async function verifyEmail(req, res) {
                     : 'Código incorrecto. Agotaste los intentos, solicita un código nuevo.'
             });
         }
-
+        //Si no da error significa que si fue correcto y que si hizo match
         await client.query('BEGIN');
         await codeRepo.markCodeAsUsed(activeCode.id, client);
         await userRepo.markUserAsVerified(user.id, client);

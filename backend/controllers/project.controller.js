@@ -31,11 +31,14 @@ async function getHomeProjects(req, res) {
         // La semana (7 días) es lo normal, pero el frontend puede pedir el mes con ?period=month
         const period = req.query.period === 'month' ? 30 : 7;
         // Las tres consultas son independientes, asi que las lanzamos al mismo tiempo
-        const [featured, topRated, latest] = await Promise.all([
+        /*const [featured, topRated, latest] = await Promise.all([
             projectRepo.getFeaturedProjects(12),
             projectRepo.getTopRatedProjects(period, 3, 8),
             projectRepo.getLatestProjects(12)
-        ]);
+        ]);*/
+        const featured = projectRepo.getFeaturedProjects(12)
+        const topRated = projectRepo.getTopRatedProjects(period, 3, 8)
+        const latest = projectRepo.getLatestProjects(12)
 
         return res.status(200).json({
             featured,
