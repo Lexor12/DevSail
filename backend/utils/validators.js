@@ -1,7 +1,7 @@
-// Funciones chiquitas de validación de formato, reutilizables en cualquier ruta
-// Ninguna de estas toca la BD, solo revisan que el dato tenga la forma correcta
+// Funciones chiquitas para validar formatos en cualquier ruta
+// Ninguna toca la base de datos, solo revisan la forma del dato
 
-// Nombre completo: letras (con acentos y ñ) y espacios, de 2 a 80 caracteres
+// Nombre completo con letras y espacios, de 2 a 80 caracteres
 function isValidFullName(text) {
     if (typeof text !== 'string') return false;
     const clean = text.trim();
@@ -10,14 +10,14 @@ function isValidFullName(text) {
     return regex.test(clean);
 }
 
-// Nombre de usuario: solo minúsculas, números y guion bajo, de 3 a 20 caracteres
+// Usuario con minúsculas, números y guion bajo, de 3 a 20 caracteres
 function isValidUsername(text) {
     if (typeof text !== 'string') return false;
     const regex = /^[a-z0-9_]{3,20}$/;
     return regex.test(text);
 }
 
-// Formato estándar de correo electrónico, máximo 254 caracteres
+// Formato normal de correo, máximo 254 caracteres
 function isValidEmail(text) {
     if (typeof text !== 'string') return false;
     if (text.length > 254) return false;
@@ -25,7 +25,7 @@ function isValidEmail(text) {
     return regex.test(text);
 }
 
-// Contraseña: entre 8 y 64 caracteres, con al menos una letra mayúscula y al menos un número
+// Contraseña de 8 a 64 caracteres con al menos una mayúscula y un número
 function isValidPassword(text) {
     if (typeof text !== 'string') return false;
     if (text.length < 8 || text.length > 64) return false;
@@ -39,20 +39,20 @@ function isValidPassword(text) {
     }
     return true;
 }
-// Nombre corto del proyecto: de 3 a 20 caracteres, solo letras, números, espacios, guion y punto
+// Nombre corto del proyecto de 3 a 20 caracteres con letras, números, espacios, guion y punto
 function isValidNickname(text) {
     if (typeof text !== 'string') return false;
     const regex = /^[a-zA-ZÀ-ÿñÑ0-9 .\-]{3,20}$/;
     return regex.test(text.trim());
 }
-// Código de verificación de 6 dígitos numéricos
+// Código de 6 números
 function isValidVerificationCode(text) {
     if (typeof text !== 'string') return false;
     const regex = /^[0-9]{6}$/;
     return regex.test(text);
 }
 
-// Permite validar si un texto tiene una longitud dentro de un rango limpiando espacios
+// Revisa que un texto sin espacios sobrantes tenga el largo permitido
 function isValidLength(text, min, max) {
     if (typeof text !== 'string') return false;
     const clean = text.trim();
@@ -62,7 +62,7 @@ function isValidLength(text, min, max) {
     return true;
 }
 
-// Valida que una URL sea http o https válida y no pase del límite de caracteres
+// Revisa que sea un enlace http o https y que no pase del límite
 function isValidHttpUrl(text, maxLength = 255) {
     if (typeof text !== 'string') return false;
     const clean = text.trim();
@@ -75,13 +75,13 @@ function isValidHttpUrl(text, maxLength = 255) {
         }
         return true;
     } catch (error) {
-        // Si new URL lanza error es porque el texto no tiene estructura de enlace
+        // Si new URL falla es que el texto no es un enlace
         return false;
     }
 }
 
-// Revisa la URL del repositorio y nos dice a qué plataforma pertenece ('github', 'gitlab' o 'bitbucket')
-// Si no es de ninguna de las tres o no tiene usuario y nombre de repo, devuelve null
+// Dice si el repositorio es de github, gitlab o bitbucket
+// Si no es de ninguno o le falta usuario y repositorio regresa null
 function getRepositoryPlatform(url) {
     if (!isValidHttpUrl(url, 255)) return null;
 
@@ -89,11 +89,11 @@ function getRepositoryPlatform(url) {
     if (parsed.protocol !== 'https:') return null;
 
     const host = parsed.hostname.toLowerCase();
-    // Quitamos diagonales al inicio y al final para contar las partes de la ruta (usuario/repositorio)
+    // Quitamos las diagonales de las orillas para contar las partes de la ruta
     const cleanPath = parsed.pathname.replace(/^\/+|\/+$/g, '');
     const segments = cleanPath.split('/');
 
-    // Debe tener al menos usuario y nombre de proyecto (ejemplo: /lexordev/devsail)
+    // Debe tener al menos el usuario y el nombre del proyecto
     if (segments.length < 2 || !segments[0] || !segments[1]) {
         return null;
     }
@@ -105,8 +105,8 @@ function getRepositoryPlatform(url) {
     return null;
 }
 
-// Valida los enlaces sociales del perfil: si viene vacío o null es válido (porque son opcionales)
-// Si trae algo, revisamos que sea una URL https y del dominio que corresponde
+// Los enlaces del perfil son opcionales, así que vacío o null es válido
+// Si trae algo debe ser https y del dominio correcto
 function isValidProfileLink(url, allowedDomains) {
     if (url === null || url === undefined || url === '') return true;
     if (!isValidHttpUrl(url, 255)) return false;
@@ -114,7 +114,7 @@ function isValidProfileLink(url, allowedDomains) {
     const parsed = new URL(url.trim());
     if (parsed.protocol !== 'https:') return false;
 
-    // Si no pasamos lista de dominios (como en el sitio web personal), con que sea https ya es válido
+    // Sin lista de dominios, como en el sitio personal, basta con que sea https
     if (!allowedDomains || allowedDomains.length === 0) {
         return true;
     }
@@ -129,7 +129,7 @@ function isValidProfileLink(url, allowedDomains) {
     return false;
 }
 
-// Valida que una calificación individual sea un número entero del 1 al 5
+// La calificación debe ser un entero del 1 al 5
 function isValidScore(value) {
     if (value === null || value === undefined || value === '') return false;
     const number = Number(value);
@@ -138,7 +138,7 @@ function isValidScore(value) {
     return true;
 }
 
-// Valida si un número es entero mayor a 0 (sirve para páginas, límites, etc.)
+// Entero mayor a 0, sirve para páginas y límites
 function isValidPositiveInteger(value) {
     if (value === null || value === undefined || value === '') return false;
     const number = Number(value);
@@ -148,14 +148,14 @@ function isValidPositiveInteger(value) {
     return true;
 }
 
-// Aquí validamos todos los IDs UUID de 36 caracteres para evitar errores antes de ir a la BD
+// Validamos los UUID antes de ir a la base de datos para evitar errores
 function isValidUuid(text) {
     if (typeof text !== 'string') return false;
     const regex = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
     return regex.test(text);
 }
 
-// Verifica que una fecha venga en formato yyyy-MM-dd y que sea una fecha real en el calendario
+// La fecha debe venir como yyyy-MM-dd y existir en el calendario
 function isValidDate(text) {
     if (typeof text !== 'string') return false;
     const regex = /^\d{4}-\d{2}-\d{2}$/;
@@ -168,7 +168,6 @@ function isValidDate(text) {
     return true;
 }
 
-// Exportamos todas las funciones para usarlas en los controllers
 module.exports = {
     isValidFullName,
     isValidUsername,

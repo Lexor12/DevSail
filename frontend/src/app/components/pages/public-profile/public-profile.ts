@@ -7,7 +7,7 @@ import { ProjectSummary } from '../../../models/project.model';
 import { imageUrl, initials, score } from '../../../utils/format';
 import { ProjectCard } from '../../cards/project-card/project-card';
 
-// 07 Perfil público ruta /u/:username
+// Pantalla de perfil público
 @Component({
   selector: 'app-public-profile',
   imports: [RouterLink, ProjectCard],
@@ -67,12 +67,12 @@ export class PublicProfile implements OnInit {
     this.load();
   }
 
-  // "noviembre de 2026"
+  // Por ejemplo noviembre de 2026
   memberSince(date: string): string {
     return new Date(date).toLocaleDateString('es-MX', { month: 'long', year: 'numeric' });
   }
 
-  // "https://github.com/dante-dev" -> "github.com/dante-dev"
+  // Muestra el enlace sin el https del principio
   shortLink(url: string | null): string {
     return (url ?? '').replace('https://', '').replace('www.', '');
   }

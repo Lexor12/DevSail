@@ -8,7 +8,7 @@ const CODE_MINUTES = 15;
 const RESEND_SECONDS = 60;
 const MAX_ATTEMPTS = 5;
 
-//Este componente hace referencia a la sección de Verificación de código 
+//Pantalla de verificación de código
 @Component({
   selector: 'app-verify-code',
   imports: [RouterLink, CodeInput, Countdown],
@@ -52,7 +52,7 @@ export class VerifyCode {
     this.sending.set(true);
     this.authService.verifyEmail(this.email(), code).subscribe({
       next: (response) => {
-        // El backend ya dejó la cookie de sesión: entra directo
+        // El backend ya dejó la cookie de sesión, así que entra directo
         this.authService.user.set(response.user);
         this.router.navigate(['/']);
       },
@@ -70,7 +70,7 @@ export class VerifyCode {
     this.error.set('');
     this.authService.resendCode(this.email()).subscribe({
       next: (response) => {
-        // Código nuevo: se reinician los intentos y los dos temporizadores
+        // Con un código nuevo se reinician los intentos y los dos temporizadores
         this.message.set(response.message);
         this.attempts.set(MAX_ATTEMPTS);
         this.expired.set(false);

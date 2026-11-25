@@ -13,7 +13,7 @@ export class CatalogService {
 
     constructor(private http: HttpClient) {}
 
-    // Tipos de proyecto y tecnologías. Se piden una sola vez y se reutilizan en toda la app
+    // Tipos y tecnologías se piden una vez y se reutilizan en toda la app
     getProjectCatalogs(): Observable<ProjectCatalogs> {
         if (!this.catalogs$) {
         this.catalogs$ = this.http.get<ProjectCatalogs>(`${this.api}/projects`).pipe(shareReplay(1));

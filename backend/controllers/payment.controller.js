@@ -1,5 +1,5 @@
-// Este archivo maneja las compras con PayPal: Plan Pro (30 dias) y Proyectos Destacados (7 o 30 dias),
-// ademas del historial de pagos, estado de suscripcion y estadisticas exclusivas del Plan Pro.
+// Compras con PayPal del Plan Pro y de proyectos destacados,
+// ademas del historial, la suscripcion y las estadisticas Pro
 const pool = require('../config/db');
 const { env } = require('../config/env');
 const paypalService = require('../services/paypal/paypal.service');
@@ -12,14 +12,14 @@ const visitRepo = require('../services/repositories/visit.service');
 const mailService = require('../services/mail/mail.service');
 const { isValidUuid } = require('../utils/validators');
 
-// Precios oficiales en pesos mexicanos (los define el servidor, nunca el frontend)
+// Precios en pesos mexicanos, siempre los define el servidor
 const CATALOG_PRICES = {
     pro_plan: { amount: 119.00, days: 30, label: 'Plan Pro DevSail (30 días)' },
     featured_7: { amount: 149.00, days: 7, label: 'Proyecto Destacado (7 días)' },
     featured_30: { amount: 399.00, days: 30, label: 'Proyecto Destacado (30 días)' }
 };
 
-// Paso 1 de PayPal: crea la orden de cobro y devuelve la URL de aprobacion al frontend
+// Primer paso, crea la orden y devuelve el enlace de PayPal
 async function createPayPalOrder(req, res) {
     try {
         const { concept, projectId } = req.body;
@@ -29,7 +29,7 @@ async function createPayPalOrder(req, res) {
             return res.status(400).json({ message: 'El concepto de pago no es válido.' });
         }
 
-        // Si va a destacar un proyecto, revisamos que sea suyo y que este publicado
+        // Para destacar, el proyecto debe ser suyo y estar publicado
         if (concept === 'featured_7' || concept === 'featured_30') {
             if (!isValidUuid(projectId)) {
                 return res.status(400).json({ message: 'Debes seleccionar el proyecto que deseas destacar.' });
@@ -47,7 +47,7 @@ async function createPayPalOrder(req, res) {
             }
         }
 
-        // Armamos el objeto que espera la API v2 de PayPal
+        // Armamos el objeto que pide la API de PayPal
         const orderPayload = {
             intent: 'CAPTURE',
             purchase_units: [
@@ -70,7 +70,7 @@ async function createPayPalOrder(req, res) {
 
         const paypalOrder = await paypalService.createOrder(orderPayload);
 
-        // Guardamos la orden como pendiente en nuestra base de datos antes de mandar al usuario a PayPal
+        // Guardamos la orden como pendiente antes de mandar al usuario a PayPal
         await paymentRepo.createPayment({
             userId: req.user.id,
             concept,
@@ -79,7 +79,7 @@ async function createPayPalOrder(req, res) {
             paypalOrderId: paypalOrder.id
         });
 
-        // Buscamos el enlace "approve" que nos dio PayPal para redirigir al usuario
+        // Buscamos el enlace approve para redirigir al usuario
         let approveUrl = null;
         if (Array.isArray(paypalOrder.links)) {
             const approveLink = paypalOrder.links.find(link => link.rel === 'approve');
@@ -98,7 +98,7 @@ async function createPayPalOrder(req, res) {
     }
 }
 
-// Paso 2 de PayPal: el usuario ya aprobo en PayPal, capturamos el dinero y activamos el beneficio
+// Segundo paso, ya que el usuario aprobo cobramos y activamos el beneficio
 async function capturePayPalOrder(req, res) {
     const client = await pool.connect();
     let captureId = null;
@@ -130,7 +130,7 @@ async function capturePayPalOrder(req, res) {
             return res.status(400).json({ message: 'PayPal no confirmó la captura del pago.' });
         }
 
-        // Sacamos el ID de captura y monto real por si llegara a fallar nuestra BD y ocuparamos reembolsar
+        // Guardamos el ID y el monto por si falla la base de datos y hay que reembolsar
         const purchaseUnit = captureResult.purchase_units && captureResult.purchase_units[0];
         const captureObj = purchaseUnit && purchaseUnit.payments && purchaseUnit.payments.captures && purchaseUnit.payments.captures[0];
         if (captureObj) {
@@ -140,7 +140,7 @@ async function capturePayPalOrder(req, res) {
 
         const product = CATALOG_PRICES[payment.concept];
 
-        // Ahora si guardamos la confirmacion y creamos la suscripcion o destacado dentro de transaccion
+        // Guardamos la confirmacion y creamos la suscripcion o el destacado en una transaccion
         await client.query('BEGIN');
 
         await paymentRepo.markPaymentCompleted(payment.id, captureId, client);
@@ -154,7 +154,7 @@ async function capturePayPalOrder(req, res) {
 
         await client.query('COMMIT');
 
-        // Mandamos el comprobante por correo sin bloquear la respuesta si falla el SMTP
+        // Mandamos el comprobante sin detener la respuesta si falla el correo
         try {
             const user = await userRepo.getUserById(req.user.id);
             const project = payment.projectId ? await projectRepo.getProjectById(payment.projectId) : null;
@@ -180,7 +180,7 @@ async function capturePayPalOrder(req, res) {
     } catch (error) {
         await client.query('ROLLBACK');
 
-        // Si ya habiamos cobrado en PayPal pero fallo nuestra BD, devolvemos el dinero automaticamente
+        // Si PayPal ya cobro pero fallo la base de datos, devolvemos el dinero
         if (captureId) {
             try {
                 await paypalService.refundPayment(captureId, capturedAmount ? { amount: capturedAmount } : {});
@@ -196,7 +196,7 @@ async function capturePayPalOrder(req, res) {
     }
 }
 
-// Marca una orden como cancelada si el usuario cerro la ventana de PayPal sin pagar
+// Marca la orden como cancelada si el usuario salio de PayPal sin pagar
 async function cancelPayPalOrder(req, res) {
     try {
         const { orderId } = req.body;
@@ -220,7 +220,7 @@ async function cancelPayPalOrder(req, res) {
     }
 }
 
-// Devuelve el estado del Plan Pro y el historial de compras del usuario logueado
+// Estado del Plan Pro e historial de compras del usuario
 async function getMySubscriptionAndPayments(req, res) {
     try {
         const [isPro, proEndsAt, payments] = await Promise.all([
@@ -241,7 +241,7 @@ async function getMySubscriptionAndPayments(req, res) {
     }
 }
 
-// Estadisticas avanzadas de visitas por dia y por proyecto (solo disponible con Plan Pro activo)
+// Estadisticas de visitas, solo con Plan Pro activo
 async function getProAnalytics(req, res) {
     try {
         const isPro = await proRepo.isUserPro(req.user.id);
@@ -249,7 +249,7 @@ async function getProAnalytics(req, res) {
             return res.status(403).json({ message: 'Las estadísticas detalladas son exclusivas del Plan Pro.' });
         }
 
-        // Dias permitidos: 7, 30 o 90 (por defecto 30)
+        // Se permiten 7, 30 o 90 dias y por defecto son 30
         const rawDays = Number(req.query.days);
         const days = rawDays === 7 || rawDays === 90 ? rawDays : 30;
 

@@ -1,14 +1,14 @@
-//Esta clase representa un reporte de la base de datos, que equivale a un proyecto o comentario, con todos los campos de la tabla reports
+//Reporte de un proyecto o comentario con los campos de la tabla reports
 class Report {
     constructor(
         id, targetType, projectId, ratingId, status, reportsCount,
         resolutionNote, resolvedBy, resolvedAt, createdAt, updatedAt
     ) {
         this.id = id;
-        this.targetType = targetType; // 'project' | 'comment'
+        this.targetType = targetType; // project o comment
         this.projectId = projectId;
         this.ratingId = ratingId;
-        this.status = status; // 'pending' | 'resolved_hidden' | 'dismissed'
+        this.status = status; // pending, resolved_hidden o dismissed
         this.reportsCount = reportsCount;
         this.resolutionNote = resolutionNote;
         this.resolvedBy = resolvedBy;
@@ -18,7 +18,7 @@ class Report {
     }
 }
 
-// Esta es una clase que representa una tabla del frontend para la sección de reportes para el panel del administrador, que contiene un resumen de la informacion del reporte y del ultimo reporte que se hizo
+// Fila de la tabla de reportes del administrador con un resumen y el ultimo reporte
 class ReportListItem {
     constructor(
         id, targetType, targetId, contentSummary, lastReasonName,
@@ -37,7 +37,7 @@ class ReportListItem {
     }
 }
 
-// Detalle individual de quien reporto y por que (solo lo ve el admin)
+// Quien reporto y por que, solo lo ve el admin
 class ReportEntry {
     constructor(id, reportId, reporterId, reporterUsername, reasonId, reasonName, detail, createdAt) {
         this.id = id;

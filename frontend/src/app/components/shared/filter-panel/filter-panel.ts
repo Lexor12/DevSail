@@ -5,11 +5,11 @@ import { ProjectType, Technology } from '../../../models/catalog.model';
 import { SearchFilters } from '../../../models/project.model';
 import { EMPTY_FILTERS, MAX_TECHNOLOGIES } from '../../../utils/filters';
  
-// Panel de filtros reutilizable:
-//  - mode 'horizontal': fila de desplegables debajo del buscador del inicio (01)
-//  - mode 'sidebar': columna izquierda de la pantalla de resultados (02)
-// Igual que la barra de búsqueda, no tiene <form> propio: sus campos tienen "name"
-// y la página los lee con FormData al enviar su formulario.
+// Panel de filtros reutilizable
+// El modo horizontal es la fila debajo del buscador del inicio
+// y el modo sidebar es la columna izquierda de los resultados
+// Igual que el buscador no tiene form propio, sus campos tienen name
+// y la página los lee con FormData al enviar su formulario
 @Component({
   selector: 'app-filter-panel',
   imports: [NgTemplateOutlet],
@@ -40,7 +40,7 @@ export class FilterPanel implements OnInit {
     { value: 'saved', text: 'Más guardados' }
   ];
  
-  // Tecnologías marcadas, para los chips del modo sidebar
+  // Tecnologías marcadas para las etiquetas del panel lateral
   selectedTechnologies = computed(() =>
     this.technologies().filter(t => this.selected().includes(t.id))
   );
@@ -61,7 +61,7 @@ export class FilterPanel implements OnInit {
     return this.selected().includes(id);
   }
  
-  // Oculta (sin quitar del formulario) las tecnologías que no coinciden con lo escrito
+  // Esconde las tecnologías que no coinciden sin quitarlas del formulario
   matches(technology: Technology): boolean {
     return technology.name.toLowerCase().includes(this.techSearch().toLowerCase());
   }
@@ -75,7 +75,7 @@ export class FilterPanel implements OnInit {
     this.maxWarning.set(false);
  
     if (checkbox.checked) {
-      // Máximo 5 tecnologías: si ya hay 5, se desmarca la casilla y se avisa
+      // Máximo 5 tecnologías, si ya hay 5 se desmarca la casilla y se avisa
       if (this.selected().length >= this.max) {
         checkbox.checked = false;
         this.maxWarning.set(true);

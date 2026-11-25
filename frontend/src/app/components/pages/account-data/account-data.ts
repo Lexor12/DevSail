@@ -5,7 +5,7 @@ import { MyAccount } from '../../../models/user.model';
 import { imageUrl, initials, readFileAsBase64 } from '../../../utils/format';
 import { AccountMenu } from '../../shared/account-menu/account-menu';
 
-//Este componente es sobre la sección de Mi cuenta, Mis datos y seguridad
+//Sección de Mi cuenta con los datos y la seguridad
 @Component({
   selector: 'app-account-data',
   imports: [AccountMenu],
@@ -27,7 +27,7 @@ export class AccountData implements OnInit {
   readonly initials = initials;
   readonly imageUrl = imageUrl;
 
-  // Enlaces opcionales del perfil: name del input, etiqueta y ejemplo
+  // Enlaces opcionales del perfil con su nombre, etiqueta y ejemplo
   readonly links = [
     { name: 'linkLinkedin', label: 'LinkedIn', placeholder: 'https://linkedin.com/in/…' },
     { name: 'linkWebsite', label: 'Sitio personal', placeholder: 'https://…' },
@@ -119,7 +119,7 @@ export class AccountData implements OnInit {
       next: (response) => {
         this.saving.set(false);
         this.profileMessage.set(response.message);
-        // El encabezado y el perfil usan el nombre de usuario de la sesión, así que se actualiza
+        // El encabezado y el perfil usan el usuario de la sesión, así que se actualiza
         this.authService.loadSession();
       },
       error: (error) => {

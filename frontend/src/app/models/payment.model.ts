@@ -20,7 +20,7 @@ export interface Price {
     label: string;
 }
 
-// Respuesta de GET /api/payments/me
+// Respuesta con mi plan y mis pagos
 export interface MyPayments {
     isPro: boolean;
     proEndsAt: string | null;
@@ -28,16 +28,16 @@ export interface MyPayments {
     prices: Record<PaymentConcept, Price>;
 }
 
-// Respuesta de POST /api/payments/paypal/create-order
+// Respuesta al crear una orden de PayPal
 export interface OrderResponse {
     orderId: string;
     approveUrl: string;
 }
 
-// ---------- Estadísticas (12) ----------
+// Estadísticas
 
 export interface DailyVisits {
-    date: string;     // "2026-11-14"
+    date: string;     // año, mes y día
     visits: number;
 }
 
@@ -52,7 +52,7 @@ export interface ProjectVisits {
     ratingsCount: number;
 }
 
-// Respuesta de GET /api/payments/pro-analytics
+// Respuesta de las estadísticas Pro
 export interface Analytics {
     days: number;
     dailySeries: DailyVisits[];

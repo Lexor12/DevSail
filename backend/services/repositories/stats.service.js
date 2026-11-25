@@ -1,10 +1,9 @@
-// Este archivo contiene funciones para obtener estadísticas públicas calculadas del perfil de un desarrollador
+// Estadisticas publicas del perfil de un usuario
 const pool = require('../../config/db');
 const { ProfileStats } = require('../../models/profileStats.model');
 
-// Esta función obtiene estadísticas del perfil de un desarrollador, incluyendo cantidad de proyectos 
-// publicados, calificación promedio, cantidad de calificaciones recibidas, cantidad de guardados recibidos, 
-// cantidad de calificaciones dadas, el mejor proyecto y las tecnologías más usadas.
+// Junta proyectos publicados, promedio, calificaciones recibidas y dadas,
+// guardados, el mejor proyecto y las tecnologias mas usadas
 async function getProfileStats(userId, db = pool) {
     const countsSentence = `
         SELECT
@@ -39,17 +38,16 @@ async function getProfileStats(userId, db = pool) {
     `;
 
     const [counts, best, technologies] = await Promise.all([
-        db.query(countsSentence, [userId]),// Se ejecutan las tres consultas en paralelo para mejorar el rendimiento
+        db.query(countsSentence, [userId]),// Las tres consultas corren en paralelo para que sea mas rapido
         db.query(bestSentence, [userId]),
         db.query(technologiesSentence, [userId])
     ]);
 
-    const c = counts.rows[0];// Se obtiene el primer (y único) registro de la consulta de conteos
+    const c = counts.rows[0];// La consulta de conteos solo regresa un renglon
     return new ProfileStats(
         c.publishedProjects, c.avgRating, c.ratingsReceived, c.savesReceived, c.ratingsGiven,
         best.rows.length > 0 ? best.rows[0] : null,
         technologies.rows.map(r => r.name)
     );
 }
-// Exportamos la función para que pueda ser usada en otros archivos
 module.exports = { getProfileStats };

@@ -15,13 +15,13 @@ export class RatingService {
 
   constructor(private http: HttpClient) {}
 
-  // sort: 'recent', 'highest' o 'lowest'
+  // sort puede ser recent, highest o lowest
   getRatings(projectId: string, sort: string, page: number): Observable<RatingsResponse> {
     const params = new HttpParams().set('sortBy', sort).set('page', page).set('pageSize', 10);
     return this.http.get<RatingsResponse>(`${this.api}/project/${projectId}`, { params });
   }
 
-  // Sirve para calificar por primera vez y para editar mi calificación
+  // Sirve para calificar por primera vez y para editar
   rate(projectId: string, data: RatingData): Observable<Message> {
     return this.http.post<Message>(`${this.api}/project/${projectId}`, data);
   }
@@ -30,12 +30,12 @@ export class RatingService {
     return this.http.delete<Message>(`${this.api}/project/${projectId}`);
   }
 
-  // Guarda o quita de guardados (el backend decide según cómo esté)
+  // Guarda o quita de guardados según como esté
   toggleSave(projectId: string): Observable<{ saved: boolean; message: string }> {
     return this.http.post<{ saved: boolean; message: string }>(`${this.api}/saved/${projectId}`, {});
   }
 
-  // sort: 'recent' o 'rated'
+  // sort puede ser recent o rated
   getSaved(sort: string): Observable<{ projects: ProjectSummary[] }> {
     const params = new HttpParams().set('sortBy', sort);
     return this.http.get<{ projects: ProjectSummary[] }>(`${this.api}/saved`, { params });

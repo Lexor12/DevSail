@@ -1,8 +1,8 @@
-//Este archivo contiene las funciones para gestionar las Suscripciones del Plan Pro (30 dias acumulables)
+//Suscripciones del Plan Pro, los periodos de 30 dias se acumulan
 const pool = require('../../config/db');
 const { ProSubscription } = require('../../models/subscription.model');
 
-// Si ya tiene un periodo vigente o programado, el nuevo empieza donde termina el ultimo (status = 'scheduled')
+// Si ya hay un periodo vigente el nuevo empieza cuando termine
 async function createProSubscription(userId, days, paymentId, db = pool) {
     const sentence = `
         WITH calc AS (
@@ -26,7 +26,7 @@ async function createProSubscription(userId, days, paymentId, db = pool) {
     return new ProSubscription(r.id, r.userId, r.paymentId, r.startsAt, r.endsAt, r.status, r.createdAt);
 }
 
-// Devuelve la fecha maxima hasta la que el usuario tiene cubierto su Plan Pro (o null)
+// Hasta que fecha tiene Plan Pro el usuario, o null
 async function getCurrentOrScheduledEnd(userId, db = pool) {
     const result = await db.query(
         `SELECT MAX(ends_at) AS "endsAt" FROM pro_subscriptions
@@ -36,7 +36,7 @@ async function getCurrentOrScheduledEnd(userId, db = pool) {
     return result.rows[0].endsAt;
 }
 
-//Permite verificar si un usuario tiene una suscripción activa al Plan Pro, devolviendo true o false
+//Dice si el usuario tiene el Plan Pro activo
 async function isUserPro(userId, db = pool) {
     const result = await db.query(
         `SELECT 1 FROM pro_subscriptions WHERE user_id = $1 AND status = 'active' AND starts_at <= NOW() AND ends_at > NOW() LIMIT 1`,
@@ -45,7 +45,7 @@ async function isUserPro(userId, db = pool) {
     return result.rows.length > 0;
 }
 
-// Tarea programada cada hora: vence los periodos pasados y activa los programados que ya iniciaron
+// Cada hora vence los periodos terminados y activa los programados
 async function syncSubscriptionsLifecycle(db = pool) {
     await db.query(`UPDATE pro_subscriptions SET status = 'expired' WHERE status = 'active' AND ends_at <= NOW()`);
     await db.query(`UPDATE pro_subscriptions SET status = 'active' WHERE status = 'scheduled' AND starts_at <= NOW() AND ends_at > NOW()`);

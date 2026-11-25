@@ -1,8 +1,8 @@
 import { Component, ElementRef, afterNextRender, computed, output, signal, viewChild } from '@angular/core';
 
-//Este componente hace referencia a las 6 casillas que se solicitan para el código que llega por correo (Ya sea verificacion de correo o perdida de contraseña). Avanza solo al escribir, regresa con Borrar
-//y acepta pegar el código completo. Además deja un campo oculto "code" para que
-//la página lo lea con FormData al enviar su formulario.
+//Las 6 casillas del código que llega por correo, avanza al escribir, regresa al borrar
+//y deja pegar el código completo, además tiene un campo oculto llamado code
+//para que la página lo lea con FormData
 @Component({
   selector: 'app-code-input',
   templateUrl: './code-input.html',
@@ -54,7 +54,7 @@ export class CodeInput {
     boxes[Math.min(text.length, 5)].focus();
   }
 
-  // La página lo llama después de un código incorrecto o al pedir uno nuevo
+  // La página lo llama después de un código incorrecto o al pedir otro
   reset(): void {
     this.boxes().forEach(box => (box.value = ''));
     this.digits.set(['', '', '', '', '', '']);

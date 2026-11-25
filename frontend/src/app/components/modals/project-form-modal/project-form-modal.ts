@@ -9,8 +9,8 @@ const MAX_IMAGES = 4;
 const MAX_IMAGE_MB = 2;
 const MAX_TECHNOLOGIES = 5;
  
-// M05 Publicar / Editar proyecto se abre desde 09 y desde "+ Publicar proyecto" del encabezado
-// Si projectId viene en null es "Publicar"; si trae un id es "Editar"
+// Ventana para publicar o editar un proyecto
+// Si projectId es null se publica uno nuevo y si trae id se edita
 @Component({
   selector: 'app-project-form-modal',
   templateUrl: './project-form-modal.html',
@@ -27,8 +27,8 @@ export class ProjectFormModal implements OnInit {
  
   selectedTechs = signal<string[]>([]);
   techSearch = signal('');
-  newImages = signal<string[]>([]);                     // base64 de las imágenes nuevas (al publicar)
-  currentImages = signal<ProjectImage[]>([]);           // imágenes que ya tiene (al editar)
+  newImages = signal<string[]>([]);                     // imágenes nuevas en base64 al publicar
+  currentImages = signal<ProjectImage[]>([]);           // imágenes que ya tiene al editar
  
   titleLength = signal(0);
   descriptionLength = signal(0);
@@ -76,7 +76,7 @@ export class ProjectFormModal implements OnInit {
     else this.descriptionLength.set(length);
   }
  
-  // ---------- Tecnologías ----------
+  // Tecnologías
  
   searchTech(event: Event): void {
     this.techSearch.set((event.target as HTMLInputElement).value.toLowerCase());
@@ -104,7 +104,7 @@ export class ProjectFormModal implements OnInit {
     return this.technologies().find(t => t.id === id)?.name ?? '';
   }
  
-  // ---------- Imágenes ----------
+  // Imágenes
  
   totalImages(): number {
     return this.isEditing() ? this.currentImages().length : this.newImages().length;
@@ -160,7 +160,7 @@ export class ProjectFormModal implements OnInit {
     });
   }
  
-  // ---------- Guardar ----------
+  // Guardar
  
   submit(event: Event): void {
     event.preventDefault();

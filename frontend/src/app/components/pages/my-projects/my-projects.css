@@ -10,7 +10,7 @@
   font-size: 16px;
 }
  
-/* El menú ⋮ se sale de la tabla, así que aquí la tabla no recorta lo que sobresale */
+/* El menú de acciones se sale de la tabla, así que aquí no se recorta */
 .table-wrap {
   overflow: visible;
 }

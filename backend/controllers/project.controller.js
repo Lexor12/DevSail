@@ -1,5 +1,5 @@
-// Este archivo controla todo el ciclo de vida de los proyectos: inicio, busqueda con filtros,
-// detalle publico, creacion con imagenes, edicion, cambio de estado (publicado o desactivado) y borrado.
+// Todo lo de proyectos, como la busqueda, el detalle, la publicacion,
+// la edicion, el cambio de estado y el borrado
 const pool = require('../config/db');
 const projectRepo = require('../services/repositories/project.service');
 const catalogRepo = require('../services/repositories/catalog.service');
@@ -26,17 +26,12 @@ const MAX_PROJECT_IMAGES = 4;
 const MAX_IMAGE_BYTES = 2 * 1024 * 1024; // 2 MB por captura
 const MIN_IMAGE_SIZE = { width: 400, height: 300 };
 
-// Carga las 3 secciones de la pantalla de inicio: destacados, mejor calificados de la semana y recientes
+// Carga destacados, mejor calificados y recientes para el inicio
 async function getHomeProjects(req, res) {
     try {
-        // La semana (7 días) es lo normal, pero el frontend puede pedir el mes con ?period=month
+        // Normalmente es la semana, pero se puede pedir el mes con el parametro period
         const period = req.query.period === 'month' ? 30 : 7;
-        // Las tres consultas son independientes, asi que las lanzamos al mismo tiempo
-        /*const [featured, topRated, latest] = await Promise.all([
-            projectRepo.getFeaturedProjects(12),
-            projectRepo.getTopRatedProjects(period, 3, 8),
-            projectRepo.getLatestProjects(12)
-        ]);*/
+        // Pedimos las tres secciones una por una
         const featured = await projectRepo.getFeaturedProjects(12)
         const topRated = await projectRepo.getTopRatedProjects(period, 3, 8)
         const latest = await projectRepo.getLatestProjects(12)
@@ -52,13 +47,13 @@ async function getHomeProjects(req, res) {
     }
 }
 
-// Busca proyectos combinando texto, tipo, tecnologias, rango de calificacion, etiquetas y orden
+// Busqueda por texto, tipo, tecnologias, calificacion, etiquetas y orden
 async function searchProjects(req, res) {
     try {
         const text = typeof req.query.text === 'string' ? req.query.text.trim() : '';
         const typeCode = typeof req.query.typeCode === 'string' ? req.query.typeCode.trim() : '';
 
-        // Las tecnologias pueden venir separadas por coma, por ejemplo ?technologies=uuid1,uuid2
+        // Las tecnologias pueden venir separadas por comas
         let technologyIds = [];
         if (typeof req.query.technologies === 'string' && req.query.technologies.trim() !== '') {
             const rawIds = req.query.technologies.split(',');
@@ -78,7 +73,7 @@ async function searchProjects(req, res) {
         }
 
         const page = isValidPositiveInteger(req.query.page) ? Number(req.query.page) : 1;
-        // Solo se permiten 12, 24 o 48 resultados por página
+        // Solo se permiten 12, 24 o 48 resultados por pagina
         const requestedSize = Number(req.query.pageSize);
         const pageSize = [12, 24, 48].includes(requestedSize) ? requestedSize : 12;
 
@@ -109,7 +104,7 @@ async function searchProjects(req, res) {
     }
 }
 
-// Muestra la ficha completa de un proyecto y registra visita anonima si lo ve alguien que no es el dueño
+// Detalle de un proyecto, cuenta la visita si no es el dueño
 async function getProjectDetail(req, res) {
     try {
         const projectId = req.params.id;
@@ -127,7 +122,7 @@ async function getProjectDetail(req, res) {
         const isOwner = currentUserId === project.ownerId;
         const isAdmin = currentUserRole === 'admin';
 
-        // Si el proyecto esta desactivado o oculto, solo su dueño o el administrador pueden verlo
+        // Si esta desactivado u oculto solo lo ve el dueño o el administrador
         if (project.status !== 'published' && !isOwner && !isAdmin) {
             return res.status(404).json({ message: 'Este proyecto no está disponible.' });
         }
@@ -140,7 +135,7 @@ async function getProjectDetail(req, res) {
         project.images = images.map(attachMediaUrl);
         project.technologies = technologies;
 
-        // Si hay sesion iniciada, revisamos si ya lo guardo o si ya lo califico para pintar bien los botones
+        // Con sesion revisamos si ya lo guardo o califico para mostrar bien los botones
         let isSaved = false;
         let myRating = null;
         if (currentUserId && !isOwner) {
@@ -150,7 +145,7 @@ async function getProjectDetail(req, res) {
             ]);
         }
 
-        // Sumamos una visita diaria solo cuando el proyecto esta publicado y quien entra no es su dueño
+        // Sumamos la visita solo si esta publicado y no es el dueño
         if (project.status === 'published' && !isOwner) {
             await visitRepo.registerProjectVisit(projectId);
         }
@@ -167,7 +162,7 @@ async function getProjectDetail(req, res) {
     }
 }
 
-// Lista todos los proyectos (publicados, desactivados y ocultos) del desarrollador logueado
+// Todos los proyectos del usuario, incluyendo desactivados y ocultos
 async function getMyProjects(req, res) {
     try {
         const [projects, isPro] = await Promise.all([
@@ -194,10 +189,10 @@ async function getMyProjects(req, res) {
     }
 }
 
-// Publica un nuevo proyecto con al menos 1 imagen (maximo 4) y entre 1 y 5 tecnologias
+// Publica un proyecto con 1 a 4 imagenes y 1 a 5 tecnologias
 async function createProject(req, res) {
     const client = await pool.connect();
-    const uploadedPaths = []; // Guardamos aqui lo que se suba al bucket por si hay que hacer limpieza si falla la BD
+    const uploadedPaths = []; // Rutas subidas al bucket por si hay que limpiar cuando falle la base de datos
 
     try {
         const {
@@ -206,7 +201,7 @@ async function createProject(req, res) {
             technologyIds, images
         } = req.body;
 
-        // Revisamos limite de proyectos activos si la cuenta es gratuita
+        // Revisamos el limite de proyectos si la cuenta es gratuita
         const isPro = await proRepo.isUserPro(req.user.id);
         if (!isPro) {
             const currentPublished = await projectRepo.countPublishedProjectsByOwner(req.user.id);
@@ -217,7 +212,7 @@ async function createProject(req, res) {
             }
         }
 
-        // Validaciones de campos obligatorios y longitudes
+        // Validamos campos obligatorios y longitudes
         if (!isValidUuid(projectTypeId)) {
             return res.status(400).json({ message: 'Selecciona un tipo de proyecto válido.' });
         }
@@ -246,7 +241,7 @@ async function createProject(req, res) {
             return res.status(400).json({ message: 'La URL de demostración no es válida.' });
         }
 
-        // Validamos tecnologias (arreglo de 1 a 5 UUIDs sin repetir)
+        // Deben ser de 1 a 5 tecnologias sin repetir
         if (!Array.isArray(technologyIds) || technologyIds.length < 1 || technologyIds.length > 5) {
             return res.status(400).json({ message: 'Debes elegir entre 1 y 5 tecnologías.' });
         }
@@ -260,7 +255,7 @@ async function createProject(req, res) {
             }
         }
 
-        // Validamos las imagenes recibidas (entre 1 y 4 imagenes en base64)
+        // Deben ser de 1 a 4 imagenes en base64
         if (!Array.isArray(images) || images.length < 1 || images.length > MAX_PROJECT_IMAGES) {
             return res.status(400).json({ message: 'Debes subir entre 1 y 4 imágenes del proyecto.' });
         }
@@ -275,7 +270,7 @@ async function createProject(req, res) {
             }
         }
 
-        // Validamos en BD que exista el tipo, que existan todas las tecnologias y que el repositorio no este duplicado
+        // Revisamos que el tipo y las tecnologias existan y que el repositorio no este repetido
         const projectType = await catalogRepo.getProjectTypeById(projectTypeId);
         if (!projectType) {
             return res.status(400).json({ message: 'El tipo de proyecto seleccionado no existe.' });
@@ -292,7 +287,7 @@ async function createProject(req, res) {
             return res.status(409).json({ message: 'Ese repositorio ya fue publicado anteriormente en DevSail.' });
         }
 
-        // Primero creamos la fila del proyecto para obtener su UUID y guardar sus fotos en su carpeta
+        // Primero creamos el proyecto para tener su ID y la carpeta de sus fotos
         await client.query('BEGIN');
 
         const newProjectId = await projectRepo.createProject({
@@ -311,7 +306,7 @@ async function createProject(req, res) {
 
         await techRepo.setProjectTechnologies(newProjectId, uniqueTechIds, client);
 
-        // Subimos cada imagen al bucket y registramos su posicion (1 = portada)
+        // Subimos cada imagen y guardamos su posicion, la 1 es la portada
         for (let i = 0; i < decodedImages.length; i++) {
             const img = decodedImages[i];
             const path = await storageService.uploadImage(
@@ -332,7 +327,7 @@ async function createProject(req, res) {
         });
     } catch (error) {
         await client.query('ROLLBACK');
-        // Si ya habiamos subido fotos al bucket antes del error, las borramos para no dejar archivos huerfanos
+        // Borramos las fotos que se subieron antes del error
         if (uploadedPaths.length > 0) {
             await storageService.deleteImages(uploadedPaths);
         }
@@ -343,7 +338,7 @@ async function createProject(req, res) {
     }
 }
 
-// Edita los datos de un proyecto existente (solo el dueño puede hacerlo y solo si no esta oculto por moderacion)
+// Edita un proyecto, solo el dueño y si no esta oculto por moderacion
 async function updateProject(req, res) {
     const client = await pool.connect();
     try {
@@ -445,7 +440,7 @@ async function updateProject(req, res) {
     }
 }
 
-// Agrega una nueva imagen a un proyecto existente (si aun tiene menos de 5)
+// Agrega una imagen si el proyecto tiene menos de 4
 async function addProjectImage(req, res) {
     try {
         const projectId = req.params.id;
@@ -506,7 +501,7 @@ async function addProjectImage(req, res) {
     }
 }
 
-// Reordena las imagenes del proyecto (la posicion 1 pasa a ser la portada)
+// Reordena las imagenes, la primera queda de portada
 async function reorderProjectImages(req, res) {
     const client = await pool.connect();
     try {
@@ -533,7 +528,7 @@ async function reorderProjectImages(req, res) {
             return res.status(400).json({ message: 'La lista de imágenes no coincide con las del proyecto.' });
         }
 
-        // Revisamos que todos los IDs enviados pertenezcan realmente a este proyecto
+        // Revisamos que todas las imagenes sean de este proyecto
         const validIds = new Set(currentImages.map(img => img.id));
         for (let i = 0; i < imageIds.length; i++) {
             if (!validIds.has(imageIds[i])) {
@@ -557,7 +552,7 @@ async function reorderProjectImages(req, res) {
     }
 }
 
-// Elimina una imagen del proyecto (siempre debe quedar al menos 1)
+// Elimina una imagen, siempre debe quedar al menos una
 async function deleteProjectImage(req, res) {
     const client = await pool.connect();
     try {
@@ -587,7 +582,7 @@ async function deleteProjectImage(req, res) {
         await client.query('BEGIN');
         await imageRepo.deleteImage(imageId, client);
 
-        // Reacomodamos las posiciones restantes para que queden 1, 2, 3... sin huecos
+        // Reacomodamos las posiciones para que no queden huecos
         const remaining = images.filter(img => img.id !== imageId);
         for (let i = 0; i < remaining.length; i++) {
             await imageRepo.updateImagePosition(remaining[i].id, i + 1, client);
@@ -606,11 +601,11 @@ async function deleteProjectImage(req, res) {
     }
 }
 
-// Activa o desactiva un proyecto del dueño (si tiene destacado activo no se puede desactivar)
+// Activa o desactiva un proyecto, no se puede si tiene un destacado activo
 async function toggleProjectStatus(req, res) {
     try {
         const projectId = req.params.id;
-        const { status } = req.body; // 'published' o 'deactivated'
+        const { status } = req.body; // published o deactivated
 
         if (!isValidUuid(projectId)) {
             return res.status(400).json({ message: 'El ID del proyecto no es válido.' });
@@ -633,7 +628,7 @@ async function toggleProjectStatus(req, res) {
             return res.status(200).json({ message: 'El proyecto ya tiene ese estado.' });
         }
 
-        // Si lo quiere desactivar, revisamos que no tenga un destacado vigente
+        // Para desactivarlo no debe tener un destacado vigente
         if (status === 'deactivated') {
             const isFeatured = await featuredRepo.isProjectFeatured(projectId);
             if (isFeatured) {
@@ -643,7 +638,7 @@ async function toggleProjectStatus(req, res) {
             }
         }
 
-        // Si lo quiere reactivar, revisamos que no pase el limite de 3 proyectos del plan gratuito
+        // Para reactivarlo no debe pasar el limite del plan gratuito
         if (status === 'published') {
             const isPro = await proRepo.isUserPro(req.user.id);
             if (!isPro) {
@@ -667,7 +662,7 @@ async function toggleProjectStatus(req, res) {
     }
 }
 
-// Elimina definitivamente un proyecto y borra sus imagenes de Storage
+// Elimina el proyecto y sus imagenes
 async function deleteProject(req, res) {
     try {
         const projectId = req.params.id;
@@ -683,7 +678,7 @@ async function deleteProject(req, res) {
             return res.status(403).json({ message: 'No tienes permiso para eliminar este proyecto.' });
         }
 
-        // No permitimos borrar si tiene destacado vigente para evitar que pierda su pago por accidente
+        // No se borra con un destacado vigente para no perder el pago por accidente
         const isFeatured = await featuredRepo.isProjectFeatured(projectId);
         if (isFeatured) {
             return res.status(400).json({ message: 'No puedes eliminar un proyecto mientras esté destacado.' });

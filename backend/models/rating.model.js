@@ -1,4 +1,4 @@
-//Representa una calificacion de un proyecto, con todos los campos de la tabla ratings
+//Calificacion de un proyecto con los campos de la tabla ratings
 class Rating {
     constructor(
         id, projectId, userId, scoreDesign, scoreUsefulness, scoreCodeQuality,
@@ -26,7 +26,7 @@ class Rating {
     }
 }
 
-//Esta clase representa en el Frontend una calificacion con datos del autor para mostrar en el detalle del proyecto
+//Calificacion con los datos del autor para el detalle del proyecto
 class ProjectCommentItem {
     constructor(
         id, userId, authorUsername, authorFullName, authorAvatarPath,

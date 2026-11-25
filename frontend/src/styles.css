@@ -1,4 +1,4 @@
-/* Estilos globales de DevSail: colores de los mockups y clases que comparten todos los componentes */
+/* Estilos globales con los colores de los mockups y las clases compartidas */
 :root {
   --bg: #0F1117;
   --surface: #181B22;
@@ -169,7 +169,7 @@ button, input, select, textarea {
   color: var(--red-text);
 }
 
-/* Flecha propia para los select, igual a la de los mockups */
+/* Flecha propia para los select como en los mockups */
 select.field {
   appearance: none;
   padding-right: 34px;
@@ -214,7 +214,7 @@ select.field option {
   color: var(--red-text);
 }
 
-/* Etiquetas de colores (chips) */
+/* Etiquetas de colores */
 .chip {
   display: inline-flex;
   align-items: center;
@@ -283,7 +283,6 @@ select.field option {
   }
 }
 
-/* ================= Agregado en el sprint de las pantallas 06 a 12 ================= */
 
 /* Botones extra */
 .btn-danger {
@@ -341,7 +340,7 @@ textarea.field {
   font-size: 12px;
 }
 
-/* Ventanas modales: fondo oscuro + tarjeta centrada */
+/* Ventanas modales con fondo oscuro y tarjeta centrada */
 .modal-backdrop {
   position: fixed;
   inset: 0;
@@ -395,7 +394,7 @@ textarea.field {
   gap: 12px;
 }
 
-/* Mi cuenta: menú lateral + contenido */
+/* Mi cuenta con menú lateral y contenido */
 .account {
   display: grid;
   grid-template-columns: 260px minmax(0, 1fr);
@@ -453,7 +452,7 @@ textarea.field {
   border-top: none;
 }
 
-/* Cajas con un número grande (perfil y estadísticas) */
+/* Cajas con un número grande para perfil y estadísticas */
 .stats-row {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));

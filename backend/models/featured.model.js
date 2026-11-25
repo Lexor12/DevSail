@@ -1,5 +1,5 @@
-// Esta clase representa de la base de datos la tabla "featured_projects", que contiene los proyectos destacados y su informacion de pago y duracion
-// Que abarca los de 7 dias e incluye los de 30 dias
+// Tabla featured_projects con los destacados, su pago y su duracion
+// Pueden ser de 7 o de 30 dias
 class FeaturedProject {
     constructor(
         id, projectId, paymentId, durationDays, startsAt, endsAt, status,
@@ -12,7 +12,7 @@ class FeaturedProject {
         this.durationDays = durationDays;
         this.startsAt = startsAt;
         this.endsAt = endsAt;
-        this.status = status; // 'scheduled' | 'active' | 'expired' | 'removed'
+        this.status = status; // scheduled, active, expired o removed
         this.removedReason = removedReason;
         this.removedAt = removedAt;
         this.removedBy = removedBy;

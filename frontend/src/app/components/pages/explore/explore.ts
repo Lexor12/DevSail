@@ -11,8 +11,8 @@ import { SearchFilters, SearchResult } from '../../../models/project.model';
 import { ProjectType, Technology } from '../../../models/catalog.model';
 import { EMPTY_FILTERS, formToQueryParams, queryParamsToFilters } from '../../../utils/filters';
  
-// 02 Resultados de búsqueda ruta /explore
-// Todos los filtros viven en la dirección (/explore?q=...&type=...), así se pueden compartir y recargar
+// Pantalla de resultados de búsqueda
+// Los filtros viven en la dirección, así se pueden compartir y recargar
 @Component({
   selector: 'app-explore',
   imports: [SearchBar, FilterPanel, ActiveFilters, Paginator, ProjectCard],
@@ -34,7 +34,7 @@ export class Explore implements OnInit {
     { value: 'saved', text: 'Más guardados' }
   ];
  
-  // Chips de "filtros activos" armados a partir de los filtros de la dirección
+  // Etiquetas de filtros activos armadas con lo que trae la dirección
   activeFilters = computed<ActiveFilter[]>(() => {
     const f = this.filters();
     const list: ActiveFilter[] = [];
@@ -95,7 +95,7 @@ export class Explore implements OnInit {
     });
   }
  
-  // Botón Buscar, Aplicar filtros o cambio de orden: se lee todo el formulario con FormData
+  // Al buscar, aplicar filtros o cambiar el orden se lee todo el formulario
   apply(event: Event): void {
     event.preventDefault();
     const data = new FormData(event.target as HTMLFormElement);
@@ -122,7 +122,7 @@ export class Explore implements OnInit {
     this.router.navigate(['/explore'], { queryParams: params });
   }
  
-  // Quita todos los filtros pero conserva el texto buscado
+  // Quita los filtros pero conserva el texto buscado
   clearFilters(): void {
     const q = this.filters().q;
     this.router.navigate(['/explore'], { queryParams: q ? { q } : {} });

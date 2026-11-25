@@ -1,12 +1,12 @@
-// Este archivo maneja las calificaciones con 5 criterios y comentario de los proyectos,
-// ademas de la lista personal de proyectos guardados por cada desarrollador.
+// Calificaciones con 5 criterios y comentario,
+// ademas de los proyectos guardados de cada usuario
 const pool = require('../config/db');
 const projectRepo = require('../services/repositories/project.service');
 const ratingRepo = require('../services/repositories/rating.service');
 const savedRepo = require('../services/repositories/savedProject.service');
 const { isValidScore, isValidLength, isValidUuid, isValidPositiveInteger } = require('../utils/validators');
 
-// Lista paginada de calificaciones y comentarios de un proyecto
+// Calificaciones y comentarios de un proyecto por paginas
 async function getProjectRatings(req, res) {
     try {
         const projectId = req.params.projectId;
@@ -32,7 +32,7 @@ async function getProjectRatings(req, res) {
     }
 }
 
-// Crea o actualiza la calificacion de un usuario en un proyecto y recalcula los promedios
+// Crea o actualiza una calificacion y recalcula los promedios
 async function submitRating(req, res) {
     const client = await pool.connect();
     try {
@@ -58,14 +58,14 @@ async function submitRating(req, res) {
             return res.status(404).json({ message: 'Proyecto no disponible para calificar.' });
         }
 
-        // Un desarrollador no puede calificar su propio proyecto
+        // Nadie puede calificar su propio proyecto
         if (project.ownerId === req.user.id) {
             return res.status(403).json({ message: 'No puedes calificar tu propio proyecto.' });
         }
 
         const existingRating = await ratingRepo.getRatingByUserAndProject(req.user.id, projectId);
 
-        // Si el comentario anterior fue ocultado por moderacion, no dejamos que lo vuelva a escribir
+        // Si moderacion oculto su comentario no puede volver a escribirlo
         if (existingRating && existingRating.commentHidden && cleanComment !== null) {
             return res.status(403).json({
                 message: 'Tu comentario anterior fue ocultado por moderación; puedes editar tus estrellas pero no agregar texto.'
@@ -91,7 +91,7 @@ async function submitRating(req, res) {
             await ratingRepo.createRating(payload, client);
         }
 
-        // Recalculamos de inmediato los 5 promedios y el promedio general del proyecto
+        // Recalculamos los promedios del proyecto
         await projectRepo.recalculateProjectRatings(projectId, client);
 
         await client.query('COMMIT');
@@ -108,7 +108,7 @@ async function submitRating(req, res) {
     }
 }
 
-// Elimina la calificacion propia de un usuario y recalcula el promedio del proyecto
+// Borra la calificacion propia y recalcula el promedio
 async function deleteMyRating(req, res) {
     const client = await pool.connect();
     try {
@@ -137,7 +137,7 @@ async function deleteMyRating(req, res) {
     }
 }
 
-// Guarda o quita un proyecto de la lista personal de favoritos del usuario
+// Guarda o quita un proyecto de los guardados
 async function toggleSaveProject(req, res) {
     const client = await pool.connect();
     try {
@@ -178,7 +178,7 @@ async function toggleSaveProject(req, res) {
     }
 }
 
-// Devuelve la lista de proyectos guardados por el usuario logueado
+// Proyectos guardados del usuario
 async function getMySavedProjects(req, res) {
     try {
         const sortBy = req.query.sortBy === 'rated' ? 'rated' : 'recent';

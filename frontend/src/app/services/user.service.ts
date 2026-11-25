@@ -15,7 +15,7 @@ export class UserService {
 
     constructor(private http: HttpClient) {}
 
-    //Perfil público; sort: 'recent' o 'rated'
+    //Perfil público, sort puede ser recent o rated
     getPublicProfile(username: string, sort: string): Observable<{ profile: ProfileInfo; stats: ProfileStats; projects: ProjectSummary[] }> {
         const params = new HttpParams().set('sortBy', sort);
         return this.http.get<{ profile: ProfileInfo; stats: ProfileStats; projects: ProjectSummary[] }>(`${this.api}/profile/${username}`, { params });
@@ -30,7 +30,7 @@ export class UserService {
         return this.http.put<Message>(`${this.api}/me`, data);
     }
 
-    // image es la foto en base64 (data URL)
+    // image es la foto en base64
     updateAvatar(image: string): Observable<{ message: string; avatarPath: string }> {
         return this.http.post<{ message: string; avatarPath: string }>(`${this.api}/me/avatar`, { image });
     }
@@ -39,7 +39,7 @@ export class UserService {
         return this.http.delete<Message>(`${this.api}/me/avatar`);
     }
 
-    // El cambio de contraseña vive en /api/auth, pero se usa desde Mis datos
+    // El cambio de contraseña está en auth pero se usa desde Mis datos
     changePassword(data: PasswordData): Observable<Message> {
         return this.http.put<Message>(`${API_URL}/auth/change-password`, data);
     }

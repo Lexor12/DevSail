@@ -1,7 +1,7 @@
 <section class="section">
   <div class="heading">
     <h2 class="title">{{ title() }}</h2>
-    <!-- Aquí la página mete el chip "Patrocinado", las pestañas Semana/Mes o el texto gris -->
+    <!-- Aquí la página mete la etiqueta de patrocinado, las pestañas o un texto -->
     <ng-content />
     @if (seeAll()) {
       <a class="see-all" routerLink="/explore" [queryParams]="seeAll()">Ver todos →</a>

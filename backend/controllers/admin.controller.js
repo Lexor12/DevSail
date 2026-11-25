@@ -1,6 +1,5 @@
-// Este archivo contiene todas las acciones del panel de administracion: resumen general,
-// gestion y resolucion de reportes, ocultar o mostrar proyectos y comentarios,
-// gestion de proyectos destacados y consulta de ingresos.
+// Acciones del panel de administracion como el resumen, los reportes,
+// ocultar proyectos y comentarios, los destacados y los ingresos
 const pool = require('../config/db');
 const adminRepo = require('../services/repositories/admin.service');
 const reportRepo = require('../services/repositories/report.service');
@@ -13,7 +12,7 @@ const logRepo = require('../services/repositories/moderationLog.service');
 const mailService = require('../services/mail/mail.service');
 const { isValidUuid, isValidLength, isValidPositiveInteger, isValidDate } = require('../utils/validators');
 
-// Devuelve las 6 tarjetas numericas del resumen principal del administrador
+// Las 6 tarjetas del resumen del administrador
 async function getDashboard(req, res) {
     try {
         const summary = await adminRepo.getDashboardSummary();
@@ -24,7 +23,7 @@ async function getDashboard(req, res) {
     }
 }
 
-// Lista paginada de reportes agrupados con filtros
+// Lista de reportes agrupados con filtros y paginas
 async function getReports(req, res) {
     try {
         const page = isValidPositiveInteger(req.query.page) ? Number(req.query.page) : 1;
@@ -53,7 +52,7 @@ async function getReports(req, res) {
     }
 }
 
-// Muestra el detalle completo de un reporte y todas las personas que lo reportaron
+// Detalle de un reporte con todas las personas que lo enviaron
 async function getReportDetail(req, res) {
     try {
         const reportId = req.params.id;
@@ -68,7 +67,7 @@ async function getReportDetail(req, res) {
 
         const entries = await reportRepo.getEntriesByReportId(reportId);
 
-        // Cargamos el contenido reportado para que el admin lo vea completo antes de decidir
+        // Cargamos el contenido reportado para que el admin lo revise antes de decidir
         let targetContent = null;
         if (report.targetType === 'project' && report.projectId) {
             targetContent = await projectRepo.getProjectDetailById(report.projectId);
@@ -87,12 +86,12 @@ async function getReportDetail(req, res) {
     }
 }
 
-// Resuelve un reporte pendiente: oculta el contenido ('hide') o lo descarta ('dismiss')
+// Resuelve un reporte pendiente, ya sea ocultando el contenido o descartandolo
 async function resolveReport(req, res) {
     const client = await pool.connect();
     try {
         const reportId = req.params.id;
-        const { decision, reason } = req.body; // 'hide' o 'dismiss'
+        const { decision, reason } = req.body; // hide o dismiss
 
         if (!isValidUuid(reportId)) {
             return res.status(400).json({ message: 'El ID del reporte no es válido.' });
@@ -126,7 +125,7 @@ async function resolveReport(req, res) {
                         hiddenReason: cleanReason,
                         hiddenBy: req.user.id
                     }, client);
-                    // Si el proyecto estaba destacado, tambien se retira su destacado
+                    // Si el proyecto estaba destacado tambien se le quita
                     await featuredRepo.withdrawFeatured(project.id, cleanReason, req.user.id, client);
                     ownerToNotify = await userRepo.getUserById(project.ownerId);
                     targetName = project.title;
@@ -211,7 +210,7 @@ async function toggleProjectVisibility(req, res) {
     const client = await pool.connect();
     try {
         const projectId = req.params.id;
-        const { action, reason } = req.body; // 'hide' o 'show'
+        const { action, reason } = req.body; // hide o show
 
         if (!isValidUuid(projectId)) {
             return res.status(400).json({ message: 'El ID del proyecto no es válido.' });
@@ -311,12 +310,12 @@ async function getAdminComments(req, res) {
     }
 }
 
-// Oculta o vuelve a mostrar el texto de un comentario sin alterar su calificacion numerica
+// Oculta o muestra el texto de un comentario, la calificacion no cambia
 async function toggleCommentVisibility(req, res) {
     const client = await pool.connect();
     try {
         const ratingId = req.params.id;
-        const { action, reason } = req.body; // 'hide' o 'show'
+        const { action, reason } = req.body; // hide o show
 
         if (!isValidUuid(ratingId)) {
             return res.status(400).json({ message: 'El ID del comentario no es válido.' });
@@ -384,7 +383,7 @@ async function toggleCommentVisibility(req, res) {
     }
 }
 
-// Lista los proyectos destacados vigentes y los que vencen en las proximas 24 horas
+// Destacados vigentes y los que vencen en las proximas 24 horas
 async function getActiveFeatured(req, res) {
     try {
         const [activeList, endingSoon] = await Promise.all([
@@ -402,7 +401,7 @@ async function getActiveFeatured(req, res) {
     }
 }
 
-// Retira manualmente el destacado de un proyecto por incumplimiento de reglas
+// Quita el destacado de un proyecto que no cumple las reglas
 async function removeFeaturedProject(req, res) {
     const client = await pool.connect();
     try {
@@ -461,7 +460,7 @@ async function removeFeaturedProject(req, res) {
     }
 }
 
-// Consulta los ingresos y movimientos de PayPal con filtros y totales
+// Ingresos y movimientos de PayPal con filtros y totales
 async function getIncomeReport(req, res) {
     try {
         const page = isValidPositiveInteger(req.query.page) ? Number(req.query.page) : 1;

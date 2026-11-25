@@ -1,4 +1,4 @@
-// Mi calificación de un proyecto (viene en myRating del detalle)
+// Mi calificación de un proyecto, viene en myRating
 export interface Rating {
   id: string;
   scoreDesign: number;
@@ -25,7 +25,7 @@ export interface RatingItem {
   createdAt: string;
 }
  
-// Respuesta de GET /api/ratings/project/:projectId
+// Respuesta de la lista de calificaciones
 export interface RatingsResponse {
   ratings: RatingItem[];
   total: number;
@@ -33,7 +33,7 @@ export interface RatingsResponse {
   pageSize: number;
 }
  
-// Cuerpo de POST /api/ratings/project/:projectId
+// Datos que se mandan al calificar
 export interface RatingData {
   scoreDesign: number;
   scoreUsefulness: number;

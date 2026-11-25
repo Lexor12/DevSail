@@ -1,11 +1,10 @@
-// Este archivo contiene las funciones que se usan para mostrar valores en el panel del administrador, como el resumen de reportes 
-// pendientes, proyectos ocultos, comentarios ocultos, proyectos destacados activos, planes pro activos y el ingreso del mes actual. 
-// También permite obtener listas filtradas de proyectos y comentarios para su gestión.
+// Consultas del panel del administrador, como el resumen
+// y las listas filtradas de proyectos y comentarios
 const pool = require('../../config/db');
 const { MX_TIMEZONE } = require('./supabase.config.js');
 const { DashboardSummary, AdminProject, AdminComment } = require('../../models/admin.model');
 
-// Esta función obtiene un resumen de métricas para el panel del administrador, incluyendo reportes pendientes, proyectos ocultos, comentarios ocultos, proyectos destacados activos, planes pro activos y el ingreso del mes actual.
+// Numeros del resumen del panel
 async function getDashboardSummary(db = pool) {
     const sentence = `
         SELECT
@@ -24,7 +23,7 @@ async function getDashboardSummary(db = pool) {
         r.activeFeatured, r.activeProPlans, r.monthIncome
     );
 }
-// Esta función obtiene una lista de proyectos filtrados para el panel del administrador, incluyendo información sobre el propietario, estado, calificación promedio, cantidad de reportes pendientes y fecha de publicación.
+// Proyectos filtrados con su dueño, estado, promedio y reportes pendientes
 async function getAdminProjects(filters, db = pool) {
     const conditions = ['TRUE'];
     const params = [];
@@ -68,7 +67,7 @@ async function getAdminProjects(filters, db = pool) {
     };
 }
 
-// Esta función obtiene una lista de comentarios filtrados para el panel del administrador, incluyendo información sobre el proyecto, autor, estado y fecha de creación.
+// Comentarios filtrados con su proyecto, autor, estado y fecha
 async function getAdminComments(filters, db = pool) {
     const conditions = ['r.comment IS NOT NULL'];
     const params = [];
@@ -106,5 +105,4 @@ async function getAdminComments(filters, db = pool) {
         total: result.rows.length > 0 ? result.rows[0].total : 0
     };
 }
-// Exportamos las funciones para que puedan ser usadas en otros archivos
 module.exports = { getDashboardSummary, getAdminProjects, getAdminComments };

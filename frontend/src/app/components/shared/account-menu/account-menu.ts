@@ -1,7 +1,7 @@
 import { Component, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
-// Menú lateral de "Mi cuenta" (pantallas 08 a 12). La página le dice cuál opción está activa.
+// Menú lateral de Mi cuenta, la página le dice cuál opción está activa
 @Component({
   selector: 'app-account-menu',
   imports: [RouterLink],

@@ -14,7 +14,7 @@ export interface TabOption {
 export class Tabs {
   options = input.required<TabOption[]>();
   selected = input.required<string>();
-  // 'compact' para la del inicio, 'full' ocupa todo el ancho (autenticación)
+  // compact es para el inicio y full ocupa todo el ancho en autenticación
   variant = input<'compact'|'full'>('compact');
   changed = output<string>();
 }

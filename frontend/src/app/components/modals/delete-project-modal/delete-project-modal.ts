@@ -3,7 +3,7 @@ import { ProjectService } from '../../../services/project.service';
 import { OwnerProject } from '../../../models/project-detail.model';
 import { formatDate } from '../../../utils/format';
  
-// M08 Eliminar proyecto se abre desde 09
+// Ventana para eliminar un proyecto desde Mis proyectos
 @Component({
   selector: 'app-delete-project-modal',
   templateUrl: './delete-project-modal.html',

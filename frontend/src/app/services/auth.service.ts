@@ -10,7 +10,7 @@ import { RegisterData, SessionResponse, User } from '../models/user.model';
 export class AuthService {
   private api = `${API_URL}/auth`;
 
-  // Usuario con sesión activa el null es por si nadie ha iniciado sesión
+  // Usuario con sesión activa, es null si nadie ha iniciado sesión
   user = signal<User | null>(null);
 
   constructor(private http: HttpClient) {}
@@ -35,7 +35,7 @@ export class AuthService {
     return this.http.get<User>(`${this.api}/session`);
   }
 
-  // Se llama al abrir la app, si la cookie sigue vigente, recupera los datos del usuario
+  // Se llama al abrir la app y recupera al usuario si la cookie sigue vigente
   loadSession(): void {
     this.getSession().subscribe({
       next: (user) => this.user.set(user),

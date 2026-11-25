@@ -1,4 +1,4 @@
-// Carga y centraliza las variables de entorno para que ningun archivo lea process.env regado por todos lados
+// Aqui juntamos las variables de entorno para no leer process.env en todos los archivos
 require('dotenv').config();
 
 const isProduction = process.env.PROYECT_PRODUCTION === 'true';
@@ -12,12 +12,12 @@ const env = {
     jwtSecret: process.env.JWT_SECRET,
     jwtExpiresIn: process.env.JWT_EXPIRES_IN,
     cookieName: process.env.COOKIE_NAME,
-    // Configuracion de cookie: en local permite HTTP y localhost/127.0.0.1; en Render permite cross-site hacia Netlify
+    // En local la cookie funciona con HTTP y en Render permite peticiones desde Netlify
     cookieOptions: {
         httpOnly: true,
         secure: isProduction,
         sameSite: isProduction ? 'none' : 'lax',
-        maxAge: 8 * 60 * 60 * 1000 // 8 horas (igual que el JWT)
+        maxAge: 8 * 60 * 60 * 1000 // 8 horas, igual que el JWT
     },
     supabase: {
         url: process.env.SUPABASE_URL,

@@ -12,7 +12,7 @@ export interface ProjectTechnology {
   name: string;
 }
  
-// Ficha completa de un proyecto (clase ProjectDetail del backend)
+// Detalle completo de un proyecto, igual que ProjectDetail del backend
 export interface ProjectDetailData {
   id: string;
   ownerId: string;
@@ -46,7 +46,7 @@ export interface ProjectDetailData {
   technologies: ProjectTechnology[];
 }
  
-// Respuesta de GET /api/projects/:id
+// Respuesta del detalle
 export interface ProjectDetailResponse {
   project: ProjectDetailData;
   isOwner: boolean;
@@ -54,7 +54,7 @@ export interface ProjectDetailResponse {
   myRating: Rating | null;
 }
  
-// Fila de "Mis proyectos" (clase OwnerProject del backend)
+// Fila de Mis proyectos, igual que OwnerProject del backend
 export interface OwnerProject {
   id: string;
   title: string;
@@ -70,7 +70,7 @@ export interface OwnerProject {
   publishedAt: string;
 }
  
-// Respuesta de GET /api/projects/my-projects
+// Respuesta de Mis proyectos
 export interface MyProjectsResponse {
   projects: OwnerProject[];
   isPro: boolean;
@@ -78,7 +78,7 @@ export interface MyProjectsResponse {
   freeLimit: number;
 }
  
-// Cuerpo de POST /api/projects y PUT /api/projects/:id
+// Datos que se mandan al crear o editar un proyecto
 export interface ProjectData {
   projectTypeId: string;
   title: string;

@@ -50,7 +50,7 @@
   font-size: 20px;
 }
 
-/* En celular: logo más chico y menú desplegable */
+/* En celular el logo es más chico y el menú es desplegable */
 @media (max-width: 860px) {
   .header {
     min-height: 72px;

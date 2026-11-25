@@ -4,8 +4,8 @@ import { Tabs } from '../../shared/tabs/tabs';
 import { LoginForm } from './login-form/login-form';
 import { RegisterForm } from './register-form/register-form';
 
-//Este componente lo que hace es integrar los componentes Iniciar sesión y Registro
-// Es la misma pantalla: la tarjeta con pestañas cambia de formulario según la ruta
+//Une los componentes de inicio de sesión y registro
+// Es la misma pantalla y las pestañas cambian el formulario según la ruta
 @Component({
   selector: 'app-auth',
   imports: [Tabs, LoginForm, RegisterForm],

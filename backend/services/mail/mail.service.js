@@ -1,4 +1,4 @@
-// Envio de correos transaccionales con Nodemailer y Gmail SMTP
+// Correos con Nodemailer y Gmail
 const nodemailer = require('nodemailer');
 const { env } = require('../../config/env');
 
@@ -19,7 +19,7 @@ async function sendMail(to, subject, html) {
     });
 }
 
-// Codigo de 6 digitos para verificar cuenta o recuperar contraseña
+// Codigo para verificar la cuenta o recuperar la contraseña
 async function sendVerificationCodeEmail(to, fullName, code, purpose) {
     const isReset = purpose === 'password_reset';
     const subject = isReset
@@ -41,7 +41,7 @@ async function sendVerificationCodeEmail(to, fullName, code, purpose) {
     await sendMail(to, subject, html);
 }
 
-// Comprobante de activacion de Plan Pro o Destacado
+// Comprobante del Plan Pro o de un destacado
 async function sendPaymentReceiptEmail(to, fullName, receipt) {
     const projectLine = receipt.projectNickname
         ? `<p><strong>Proyecto:</strong> ${receipt.projectNickname}</p>`
@@ -61,7 +61,7 @@ async function sendPaymentReceiptEmail(to, fullName, receipt) {
     await sendMail(to, 'DevSail — Comprobante de contratación', html);
 }
 
-// Aviso de moderacion cuando se oculta proyecto/comentario o se retira destacado
+// Aviso cuando moderacion oculta contenido o quita un destacado
 async function sendModerationNoticeEmail(to, fullName, actionLabel, targetName, reason) {
     const html = `
         <div style="font-family: Arial, sans-serif; max-width: 520px; margin: auto; color: #1e293b;">
@@ -74,7 +74,7 @@ async function sendModerationNoticeEmail(to, fullName, actionLabel, targetName, 
     await sendMail(to, 'DevSail — Aviso de moderación', html);
 }
 
-// Aviso al eliminar cuenta definitivamente
+// Aviso de cuenta eliminada
 async function sendAccountDeletedEmail(to, fullName) {
     const html = `
         <div style="font-family: Arial, sans-serif; max-width: 520px; margin: auto; color: #1e293b;">
@@ -84,7 +84,6 @@ async function sendAccountDeletedEmail(to, fullName) {
     `;
     await sendMail(to, 'DevSail — Tu cuenta ha sido eliminada', html);
 }
-// Exportamos las funciones para que puedan ser usadas en otros archivos
 module.exports = {
     sendVerificationCodeEmail,
     sendPaymentReceiptEmail,

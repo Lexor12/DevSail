@@ -10,7 +10,7 @@ export interface Technology {
     name: string;
 }
 
-// Respuesta de GET /api/catalogs/projects
+// Respuesta del catálogo de proyectos
 export interface ProjectCatalogs {
     projectTypes: ProjectType[];
     technologies: Technology[];

@@ -1,7 +1,7 @@
 import { Component, output, signal } from '@angular/core';
 import { PaymentService } from '../../../services/payment.service';
 
-//Este componente es basicamente un modal que permite realizar la contratación del Plan Pro
+//Modal para contratar el Plan Pro
 @Component({
   selector: 'app-pro-plan-modal',
   templateUrl: './pro-plan-modal.html',
@@ -20,7 +20,7 @@ export class ProPlanModal {
     this.accepted.set((event.target as HTMLInputElement).checked);
   }
 
-  // Crea la orden en el backend y manda al usuario a PayPal; al terminar, PayPal regresa a /payments/return
+  // Crea la orden y manda al usuario a PayPal, al terminar PayPal lo regresa a la app
   pay(): void {
     this.sending.set(true);
     this.error.set('');

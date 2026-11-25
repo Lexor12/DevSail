@@ -1,8 +1,8 @@
-// Este archivo permite gestionar las calificaciones y comentarios de los proyectos, incluyendo la creación, actualización, eliminación y ocultamiento de comentarios por parte de administradores
+// Manejo de calificaciones y comentarios, incluyendo cuando el admin los oculta
 const pool = require('../../config/db');
 const { Rating, ProjectCommentItem } = require('../../models/rating.model');
 
-//Este objeto contiene las columnas de la tabla ratings que se van a seleccionar en las consultas, para evitar repetir código y mantener consistencia
+//Columnas de ratings que se piden en las consultas para no repetirlas
 const RATING_COLUMNS = `
     id, project_id AS "projectId", user_id AS "userId",
     score_design AS "scoreDesign", score_usefulness AS "scoreUsefulness",
@@ -13,7 +13,7 @@ const RATING_COLUMNS = `
     comment_hidden_by AS "commentHiddenBy", created_at AS "createdAt", updated_at AS "updatedAt"
 `;
 
-//Esta función permite mapear los resultados de la base de datos a un objeto de tipo Rating, esta como se utiliza muchas veces se hace función para evitar repetir código
+//Convierte un renglon en un objeto Rating, es funcion porque se usa muchas veces
 function mapRating(r) {
     return new Rating(
         r.id, r.projectId, r.userId, r.scoreDesign, r.scoreUsefulness, r.scoreCodeQuality,
@@ -23,13 +23,13 @@ function mapRating(r) {
     );
 }
 
-//Permite obtener una calificación por su id, si no existe retorna null
+//Una calificacion por su id o null si no existe
 async function getRatingById(ratingId, db = pool) {
     const result = await db.query(`SELECT ${RATING_COLUMNS} FROM ratings WHERE id = $1`, [ratingId]);
     return result.rows.length > 0 ? mapRating(result.rows[0]) : null;
 }
 
-//Permite obtener la calificación de un usuario para un proyecto específico, si no existe retorna null
+//La calificacion de un usuario en un proyecto o null
 async function getRatingByUserAndProject(userId, projectId, db = pool) {
     const result = await db.query(
         `SELECT ${RATING_COLUMNS} FROM ratings WHERE user_id = $1 AND project_id = $2`,
@@ -38,7 +38,7 @@ async function getRatingByUserAndProject(userId, projectId, db = pool) {
     return result.rows.length > 0 ? mapRating(result.rows[0]) : null;
 }
 
-// Lista paginada de calificaciones/comentarios de un proyecto
+// Calificaciones de un proyecto por paginas
 async function getRatingsByProject(projectId, sortBy = 'recent', page = 1, pageSize = 10, db = pool) {
     const orderBy = sortBy === 'highest' ? 'r.average DESC, r.created_at DESC' : sortBy === 'lowest' ? 'r.average ASC, r.created_at DESC' : 'r.created_at DESC';
     const offset = (page - 1) * pageSize;
@@ -71,12 +71,12 @@ async function getRatingsByProject(projectId, sortBy = 'recent', page = 1, pageS
     };
 }
 
-// Ids de todos los proyectos que califico un usuario (sirve para recalcular promedios al eliminar cuenta)
+// Proyectos que califico un usuario, sirve al eliminar su cuenta
 async function getProjectIdsRatedByUser(userId, db = pool) {
     const result = await db.query(`SELECT DISTINCT project_id AS "projectId" FROM ratings WHERE user_id = $1`, [userId]);
     return result.rows.map(r => r.projectId);
 }
-//Permite crear una nueva calificación para un proyecto, retorna el id de la nueva calificación
+//Crea una calificacion y devuelve su id
 async function createRating(data, db = pool) {
     const average = (
         data.scoreDesign + data.scoreUsefulness + data.scoreCodeQuality +
@@ -99,7 +99,7 @@ async function createRating(data, db = pool) {
     return result.rows[0].id;
 }
 
-//Permite actualizar una calificación existente, recalculando el promedio y marcando como editado
+//Actualiza una calificacion y la marca como editada
 async function updateRating(ratingId, data, db = pool) {
     const average = (
         data.scoreDesign + data.scoreUsefulness + data.scoreCodeQuality +
@@ -118,19 +118,19 @@ async function updateRating(ratingId, data, db = pool) {
         data.scoreDocumentation, data.scoreInnovation, average, data.comment || null
     ]);
 }
-//Permite eliminar una calificación existente
+//Elimina una calificacion
 async function deleteRating(ratingId, db = pool) {
     await db.query(`DELETE FROM ratings WHERE id = $1`, [ratingId]);
 }
 
-// El administrador oculta el texto del comentario, pero la calificacion numerica sigue contando 
+// Oculta el texto del comentario pero las estrellas siguen contando
 async function hideRatingComment(ratingId, reason, adminId, db = pool) {
     await db.query(
         `UPDATE ratings SET comment_hidden = TRUE, comment_hidden_reason = $2, comment_hidden_at = NOW(), comment_hidden_by = $3 WHERE id = $1`,
         [ratingId, reason, adminId]
     );
 }
-// El administrador muestra nuevamente el texto del comentario
+// Vuelve a mostrar el comentario
 async function showRatingComment(ratingId, db = pool) {
     await db.query(
         `UPDATE ratings SET comment_hidden = FALSE, comment_hidden_reason = NULL, comment_hidden_at = NULL, comment_hidden_by = NULL WHERE id = $1`,
@@ -138,7 +138,6 @@ async function showRatingComment(ratingId, db = pool) {
     );
 }
 
-// Exportamos las funciones para que puedan ser usadas en otros archivos
 module.exports = {
     getRatingById, getRatingByUserAndProject, getRatingsByProject, getProjectIdsRatedByUser,
     createRating, updateRating, deleteRating, hideRatingComment, showRatingComment

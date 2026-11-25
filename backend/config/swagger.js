@@ -1,7 +1,7 @@
-// Definicion OpenAPI 3.0 completa con todos los endpoints de DevSail para probar desde el navegador
+// Documentacion de los endpoints para probarlos desde el navegador
 const { env } = require('./env');
 
-// Esquema reutilizable para respuestas simples con mensaje
+// Esquema para las respuestas que solo traen un mensaje
 const messageResponse = {
     200: { description: 'Operación exitosa' },
     400: { description: 'Datos inválidos o regla de negocio no cumplida' },
@@ -540,7 +540,7 @@ const swaggerDocument = {
             }
         },
 
-        // RATINGS & SAVED
+        // RATINGS Y SAVED
         '/api/ratings/saved': {
             get: {
                 tags: ['Ratings'],

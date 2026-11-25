@@ -18,8 +18,8 @@ export const EMPTY_FILTERS: SearchFilters = {
 };
  
 export const MAX_TECHNOLOGIES = 5;
-// Convierte los datos de un formulario de filtros en parámetros para la dirección /explore
-// Solo se agregan los que no tienen el valor por defecto, para que la dirección quede corta
+// Convierte el formulario de filtros en parámetros para la dirección
+// Solo agrega los que cambian del valor por defecto para que quede corta
 export function formToQueryParams(data: FormData): Params {
   const params: Params = {};
   const q = (data.get('q') as string | null)?.trim();
@@ -42,7 +42,7 @@ export function formToQueryParams(data: FormData): Params {
   return params;
 }
  
-// Lee la dirección y arma el objeto de filtros que usan la página y el servicio
+// Lee la dirección y arma los filtros que usan la página y el servicio
 export function queryParamsToFilters(params: ParamMap): SearchFilters {
   const toNumber = (value: string | null, fallback: number) => {
     const n = Number(value);

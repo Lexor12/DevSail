@@ -1,7 +1,7 @@
 import { Component, OnDestroy, computed, effect, input, output, signal } from '@angular/core';
 
-//Este componente refiere a la cuenta regresiva en formato m:ss que se muestra al enviar codigos, esta se reinicia sola cuando cambia "restart".
-// Se usa para los mensajes de "El código vence en 14:32" y para "Reenviar código (disponible en 0:45)".
+//Cuenta regresiva de minutos y segundos para los códigos, se reinicia cuando cambia restart
+// Se usa para avisar cuánto falta para que venza el código o para poder reenviarlo
 @Component({
   selector: 'app-countdown',
   templateUrl: './countdown.html',

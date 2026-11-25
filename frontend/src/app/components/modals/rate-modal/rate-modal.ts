@@ -2,7 +2,7 @@ import { Component, OnInit, computed, input, output, signal } from '@angular/cor
 import { RatingService } from '../../../services/rating.service';
 import { Rating } from '../../../models/rating.model';
  
-// M02 Calificar y comentar se abre desde 06
+// Ventana para calificar y comentar un proyecto
 @Component({
   selector: 'app-rate-modal',
   templateUrl: './rate-modal.html',
@@ -36,7 +36,7 @@ export class RateModal implements OnInit {
   constructor(private ratingService: RatingService) {}
  
   ngOnInit(): void {
-    // Si ya había calificado, se cargan sus estrellas
+    // Si ya había calificado se cargan sus estrellas
     const mine = this.myRating();
     if (mine) {
       this.scores.set([mine.scoreDesign, mine.scoreUsefulness, mine.scoreCodeQuality, mine.scoreDocumentation, mine.scoreInnovation]);

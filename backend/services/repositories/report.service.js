@@ -1,29 +1,29 @@
-//Este archivo contiene las funciones para gestionar los Reportes agrupados (reports) y sus entradas individuales (report_entries)
+//Manejo de los reportes agrupados y de cada envio
 const pool = require('../../config/db');
 const { MX_TIMEZONE } = require('./supabase.config.js');
 const { Report, ReportListItem, ReportEntry } = require('../../models/report.model');
 
-// Esta constante define las columnas que se seleccionarán de la tabla de reportes, para evitar repetir código y mantener consistencia
+// Columnas de la tabla de reportes para no repetirlas
 const REPORT_COLUMNS = `
     id, target_type AS "targetType", project_id AS "projectId", rating_id AS "ratingId",
     status, reports_count AS "reportsCount", resolution_note AS "resolutionNote",
     resolved_by AS "resolvedBy", resolved_at AS "resolvedAt",
     created_at AS "createdAt", updated_at AS "updatedAt"
 `;
-// Esta función mapea los resultados de la base de datos a un objeto de tipo Report, para facilitar su uso en el código
+// Convierte un renglon en un objeto Report
 function mapReport(r) {
     return new Report(
         r.id, r.targetType, r.projectId, r.ratingId, r.status, r.reportsCount,
         r.resolutionNote, r.resolvedBy, r.resolvedAt, r.createdAt, r.updatedAt
     );
 }
-// Permite obtener un reporte por su id, si no existe retorna null
+// Un reporte por su id o null si no existe
 async function getReportById(reportId, db = pool) {
     const result = await db.query(`SELECT ${REPORT_COLUMNS} FROM reports WHERE id = $1`, [reportId]);
     return result.rows.length > 0 ? mapReport(result.rows[0]) : null;
 }
 
-// Busca si ya existe un reporte pendiente para ese proyecto o comentario (agrupacion de reportes), si existe retorna el reporte, si no retorna null
+// Busca un reporte pendiente del mismo contenido para agruparlos
 async function getPendingReportByTarget(targetType, targetId, db = pool) {
     const column = targetType === 'project' ? 'project_id' : 'rating_id';
     const result = await db.query(
@@ -33,7 +33,7 @@ async function getPendingReportByTarget(targetType, targetId, db = pool) {
     return result.rows.length > 0 ? mapReport(result.rows[0]) : null;
 }
 
-// Revisa si el usuario ya reporto ese contenido (en reporte pendiente o resuelto), retorna true o false
+// Revisa si el usuario ya habia reportado ese contenido
 async function hasUserReportedTarget(userId, targetType, targetId, db = pool) {
     const column = targetType === 'project' ? 'r.project_id' : 'r.rating_id';
     const sentence = `
@@ -47,7 +47,7 @@ async function hasUserReportedTarget(userId, targetType, targetId, db = pool) {
     return result.rows.length > 0;
 }
 
-// Crea o incrementa el reporte agrupado y guarda la entrada del usuario (ejecutar en transaccion)
+// Crea o suma al reporte y guarda el envio del usuario, va en una transaccion
 async function addReportWithEntry(data, db = pool) {
     const existing = await getPendingReportByTarget(data.targetType, data.targetId, db);
     let reportId;
@@ -75,7 +75,7 @@ async function addReportWithEntry(data, db = pool) {
     return reportId;
 }
 
-// Lista filtrada de reportes para el administrador
+// Reportes filtrados para el administrador
 async function getReportList(filters, db = pool) {
     const conditions = ['TRUE'];
     const params = [];
@@ -129,7 +129,7 @@ async function getReportList(filters, db = pool) {
         total: result.rows.length > 0 ? result.rows[0].total : 0
     };
 }
-// Lista de entradas de un reporte específico
+// Envios de un reporte
 async function getEntriesByReportId(reportId, db = pool) {
     const sentence = `
         SELECT re.id, re.report_id AS "reportId", re.reporter_id AS "reporterId",
@@ -147,14 +147,13 @@ async function getEntriesByReportId(reportId, db = pool) {
     ));
 }
 
-//Permite resolver un reporte, cambiando su estado entre: 'resolved_hidden' | 'dismissed'
+//Resuelve un reporte como resolved_hidden o dismissed
 async function resolveReport(reportId, newStatus, resolutionNote, adminId, db = pool) {
     await db.query(
         `UPDATE reports SET status = $2, resolution_note = $3, resolved_by = $4, resolved_at = NOW(), updated_at = NOW() WHERE id = $1`,
         [reportId, newStatus, resolutionNote, adminId]
     );
 }
-// Exportamos las funciones para que puedan ser usadas en otros archivos
 module.exports = {
     getReportById, getPendingReportByTarget, hasUserReportedTarget,
     addReportWithEntry, getReportList, getEntriesByReportId, resolveReport

@@ -8,7 +8,7 @@ import { AccountMenu } from '../../shared/account-menu/account-menu';
 import { ProPlanModal } from '../../modals/pro-plan-modal/pro-plan-modal';
 import { FeatureModal } from '../../modals/feature-modal/feature-modal';
 
-// 11 Mi cuenta Plan y pagos ruta /my-account/plan
+// Pantalla de Plan y pagos
 @Component({
   selector: 'app-plan-payments',
   imports: [AccountMenu, ProPlanModal, FeatureModal],
@@ -24,7 +24,7 @@ export class PlanPayments implements OnInit {
 
   readonly formatDate = formatDate;
 
-  // Proyectos con destacado vigente (los manda "Mis proyectos" con featuredEndsAt)
+  // Proyectos con destacado vigente, salen de Mis proyectos
   featured = computed(() => this.projects().filter(p => p.featuredEndsAt));
 
   constructor(private paymentService: PaymentService, private projectService: ProjectService) {}

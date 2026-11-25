@@ -1,5 +1,5 @@
-// Este archivo recibe los reportes enviados por los usuarios sobre proyectos o comentarios
-// y los agrupa en la tabla de moderacion sin duplicar registros.
+// Recibe los reportes de proyectos o comentarios
+// y los agrupa para moderacion sin duplicarlos
 const pool = require('../config/db');
 const projectRepo = require('../services/repositories/project.service');
 const ratingRepo = require('../services/repositories/rating.service');
@@ -7,7 +7,7 @@ const catalogRepo = require('../services/repositories/catalog.service');
 const reportRepo = require('../services/repositories/report.service');
 const { isValidUuid, isValidLength } = require('../utils/validators');
 
-// Crea un reporte sobre un proyecto o un comentario
+// Crea un reporte de un proyecto o comentario
 async function createReport(req, res) {
     const client = await pool.connect();
     try {
@@ -20,7 +20,7 @@ async function createReport(req, res) {
             return res.status(400).json({ message: 'Los identificadores enviados no son válidos.' });
         }
 
-        // Revisamos que el motivo exista y si exige que el usuario escriba detalle (por ejemplo en "Otro")
+        // Revisamos que el motivo exista y si pide escribir un detalle
         const reason = await catalogRepo.getReportReasonById(reasonId);
         if (!reason) {
             return res.status(400).json({ message: 'El motivo de reporte seleccionado no existe.' });
@@ -34,7 +34,7 @@ async function createReport(req, res) {
             return res.status(400).json({ message: 'La descripción no puede superar los 300 caracteres.' });
         }
 
-        // Verificamos que el proyecto o comentario exista y que el usuario no se este reportando a si mismo
+        // El contenido debe existir y nadie puede reportarse a si mismo
         if (targetType === 'project') {
             const project = await projectRepo.getProjectById(targetId);
             if (!project || project.status !== 'published') {
@@ -53,7 +53,7 @@ async function createReport(req, res) {
             }
         }
 
-        // Evitamos que la misma persona mande dos reportes sobre exactamente lo mismo
+        // Evitamos que alguien reporte dos veces lo mismo
         const alreadyReported = await reportRepo.hasUserReportedTarget(req.user.id, targetType, targetId);
         if (alreadyReported) {
             return res.status(409).json({ message: 'Ya enviaste un reporte sobre este contenido anteriormente.' });

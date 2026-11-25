@@ -33,12 +33,12 @@ export class LoginForm {
     this.authService.login(email, password).subscribe({
       next: (response) => {
         this.authService.user.set(response.user);
-        // El administrador va a su panel; el desarrollador, al inicio
+        // El administrador va a su panel y los demás al inicio
         this.router.navigate([response.user.role === 'admin' ? '/admin' : '/']);
       },
       error: (error) => {
         this.sending.set(false);
-        // Cuenta sin verificar: se manda a la pantalla del código
+        // Si la cuenta no está verificada se manda a la pantalla del código
         if (error.status === 403 && error.error?.needsVerification) {
           this.router.navigate(['/auth/verify'], { queryParams: { email: error.error.email } });
           return;

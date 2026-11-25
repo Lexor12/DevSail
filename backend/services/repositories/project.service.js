@@ -1,8 +1,8 @@
-// Consultas y operaciones de la tabla projects
+// Consultas de la tabla projects
 const pool = require('../../config/db');
 const { Project, ProjectDetail, OwnerProject,ProjectCard } = require('../../models/project.model');
 
-// Condicion: el proyecto tiene un destacado activo justo ahora
+// Condicion para saber si el proyecto esta destacado ahora
 const FEATURED_CONDITION = `EXISTS (
     SELECT 1 FROM featured_projects f
     WHERE f.project_id = p.id
@@ -10,7 +10,7 @@ const FEATURED_CONDITION = `EXISTS (
     AND f.starts_at <= NOW()
     AND f.ends_at > NOW()
 )`;
-// Columnas de una tarjeta con alias en camelCase entre comillas dobles para que pg respete mayusculas
+// Columnas de las tarjetas, los alias van entre comillas para que pg respete mayusculas
 const CARD_SELECT = `
     p.id,
     p.title,
@@ -68,7 +68,7 @@ function mapProject(r) {
     );
 }
 
-//Permite crear un proyecto nuevo, retorna el id del proyecto creado
+//Crea un proyecto y devuelve su id
 async function createProject(data, db = pool) {
     const sentence = `
         INSERT INTO projects (
@@ -86,7 +86,7 @@ async function createProject(data, db = pool) {
     return result.rows[0].id;
 }
 
-// Permite actualizar un proyecto existente, no retorna nada
+// Actualiza un proyecto
 async function updateProject(projectId, data, db = pool) {
     const sentence = `
         UPDATE projects SET
@@ -102,7 +102,7 @@ async function updateProject(projectId, data, db = pool) {
     ]);
 }
 
-//Permite cambiar el estado de un proyecto entre: 'published', 'deactivated' o 'hidden'
+//Cambia el estado a published, deactivated o hidden
 async function setProjectStatus(projectId, status, options = {}, db = pool) {
     if (status === 'hidden') {
         await db.query(
@@ -118,14 +118,14 @@ async function setProjectStatus(projectId, status, options = {}, db = pool) {
         );
         return;
     }
-    // Al reactivar o volver a mostrar se limpian las marcas de ocultamiento/desactivacion
+    // Al reactivar o volver a mostrar se limpian las marcas anteriores
     await db.query(
         `UPDATE projects SET status = 'published', hidden_reason = NULL, hidden_at = NULL, hidden_by = NULL, deactivated_at = NULL, updated_at = NOW() WHERE id = $1`,
         [projectId]
     );
 }
 
-// Desactiva en lote los proyectos excedentes cuando vence el Plan Pro
+// Desactiva los proyectos de mas cuando vence el Plan Pro
 async function deactivateProjectsBatch(projectIds, db = pool) {
     if (projectIds.length === 0) return;
     await db.query(
@@ -133,23 +133,23 @@ async function deactivateProjectsBatch(projectIds, db = pool) {
         [projectIds]
     );
 }
-// Permite eliminar un proyecto 
+// Elimina un proyecto
 async function deleteProject(projectId, db = pool) {
     await db.query(`DELETE FROM projects WHERE id = $1`, [projectId]);
 }
 
-//Permite obtener un proyecto por su id, si no existe retorna null
+//Un proyecto por su id o null si no existe
 async function getProjectById(projectId, db = pool) {
     const result = await db.query(`SELECT ${PROJECT_COLUMNS} FROM projects WHERE id = $1`, [projectId]);
     return result.rows.length > 0 ? mapProject(result.rows[0]) : null;
 }
 
-//Permite obtener un proyecto por su url de repositorio, si no existe retorna null
+//Un proyecto por la url de su repositorio o null
 async function getProjectByRepositoryUrl(repositoryUrl, db = pool) {
     const result = await db.query(`SELECT ${PROJECT_COLUMNS} FROM projects WHERE repository_url = $1`, [repositoryUrl]);
     return result.rows.length > 0 ? mapProject(result.rows[0]) : null;
 }
-//Permite obtener los detalles de un producto según su Id
+//Detalle de un proyecto por su id
 async function getProjectDetailById(projectId, db = pool) {
     const sentence = `
         SELECT
@@ -184,7 +184,7 @@ async function getProjectDetailById(projectId, db = pool) {
     );
 }
 
-// Recalcula promedios por criterio, promedio general y total de calificaciones en la misma transaccion
+// Recalcula los promedios y el total de calificaciones en la misma transaccion
 async function recalculateProjectRatings(projectId, db = pool) {
     const sentence = `
         UPDATE projects p SET
@@ -212,7 +212,7 @@ async function recalculateProjectRatings(projectId, db = pool) {
     await db.query(sentence, [projectId]);
 }
 
-// Actualiza el contador denormalizado saves_count en projects
+// Actualiza el contador saves_count
 async function recalculateProjectSaves(projectId, db = pool) {
     await db.query(
         `UPDATE projects SET saves_count = (SELECT COUNT(*)::int FROM saved_projects WHERE project_id = $1) WHERE id = $1`,
@@ -220,7 +220,7 @@ async function recalculateProjectSaves(projectId, db = pool) {
     );
 }
 
-//Esta función permite contar cuantos proyectos publicados tiene un usuario, para poder limitar la cantidad de proyectos que puede tener un usuario sin Plan Pro
+//Cuenta los proyectos publicados para aplicar el limite sin Plan Pro
 async function countPublishedProjectsByOwner(ownerId, db = pool) {
     const result = await db.query(
         `SELECT COUNT(*)::int AS total FROM projects WHERE owner_id = $1 AND status = 'published'`,
@@ -229,7 +229,7 @@ async function countPublishedProjectsByOwner(ownerId, db = pool) {
     return result.rows[0].total;
 }
 
-//Esta función retorna todos los proyectos de un usuario, incluyendo los desactivados y ocultos, ordenados por fecha de publicación descendente, para poder mostrar la lista de proyectos del usuario en su perfil
+//Todos los proyectos de un usuario, incluso desactivados y ocultos, para Mis proyectos
 async function getProjectsByOwner(ownerId, db = pool) {
     const sentence = `
         SELECT
@@ -251,7 +251,7 @@ async function getProjectsByOwner(ownerId, db = pool) {
     ));
 }
 
-//Esta función retorna todos los proyectos publicados de un usuario, ordenados por fecha de publicación descendente, para poder mostrar la lista de proyectos del usuario en su perfil
+//Proyectos publicados de un usuario para su perfil
 async function getPublishedProjectsByOwner(ownerId, sortBy = 'recent', db = pool) {
     const orderBy = sortBy === 'rated' ? 'p.avg_overall DESC NULLS LAST, p.ratings_count DESC' : 'p.published_at DESC';
     const result = await db.query(
@@ -262,7 +262,7 @@ async function getPublishedProjectsByOwner(ownerId, sortBy = 'recent', db = pool
 }
 
 
-//Esta función permite obtener una lista de proyectos destacados, ordenados aleatoriamente, con un limite de cantidad de proyectos a retornar, estos se muestran en la pagina principal del frontend
+//Destacados en orden aleatorio para la pagina principal
 async function getFeaturedProjects(limit, db = pool) {
     const result = await db.query(
         `SELECT ${CARD_SELECT} ${CARD_FROM} WHERE p.status = 'published' AND ${FEATURED_CONDITION} ORDER BY random() LIMIT $1`,
@@ -271,7 +271,7 @@ async function getFeaturedProjects(limit, db = pool) {
     return result.rows.map(mapProjectCard);
 }
 
-//Otra función que se llama desde el frontend, que permite obtener los proyectos mejor calificados en un periodo de tiempo, con un minimo de calificaciones y un limite de cantidad de proyectos a retornar, estos se muestran en la pagina principal del frontend
+//Mejor calificados de un periodo con un minimo de calificaciones, para la pagina principal
 async function getTopRatedProjects(days, minRatings, limit, db = pool) {
     const sentence = `
         SELECT ${CARD_SELECT}
@@ -291,7 +291,7 @@ async function getTopRatedProjects(days, minRatings, limit, db = pool) {
     return result.rows.map(mapProjectCard);
 }
 
-//Permite obtener los proyectos mas recientes publicados, con un limite de cantidad de proyectos a retornar
+//Proyectos publicados mas recientes
 async function getLatestProjects(limit, db = pool) {
     const result = await db.query(
         `SELECT ${CARD_SELECT} ${CARD_FROM} WHERE p.status = 'published' ORDER BY p.published_at DESC LIMIT $1`,
@@ -310,7 +310,7 @@ const SORTS = {
     saved: 'p.saves_count DESC, p.published_at DESC'
 };
 
-// Busqueda combinada con filtros, orden y paginacion
+// Busqueda con filtros, orden y paginas
 async function searchProjects(filters, db = pool) {
     const conditions = [`p.status = 'published'`];
     const params = [];
@@ -364,7 +364,7 @@ async function searchProjects(filters, db = pool) {
     };
 }
 
-// Proyectos publicados que exceden el limite gratuito (3) en cuentas sin Plan Pro y sin destacado vigente 
+// Proyectos que pasan del limite gratuito en cuentas sin Pro y sin destacado
 async function getProjectIdsToAutoDeactivate(freeLimit, db = pool) {
     const sentence = `
         SELECT ranked.id
@@ -383,7 +383,6 @@ async function getProjectIdsToAutoDeactivate(freeLimit, db = pool) {
     return result.rows.map(r => r.id);
 }
 
-// Exportamos las funciones para que puedan ser usadas en otros archivos
 module.exports = {
     createProject, updateProject, setProjectStatus, deactivateProjectsBatch, deleteProject,
     getProjectById, getProjectByRepositoryUrl, getProjectDetailById,

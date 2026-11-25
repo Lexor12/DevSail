@@ -2,8 +2,8 @@ import { Component, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { PaymentService } from '../../../services/payment.service';
 
-//Este componente muestra lo que viene siendo la pantalla a la que regresa PayPal después de un pago
-// Puede ser para confirmar un pago o para rechazarlo
+//Pantalla a la que regresa PayPal después de un pago
+// Sirve tanto para confirmarlo como para cancelarlo
 @Component({
   selector: 'app-payment-result',
   imports: [RouterLink],

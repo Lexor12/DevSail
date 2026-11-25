@@ -11,13 +11,13 @@ import { IMAGES_URL } from '../../../config/api';
 })
 export class ProjectCard {
   project = input.required<ProjectSummary>();
-  // En "Proyectos destacados" se muestra la etiqueta amarilla DESTACADO
+  // En la sección de destacados se muestra la etiqueta amarilla
   showFeatured = input(false);
 
-  // Postgres manda el promedio como texto; lo pasamos a número
+  // Postgres manda el promedio como texto y lo pasamos a número
   average = computed(() => Number(this.project().avgOverall ?? 0));
 
-  //Muestrra las estrellas según el promedio redondeado
+  //Muestra las estrellas según el promedio redondeado
   stars = computed(() => {
     const full = Math.round(this.average());
     return '★'.repeat(full) + '☆'.repeat(5 - full);//Estas estrellas las saque de internet xd, se que parece IA, pero Google las da, aqui esta la pagina https://emojicombos.com/estrella

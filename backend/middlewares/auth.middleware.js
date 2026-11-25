@@ -1,5 +1,5 @@
-//este archivo revisa la cookie de sesion en cada peticion que entra a rutas protegidas,
-// verifica que el token JWT sea valido, que la cuenta exista y que no se haya cambiado la contraseña
+//este archivo revisa la cookie de sesion en las rutas protegidas,
+// que el token sea valido, que la cuenta exista y que no se haya cambiado la contraseña
 const jwt = require('jsonwebtoken');
 const { env } = require('../config/env');
 const { SessionUser } = require('../models/user.model');
@@ -44,8 +44,8 @@ async function verifyToken(req, res, next) {
     }
 }
 
-//revisa si viene una cookie valida, pero si no viene o vencio deja pasar como visitante (req.user = null)
-//sirve por ejemplo en el detalle de proyecto para saber si quien entra es el dueño o ya lo guardo
+//revisa si viene una cookie valida, pero si no viene o vencio deja pasar como visitante
+//sirve en el detalle de proyecto para saber si quien entra es el dueño o ya lo guardo
 async function optionalAuth(req, res, next) {
     req.user = null;
 
@@ -69,14 +69,14 @@ async function optionalAuth(req, res, next) {
             );
         }
     } catch (error) {
-        //si el token viene vencido o dañado no bloqueamos la vista publica, solo entra como visitante
+        //si el token esta vencido o dañado no bloqueamos la vista, solo entra como visitante
         req.user = null;
     }
 
     next();
 }
 
-//se usa después de verifyToken, tipo así mira: allowRoles('admin') o allowRoles('developer')
+//se usa despues de verifyToken para permitir solo ciertos roles como admin o developer
 function allowRoles(...allowedRoles) {
     return (req, res, next) => {
         if (!req.user || !allowedRoles.includes(req.user.role)) {

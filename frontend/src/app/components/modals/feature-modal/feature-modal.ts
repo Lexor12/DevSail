@@ -3,8 +3,8 @@ import { PaymentService } from '../../../services/payment.service';
 import { ProjectService } from '../../../services/project.service';
 import { OwnerProject } from '../../../models/project-detail.model';
 
-//Este modal sirve para poder Destacar un proyecto
-// Si llega projectId, ese proyecto aparece ya elegido
+//Este modal sirve para destacar un proyecto
+// Si llega projectId ese proyecto aparece ya elegido
 @Component({
   selector: 'app-feature-modal',
   templateUrl: './feature-modal.html',

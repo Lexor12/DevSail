@@ -1,11 +1,11 @@
-// Punto de entrada del servidor: configura Express, CORS con cookies, rutas y la revision periodica de planes y destacados
+// Aqui arranca el servidor con Express, CORS, las rutas y la revision de planes y destacados
 const express = require('express');
 const cors = require('cors');
-const cookieParser = require('cookie-parser');//El proyecto utiliza Cookies para evitar XSS
+const cookieParser = require('cookie-parser');//El proyecto usa cookies httpOnly para protegerse de XSS
 const { env } = require('./config/env');
 const swaggerUi = require('swagger-ui-express');
 
-//Importamos todas las rutas antes definidas, para que nuestra API pueda implementarlas
+//Importamos las rutas para que la API pueda usarlas
 const authRoutes = require('./routes/auth.route');
 const userRoutes = require('./routes/user.route');
 const catalogRoutes = require('./routes/catalog.route');
@@ -15,45 +15,45 @@ const reportRoutes = require('./routes/report.route');
 const paymentRoutes = require('./routes/payment.route');
 const adminRoutes = require('./routes/admin.route');
 
-//Aqui corregi el nombre de las rutas de los archivos, ya que no es repository, sino service
+//Aqui corregi los nombres de las rutas de los archivos, ya que no es repository, sino service
 const proRepo = require('./services/repositories/proSubscription.service');
 const featuredRepo = require('./services/repositories/featured.service');
 const projectRepo = require('./services/repositories/project.service');
 
-//Swagger por defecto requiere una configuración, este archivo define como debe funcionar, rutas disponibles, esquemas, descripciones y detalles para Testing
+//Swagger necesita una configuracion, este archivo define las rutas, esquemas y descripciones para hacer pruebas
 const { swaggerDocument } = require('./config/swagger');
 
-//Instanciamos nuestro objeto de App para poder desplegar nuestra API
+//Creamos el objeto app para levantar la API
 const app = express();
 
-//Como el proyecto podemos estarlo ejecutando en 2 entornos (Producción y desarrollo), en el .env se define el estado
+//Podemos correr el proyecto en desarrollo o en produccion, eso se define en el .env
 if (env.isProduction) {
-    // Necesario en Render para que Express confie en el proxy HTTPS y las cookies secure funcionen bien
+    // En Render hace falta para que Express confie en el proxy HTTPS y funcionen las cookies secure
     app.set('trust proxy', 1);
 }
 
-// Habilitamos Swagger solo en desarrollo para probar endpoints desde http://localhost:3000/api-docs
+// Swagger solo se activa en desarrollo
 if (!env.isProduction) {
-    app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));//Aqui importamos la configuración de SwaggerDocument que justo importamos
+    app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));//Aqui usamos el swaggerDocument que importamos
 }
 
-// Permitimos peticiones desde el frontend con envio de cookies (credentials: true)
+// Permitimos peticiones del frontend con cookies
 app.use(cors({
-    origin: env.frontendUrl,//Este valor del .env puede hacer referencia a localhost o si estamos en Producción pues a nuestro hoster
-    credentials: true//Para que pueda manejar las cookies
+    origin: env.frontendUrl,//Segun el .env puede ser localhost o nuestro hosting en produccion
+    credentials: true//Para que se puedan manejar las cookies
 }));
 
-// Subimos el limite del body a 30mb porque al publicar un proyecto se mandan hasta 5 imagenes en base64
+// Subimos el limite a 30mb porque las imagenes del proyecto se mandan en base64
 app.use(express.json({ limit: '30mb' }));
-app.use(cookieParser());//Habilita el middleware de cookie parser para leer las cookies enviadas por el navegador en req.headers.cookie
-//tambien las convierte en cookies sin firmar (req.cookies) y req.signedCookies (cookies que si estan firmadas y son validas)
+app.use(cookieParser());//Permite leer las cookies que manda el navegador
+//las separa en req.cookies y en req.signedCookies que son las firmadas
 
-// Ruta rapida para verificar que el servidor esta vivo
+// Ruta para revisar que el servidor esta vivo
 app.get('/api/health', (req, res) => {
     res.status(200).json({ status: 'ok' });
 });
 
-//Agregamos las rutas definidas en otros archivos como adicionales a nuestra API
+//Agregamos las rutas de los otros archivos a la API
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/catalogs', catalogRoutes);
@@ -63,24 +63,24 @@ app.use('/api/reports', reportRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/admin', adminRoutes);
 
-// Si llega una peticion con JSON mal formado o demasiado pesado
+// Errores por un JSON mal formado o demasiado pesado
 app.use((err, req, res, next) => {
-    //Este es otro mid, pero este se encarga del manejo de rrores de Express, este recibe el error y según el tipo hace una acción
-    if (err && err.type === 'entity.too.large') {//Si una solicitud es demasiado grande, retorna error
+    //Este middleware maneja los errores de Express y responde segun el tipo
+    if (err && err.type === 'entity.too.large') {//Si la solicitud es demasiado grande respondemos con error
         return res.status(413).json({ message: 'Los archivos enviados son demasiado pesados.' });
     }
-    if (err instanceof SyntaxError && err.status === 400 && 'body' in err) {//Si envia un formato no procesable, marcamos error
+    if (err instanceof SyntaxError && err.status === 400 && 'body' in err) {//Si el formato no se puede procesar tambien marcamos error
         return res.status(400).json({ message: 'El formato JSON enviado no es válido.' });
     }
-    //Si al final no podemos manejar el error, podemos considerarlo como interno
+    //Si no es ninguno de esos lo tratamos como error interno
     return res.status(500).json({ message: 'Error interno del servidor.' });
 });
 
-//Necesitamos Jobs para hacer tareas cada 60 minutos, asi que creamos una función async que se ejecuta en otro hilo cada 60
+//Necesitamos tareas cada 60 minutos, asi que usamos una funcion async
 
 async function runLifecycleMaintenance() {
     try {
-        // Revisa cada hora si vencieron planes Pro o destacados y desactiva proyectos excedentes del limite gratuito (3)
+        // Vence planes Pro y destacados, y desactiva los proyectos que pasan del limite gratuito
         await proRepo.syncSubscriptionsLifecycle();
         await featuredRepo.syncFeaturedLifecycle();
 
@@ -95,7 +95,7 @@ async function runLifecycleMaintenance() {
 
 app.listen(env.port, () => {
     console.log(`Servidor DevSail corriendo en el puerto ${env.port}`);
-    // Corremos una revision al encender y luego cada 60 minutos
+    // Revisamos al encender y luego cada hora
     runLifecycleMaintenance();
     setInterval(runLifecycleMaintenance, 60 * 60 * 1000);
 });

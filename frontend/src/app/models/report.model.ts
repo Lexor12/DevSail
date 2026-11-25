@@ -6,7 +6,7 @@ export interface ReportReason {
   sortOrder: number;
 }
  
-// Cuerpo de POST /api/reports
+// Datos que se mandan al reportar
 export interface ReportData {
   targetType: 'project' | 'comment';
   targetId: string;

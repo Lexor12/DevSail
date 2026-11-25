@@ -1,8 +1,8 @@
-// Permite registrar visitas a un proyecto y obtener estadisticas de visitas por proyecto y por fecha
+// Registra visitas y saca estadisticas por proyecto y fecha
 const pool = require('../../config/db');
 const { MX_TIMEZONE } = require('./supabase.config.js');
 
-// Suma 1 visita a la fecha de hoy en horario de Ciudad de Mexico o crea el renglon
+// Suma una visita al dia de hoy en horario de Ciudad de Mexico
 async function registerProjectVisit(projectId, db = pool) {
     const sentence = `
         INSERT INTO daily_visits (project_id, visit_date, visits)
@@ -13,7 +13,7 @@ async function registerProjectVisit(projectId, db = pool) {
     await db.query(sentence, [projectId]);
 }
 
-// Serie diaria para la grafica de estadisticas del Plan Pro (ultimos 7, 30 o 90 dias)
+// Visitas por dia para la grafica del Plan Pro
 async function getDailyVisitsSeries(ownerId, projectId, days, db = pool) {
     const params = [ownerId, days];
     const projectFilter = projectId ? `AND p.id = $3` : '';
@@ -33,7 +33,7 @@ async function getDailyVisitsSeries(ownerId, projectId, days, db = pool) {
     return result.rows;
 }
 
-// Resumen por proyecto para la tabla de estadisticas del Plan Pro
+// Resumen por proyecto para la tabla de estadisticas
 async function getProjectsVisitsBreakdown(ownerId, db = pool) {
     const sentence = `
         SELECT
@@ -53,5 +53,4 @@ async function getProjectsVisitsBreakdown(ownerId, db = pool) {
     return result.rows;
 }
 
-// Exportamos las funciones para que puedan ser usadas en otros archivos
 module.exports = { registerProjectVisit, getDailyVisitsSeries, getProjectsVisitsBreakdown };

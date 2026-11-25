@@ -12,7 +12,7 @@ import { ReportModal } from '../../modals/report-modal/report-modal';
 import { ImageViewer } from '../../modals/image-viewer/image-viewer';
 import { FeatureModal } from '../../modals/feature-modal/feature-modal';
  
-// 06 Detalle de proyecto ruta /projects/:id
+// Pantalla de detalle de un proyecto
 @Component({
   selector: 'app-project-detail',
   imports: [RouterLink, BadgeSnippet, RateModal, ReportModal, ImageViewer, FeatureModal],
@@ -28,7 +28,7 @@ export class ProjectDetail implements OnInit {
   error = signal('');
   message = signal('');
  
-  // Galería: imagen grande seleccionada
+  // Imagen grande seleccionada en la galería
   selectedImage = signal(0);
  
   // Comentarios
@@ -43,14 +43,14 @@ export class ProjectDetail implements OnInit {
   showFeature = signal(false);
   report = signal<{ type: 'project' | 'comment'; id: string; label: string } | null>(null);
  
-  // Funciones de utils/format para usarlas en el HTML
+  // Funciones de format para usarlas en el HTML
   readonly stars = stars;
   readonly score = score;
   readonly initials = initials;
   readonly formatDate = formatDate;
   readonly imageUrl = imageUrl;
  
-  // Las 5 barras de "Calificaciones por criterio"
+  // Las 5 barras de calificaciones por criterio
   criteria = computed(() => {
     const p = this.project();
     if (!p) return [];
@@ -72,7 +72,7 @@ export class ProjectDetail implements OnInit {
   ) {}
  
   ngOnInit(): void {
-    // Si cambia el id en la dirección (por ejemplo desde otro proyecto) se vuelve a cargar
+    // Si cambia el id en la dirección se vuelve a cargar
     this.route.paramMap.subscribe(params => {
       this.loadProject(params.get('id') ?? '');
     });
@@ -98,7 +98,7 @@ export class ProjectDetail implements OnInit {
     });
   }
  
-  // page 1 reemplaza la lista; las siguientes páginas se agregan al final ("Ver más comentarios")
+  // La primera página reemplaza la lista y las demás se agregan al final
   loadRatings(page: number): void {
     const id = this.project()?.id;
     if (!id) return;
@@ -165,13 +165,13 @@ export class ProjectDetail implements OnInit {
     this.showViewer.set(true);
   }
  
-  // "github" -> "GitHub" para el botón del repositorio
+  // Nombre bien escrito de la plataforma para el botón del repositorio
   platformName(platform: string): string {
     const names: Record<string, string> = { github: 'GitHub', gitlab: 'GitLab', bitbucket: 'Bitbucket' };
     return names[platform] ?? platform;
   }
  
-  // Direcciones de las imágenes para el visor (null si aún no hay bucket configurado)
+  // Direcciones de las imágenes para el visor, null si aún no hay bucket
   imageUrls(): (string | null)[] {
     return (this.project()?.images ?? []).map(image => imageUrl(image.storagePath));
   }

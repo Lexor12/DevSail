@@ -1,5 +1,5 @@
-// Este archivo maneja el perfil publico de los desarrolladores, la edicion de datos personales y enlaces,
-// la subida o borrado de foto de perfil, y la eliminacion definitiva de la cuenta.
+// Perfil publico, datos personales, foto de perfil
+// y eliminacion de la cuenta
 const bcrypt = require('bcrypt');
 const pool = require('../config/db');
 const { env } = require('../config/env');
@@ -17,10 +17,10 @@ const {
     isValidProfileLink
 } = require('../utils/validators');
 
-// Limite de 1 MB para foto de perfil
+// Limite de 1 MB para la foto de perfil
 const MAX_AVATAR_BYTES = 1 * 1024 * 1024;
 
-// Devuelve el perfil publico de un desarrollador (/u/:username) junto con sus estadisticas y proyectos
+// Perfil publico de un usuario con sus estadisticas y proyectos
 async function getPublicProfile(req, res) {
     try {
         const username = (req.params.username || '').trim().toLowerCase();
@@ -35,7 +35,7 @@ async function getPublicProfile(req, res) {
             return res.status(404).json({ message: 'Perfil no encontrado.' });
         }
 
-        // Ejecutamos estadisticas y lista de proyectos al mismo tiempo porque no dependen una de la otra
+        // Pedimos estadisticas y proyectos al mismo tiempo porque no dependen entre si
         const [stats, projects] = await Promise.all([
             statsRepo.getProfileStats(profile.id),
             projectRepo.getPublishedProjectsByOwner(profile.id, sortBy)
@@ -52,7 +52,7 @@ async function getPublicProfile(req, res) {
     }
 }
 
-// Devuelve los datos completos de mi propia cuenta para llenar el formulario de editar perfil
+// Datos de mi cuenta para llenar el formulario de perfil
 async function getMyAccount(req, res) {
     try {
         const user = await userRepo.getUserById(req.user.id);
@@ -82,7 +82,7 @@ async function getMyAccount(req, res) {
     }
 }
 
-// Actualiza nombre, usuario, biografia y enlaces sociales del usuario logueado
+// Actualiza nombre, usuario, biografia y enlaces
 async function updateProfile(req, res) {
     try {
         const {
@@ -100,7 +100,7 @@ async function updateProfile(req, res) {
             return res.status(400).json({ message: 'La biografía no puede superar los 300 caracteres.' });
         }
 
-        // Revisamos que cada enlace opcional pertenezca a la plataforma que dice
+        // Cada enlace debe ser de la plataforma que dice
         if (!isValidProfileLink(linkLinkedin, ['linkedin.com'])) {
             return res.status(400).json({ message: 'El enlace de LinkedIn debe empezar con https://linkedin.com' });
         }
@@ -126,12 +126,12 @@ async function updateProfile(req, res) {
         const cleanUsername = username.trim().toLowerCase();
         const existingUser = await userRepo.getUserByUsername(cleanUsername);
 
-        // Si alguien mas ya tiene ese username (y es cuenta verificada), no se puede usar
+        // Si otra cuenta verificada ya usa ese nombre no se puede repetir
         if (existingUser && existingUser.id !== req.user.id && existingUser.isVerified) {
             return res.status(409).json({ message: 'Ese nombre de usuario ya está ocupado.' });
         }
 
-        // Convertimos strings vacios en null para que en la BD quede limpio
+        // Los textos vacios se guardan como null
         const cleanOrNull = (value) => (typeof value === 'string' && value.trim() !== '' ? value.trim() : null);
 
         await userRepo.updateUserProfile(req.user.id, {
@@ -162,7 +162,7 @@ async function updateAvatar(req, res) {
             return res.status(400).json({ message: 'Debes enviar una imagen.' });
         }
 
-        // Validamos peso y firma real del archivo (jpg, png o webp)
+        // Revisamos el peso y que de verdad sea jpg, png o webp
         let decoded;
         try {
             decoded = storageService.decodeAndValidateImage(image, MAX_AVATAR_BYTES);
@@ -177,7 +177,7 @@ async function updateAvatar(req, res) {
 
         const oldAvatarPath = user.avatarPath;
 
-        // Primero subimos la nueva y actualizamos la BD; hasta el final borramos la vieja por si algo falla
+        // Primero subimos la nueva foto y al final borramos la vieja por si algo falla
         const newAvatarPath = await storageService.uploadImage(
             'avatars',
             decoded.buffer,
@@ -201,7 +201,7 @@ async function updateAvatar(req, res) {
     }
 }
 
-// Quita la foto de perfil para volver a mostrar iniciales
+// Quita la foto para volver a mostrar las iniciales
 async function removeAvatar(req, res) {
     try {
         const user = await userRepo.getUserById(req.user.id);
@@ -223,9 +223,9 @@ async function removeAvatar(req, res) {
     }
 }
 
-// Elimina la cuenta del desarrollador definitivamente pidiendo su contraseña actual
+// Elimina la cuenta pidiendo la contraseña actual
 async function deleteAccount(req, res) {
-    //Permite crear una transacción para poder o efectuar todo, o cancelar todo
+    //La transaccion permite hacer todo o cancelar todo
     const client = await pool.connect();
     try {
         const { password } = req.body;
@@ -248,7 +248,7 @@ async function deleteAccount(req, res) {
             return res.status(401).json({ message: 'La contraseña ingresada es incorrecta.' });
         }
 
-        // Juntamos todas las rutas de imagenes en Storage que hay que borrar (avatar + fotos de sus proyectos)
+        // Juntamos las imagenes que hay que borrar, el avatar y las de sus proyectos
         const pathsToDelete = [];
         if (user.avatarPath) {
             pathsToDelete.push(user.avatarPath);
@@ -262,15 +262,15 @@ async function deleteAccount(req, res) {
             }
         }
 
-        // Guardamos los IDs de proyectos donde este usuario habia calificado para recalcular sus promedios despues
+        // Guardamos los proyectos que califico para recalcular sus promedios despues
         const ratedProjectIds = await ratingRepo.getProjectIdsRatedByUser(user.id);
 
         await client.query('BEGIN');
 
-        // Al borrar el usuario, ON DELETE CASCADE limpia sus proyectos, calificaciones, guardados y suscripciones
+        // Al borrar el usuario la base de datos limpia en cascada todo lo suyo
         await userRepo.deleteUser(user.id, client);
 
-        // Recalculamos los promedios de los proyectos ajenos donde este usuario habia dejado calificacion
+        // Recalculamos los proyectos ajenos donde habia calificado
         for (let i = 0; i < ratedProjectIds.length; i++) {
             await projectRepo.recalculateProjectRatings(ratedProjectIds[i], client);
         }

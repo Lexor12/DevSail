@@ -14,7 +14,7 @@ export class ProjectService {
   private api = `${API_URL}/projects`;
 
   constructor(private http: HttpClient) {}
-  // Las 3 secciones del inicio; period cambia "Mejor valorados" entre semana y mes
+  // Secciones del inicio, period cambia los mejor valorados entre semana y mes
   getHome(period: 'week' | 'month' = 'week'): Observable<HomeProjects> {
     const params = new HttpParams().set('period', period);
     return this.http.get<HomeProjects>(`${this.api}/home`, { params });
@@ -58,7 +58,7 @@ export class ProjectService {
     return this.http.put<Message>(`${this.api}/${id}`, data);
   }
 
-  // status: 'published' para reactivar o 'deactivated' para desactivar
+  // status es published para reactivar o deactivated para desactivar
   changeStatus(id: string, status: 'published' | 'deactivated'): Observable<Message> {
     return this.http.patch<Message>(`${this.api}/${id}/status`, { status });
   }
@@ -67,7 +67,7 @@ export class ProjectService {
     return this.http.delete<Message>(`${this.api}/${id}`);
   }
 
-  // Al editar, las imágenes se agregan y quitan una por una
+  // Al editar las imágenes se agregan y quitan una por una
   addImage(id: string, image: string): Observable<Message> {
     return this.http.post<Message>(`${this.api}/${id}/images`, { image });
   }

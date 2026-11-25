@@ -9,7 +9,7 @@ import { AuthService } from '../../../services/auth.service';
 import { ProjectSummary } from '../../../models/project.model';
 import { formToQueryParams } from '../../../utils/filters';
 
-//Este componente hace referencia al modulo de Inicio
+//Pantalla de inicio
 @Component({
   selector: 'app-home',
   imports: [RouterLink, SearchBar, FilterPanel, ProjectSection, Tabs],
@@ -51,7 +51,7 @@ export class Home implements OnInit {
     });
   }
 
-  // Semana / Mes solo vuelve a pedir la sección de mejor valorados
+  // Cambiar entre semana y mes solo vuelve a pedir los mejor valorados
   changePeriod(value: string): void {
     const period = value === 'month' ? 'month' : 'week';
     if (period === this.period()) return;
@@ -67,7 +67,7 @@ export class Home implements OnInit {
     });
   }
 
-  // El buscador y los filtros comparten un solo formulario; al enviarlo se abre /explore
+  // El buscador y los filtros comparten un formulario que abre la pantalla de resultados
   search(event: Event): void {
     event.preventDefault();
     const data = new FormData(event.target as HTMLFormElement);

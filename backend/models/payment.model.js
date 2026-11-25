@@ -1,4 +1,4 @@
-//Esta clase representa el registro de orden/captura de PayPal, esta es equivalente a la tabla "payments" en la base de datos
+//Orden de PayPal, equivale a la tabla payments
 class Payment {
     constructor(
         id, userId, concept, projectId, amount, currency, paypalOrderId,
@@ -7,13 +7,13 @@ class Payment {
     ) {
         this.id = id;
         this.userId = userId;
-        this.concept = concept; // 'pro_plan' | 'featured_7' | 'featured_30'
+        this.concept = concept; // pro_plan, featured_7 o featured_30
         this.projectId = projectId;
         this.amount = amount;
         this.currency = currency;
         this.paypalOrderId = paypalOrderId;
         this.paypalCaptureId = paypalCaptureId;
-        this.status = status; // 'pending' | 'completed' | 'failed' | 'cancelled'
+        this.status = status; // pending, completed, failed o cancelled
         this.createdAt = createdAt;
         this.completedAt = completedAt;
         this.username = username; // null si la cuenta fue eliminada

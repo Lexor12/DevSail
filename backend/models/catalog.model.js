@@ -1,13 +1,5 @@
-// Catalogo cerrado de tipos de proyecto para las 7 opciones que son:
-/*
-1. Aplicación web
-2. Aplicación móvil o de escritorio
-3. Librería
-4. API o servicio
-5. Herramienta o script
-6. Videojuego
-7. Otro
-*/
+// Catalogo de los 7 tipos de proyecto que son
+/* Aplicación web, aplicación móvil o de escritorio, librería, API o servicio, herramienta o script, videojuego y otro */
 class ProjectType {
     constructor(id, code, name, sortOrder) {
         this.id = id;
@@ -17,7 +9,7 @@ class ProjectType {
     }
 }
 
-// Catalogo cerrado de tecnologias
+// Catalogo de tecnologias
 class Technology {
     constructor(id, name) {
         this.id = id;
@@ -25,7 +17,7 @@ class Technology {
     }
 }
 
-// Catalogo cerrado de motivos de reporte
+// Catalogo de motivos de reporte
 class ReportReason {
     constructor(id, code, name, requiresDetail, sortOrder) {
         this.id = id;

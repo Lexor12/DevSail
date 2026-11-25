@@ -1,4 +1,4 @@
-// Tarjeta resumida de un proyecto (igual que la clase ProjectCard del backend)
+// Tarjeta resumida de un proyecto, igual que ProjectCard del backend
 export interface ProjectSummary {
     id: string;
     title: string;
@@ -16,14 +16,14 @@ export interface ProjectSummary {
     publishedAt: string;
 }
 
-// Respuesta de GET /api/projects/home
+// Respuesta del inicio
 export interface HomeProjects {
     featured: ProjectSummary[];
     topRated: ProjectSummary[];
     latest: ProjectSummary[];
 }
 
-// Respuesta de GET /api/projects/search
+// Respuesta de la búsqueda
 export interface SearchResult {
     projects: ProjectSummary[];
     total: number;
@@ -31,7 +31,7 @@ export interface SearchResult {
     pageSize: number;
 }
 
-// Filtros de búsqueda tal como se leen de la dirección (/explore?q=...&type=...)
+// Filtros de búsqueda como se leen de la dirección
 export interface SearchFilters {
     q: string;
     type: string;

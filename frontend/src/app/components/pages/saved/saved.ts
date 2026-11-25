@@ -5,7 +5,7 @@ import { ProjectSummary } from '../../../models/project.model';
 import { AccountMenu } from '../../shared/account-menu/account-menu';
 import { ProjectCard } from '../../cards/project-card/project-card';
 
-// 10 Mi cuenta Guardados ruta /my-account/saved
+// Pantalla de proyectos guardados
 @Component({
   selector: 'app-saved',
   imports: [RouterLink, AccountMenu, ProjectCard],
@@ -42,7 +42,7 @@ export class Saved implements OnInit {
     this.load();
   }
 
-  // Quitar usa el mismo endpoint que Guardar; después se quita de la lista
+  // Quitar usa el mismo endpoint que guardar y luego se saca de la lista
   remove(project: ProjectSummary): void {
     this.ratingService.toggleSave(project.id).subscribe({
       next: () => this.projects.update(list => list.filter(p => p.id !== project.id))

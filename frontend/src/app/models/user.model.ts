@@ -1,5 +1,5 @@
 
-//Esta clase refiere al usuario, guarda sus datos y permite procesar los detalles del mismo, el que se encuentra activo
+//Datos del usuario que tiene la sesión activa
 export interface User {
     id: string;
     fullName: string;
@@ -9,13 +9,13 @@ export interface User {
     avatarPath?: string | null;
 }
 
-// Respuesta de login y verify-email
+// Respuesta al iniciar sesión o verificar el correo
 export interface SessionResponse {
     message: string;
     user: User;
 }
 
-// Cuerpo que espera POST /api/auth/register
+// Datos que se mandan al registrarse
 export interface RegisterData {
     fullName: string;
     username: string;
@@ -54,7 +54,7 @@ export interface ProfileStats {
     topTechnologies: string[];
 }
 
-// Respuesta de GET /api/users/me
+// Respuesta con los datos de mi cuenta
 export interface MyAccount {
     id: string;
     fullName: string;
@@ -72,7 +72,7 @@ export interface MyAccount {
     createdAt: string;
 }
 
-// Cuerpo de PUT /api/users/me
+// Datos que se mandan al actualizar el perfil
 export interface ProfileData {
     fullName: string;
     username: string;
@@ -86,7 +86,7 @@ export interface ProfileData {
     linkYoutube: string;
 }
 
-// Cuerpo de PUT /api/auth/change-password
+// Datos que se mandan al cambiar la contraseña
 export interface PasswordData {
     currentPassword: string;
     newPassword: string;

@@ -1,13 +1,13 @@
-// Este archivo entrega los catalogos cerrados de la plataforma: tipos de proyecto,
-// tecnologias disponibles y motivos de reporte para llenar los selectores del frontend.
+// Entrega los catalogos de tipos de proyecto, tecnologias
+// y motivos de reporte para los selectores del frontend
 const catalogRepo = require('../services/repositories/catalog.service');
 
-// Devuelve los 7 tipos de proyecto y todas las tecnologias en una sola llamada
+// Devuelve los tipos de proyecto y las tecnologias en una sola llamada
 async function getProjectCatalogs(req, res) {
     try {
-        //Primero obtenemos todos los tipos de Proyectos
+        //Primero obtenemos los tipos de proyecto
         const projectTypes = await catalogRepo.getAllProjectTypes();
-        //Despues obtenemos todos las tecnologias disponibles
+        //Despues las tecnologias disponibles
         const technologies = await catalogRepo.getAllTechnologies();
 
         return res.status(200).json({

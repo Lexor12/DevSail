@@ -1,4 +1,4 @@
-//Esta clase representa a la tabla "pro_subscriptions" en la base de datos, que contiene la informacion de las suscripciones Pro de los usuarios
+//Tabla pro_subscriptions con las suscripciones Pro
 class ProSubscription {
     constructor(id, userId, paymentId, startsAt, endsAt, status, createdAt) {
         this.id = id;
@@ -6,7 +6,7 @@ class ProSubscription {
         this.paymentId = paymentId;
         this.startsAt = startsAt;
         this.endsAt = endsAt;
-        this.status = status; // 'scheduled' | 'active' | 'expired'
+        this.status = status; // scheduled, active o expired
         this.createdAt = createdAt;
     }
 }

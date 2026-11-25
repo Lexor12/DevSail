@@ -1,4 +1,4 @@
-// Esta es la clase que se utiliza para representar un proyecto en la base de datos, y se usa en el backend para manejar la informacion de los proyectos, como crear, editar, eliminar, etc.
+// Representa un proyecto de la base de datos y se usa para crearlo, editarlo o eliminarlo
 class Project {
     constructor(
         id, ownerId, projectTypeId, title, nickname, description, repositoryUrl,
@@ -20,7 +20,7 @@ class Project {
         this.seekingFeedback = seekingFeedback;
         this.openToCollaborate = openToCollaborate;
         this.authorshipDeclared = authorshipDeclared;
-        this.status = status; // 'published' | 'deactivated' | 'hidden'
+        this.status = status; // published, deactivated o hidden
         this.hiddenReason = hiddenReason;
         this.hiddenAt = hiddenAt;
         this.hiddenBy = hiddenBy;
@@ -38,7 +38,7 @@ class Project {
     }
 }
 
-// Esta clase a diferencia de la de arriba, sirve para representar una tarjeta resumida de un proyecto para el inicio, busqueda, portafolio y lista de guardados en el Frontend
+// Version resumida para las tarjetas del inicio, la busqueda, el portafolio y los guardados
 class ProjectCard {
     constructor(
         id, title, nickname, typeCode, typeName, coverPath, avgOverall,
@@ -56,13 +56,13 @@ class ProjectCard {
         this.seekingFeedback = seekingFeedback;
         this.openToCollaborate = openToCollaborate;
         this.isFeatured = isFeatured;
-        this.technologies = technologies; // arreglo de strings
+        this.technologies = technologies; // arreglo de textos
         this.savesCount = savesCount;
         this.publishedAt = publishedAt;
     }
 }
 
-// Esta clase representa la vista completa de un proyecto para el detalle del proyecto, incluyendo la informacion del propietario, imagenes y tecnologias
+// Vista completa para el detalle, con el dueño, las imagenes y las tecnologias
 class ProjectDetail {
     constructor(
         id, ownerId, ownerUsername, ownerFullName, ownerAvatarPath,
@@ -105,7 +105,7 @@ class ProjectDetail {
     }
 }
 
-//Esta clase representa una fila en la tabla "Mis proyectos" del desarrollador
+//Fila de la tabla Mis proyectos
 class OwnerProject {
     constructor(
         id, title, nickname, status, hiddenReason, coverPath, avgOverall,
@@ -121,7 +121,7 @@ class OwnerProject {
         this.ratingsCount = ratingsCount;
         this.savesCount = savesCount;
         this.totalVisits = totalVisits;
-        this.featuredEndsAt = featuredEndsAt; // null si no tiene destacado vigente
+        this.featuredEndsAt = featuredEndsAt; // null si no tiene un destacado vigente
         this.publishedAt = publishedAt;
     }
 }

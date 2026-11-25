@@ -1,4 +1,4 @@
-// Esta clase representa del frontend del administrador los valores de Las 6 tarjetas del resumen del panel
+// Valores de las 6 tarjetas del panel del administrador
 class DashboardSummary {
     constructor(pendingReports, hiddenProjects, hiddenComments, activeFeatured, activeProPlans, monthIncome) {
         this.pendingReports = pendingReports;
@@ -10,7 +10,7 @@ class DashboardSummary {
     }
 }
 
-// Esta clase representa una Fila de la tabla de proyectos del administrador
+// Fila de la tabla de proyectos del administrador
 class AdminProject {
     constructor(
         id, title, nickname, ownerUsername, status, hiddenReason,
@@ -29,7 +29,7 @@ class AdminProject {
     }
 }
 
-// Esta clase representa una Fila de la tabla de comentarios del administrador
+// Fila de la tabla de comentarios del administrador
 class AdminComment {
     constructor(id, projectId, projectNickname, authorUsername, comment, commentHidden, hiddenReason, createdAt) {
         this.id = id;

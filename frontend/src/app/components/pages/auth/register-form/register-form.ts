@@ -2,7 +2,7 @@ import { Component, computed, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../../services/auth.service';
 
-// Mismas reglas que utils/validators.js del backend, para avisar antes de enviar
+// Son las mismas reglas del backend para avisar antes de enviar
 const NAME_REGEX = /^[a-zA-ZÀ-ÿñÑ\s]{2,80}$/;
 const USERNAME_REGEX = /^[a-z0-9_]{3,20}$/;
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -46,7 +46,7 @@ export class RegisterForm {
 
   constructor(private authService: AuthService, private router: Router) {}
 
-  // Se llama con cada tecla o clic dentro del formulario; lee todo con FormData
+  // Se llama con cada tecla o clic y lee todo con FormData
   check(form: HTMLFormElement): void {
     const data = new FormData(form);
     this.fullName.set((data.get('fullName') as string) ?? '');
@@ -63,7 +63,7 @@ export class RegisterForm {
     this.check(event.target as HTMLFormElement);
     if (!this.isValid()) return;
 
-    // Una sola casilla acepta el aviso de privacidad y los términos, así que se mandan los dos en true
+    // Una sola casilla acepta el aviso de privacidad y los términos, así que van los dos en true
     this.sending.set(true);
     this.authService.register({
       fullName: this.fullName().trim(),

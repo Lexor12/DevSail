@@ -10,7 +10,7 @@ import { BadgeModal } from '../../modals/badge-modal/badge-modal';
 import { FeatureModal } from '../../modals/feature-modal/feature-modal';
 import { ProPlanModal } from '../../modals/pro-plan-modal/pro-plan-modal';
  
-// 09 Mi cuenta Mis proyectos ruta /my-account/projects
+// Pantalla de Mis proyectos
 @Component({
   selector: 'app-my-projects',
   imports: [RouterLink, AccountMenu, ProjectFormModal, DeleteProjectModal, BadgeModal, FeatureModal, ProPlanModal],
@@ -23,7 +23,7 @@ export class MyProjects implements OnInit {
   error = signal('');
   message = signal('');
  
-  // Ventanas modales: guardan el proyecto con el que se abrieron
+  // Cada ventana guarda el proyecto con el que se abrió
   showForm = signal(false);
   editingId = signal<string | null>(null);
   deleting = signal<OwnerProject | null>(null);
@@ -39,7 +39,7 @@ export class MyProjects implements OnInit {
  
   ngOnInit(): void {
     this.load();
-    // El botón "+ Publicar proyecto" del encabezado llega con ?new=true
+    // El botón de publicar del encabezado llega con new en la dirección
     if (this.route.snapshot.queryParamMap.get('new') === 'true') {
       this.openCreate();
       this.router.navigate([], { queryParams: {} });
@@ -69,7 +69,7 @@ export class MyProjects implements OnInit {
     this.showForm.set(true);
   }
  
-  // Después de guardar, borrar o cambiar algo se recarga la tabla y se muestra el mensaje del backend
+  // Después de cualquier cambio se recarga la tabla y se muestra el mensaje del backend
   done(text: string): void {
     this.showForm.set(false);
     this.deleting.set(null);

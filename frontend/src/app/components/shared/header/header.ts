@@ -9,7 +9,7 @@ import { AuthService } from '../../../services/auth.service';
   styleUrl: './header.css'
 })
 export class Header {
-  // En celular el menú se abre con el botón ☰
+  // En celular el menú se abre con un botón
   menuOpen = signal(false);
 
   constructor(public authService: AuthService) {}

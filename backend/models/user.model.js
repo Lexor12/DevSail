@@ -1,4 +1,4 @@
-// Representa una cuenta completa de la tabla users (uso interno en auth y edicion de cuenta)
+// Cuenta completa de la tabla users, se usa en auth y al editar la cuenta
 class User {
     constructor(
         id, fullName, username, email, passwordHash, role, isVerified, verifiedAt,
@@ -15,7 +15,7 @@ class User {
         this.isVerified = isVerified;
         this.verifiedAt = verifiedAt; // puede ser null
         this.bio = bio; // puede ser null
-        this.avatarPath = avatarPath; // ruta en Supabase Storage, null = mostrar iniciales
+        this.avatarPath = avatarPath; // ruta en Supabase Storage, con null se muestran las iniciales
         this.linkLinkedin = linkLinkedin;
         this.linkWebsite = linkWebsite;
         this.linkGithub = linkGithub;
@@ -32,7 +32,7 @@ class User {
     }
 }
 
-// Representa los datos mínimos que se adjuntan a req.user tras validar el token
+// Datos minimos que se guardan en req.user despues de validar el token
 class SessionUser {
     constructor(id, fullName, username, role, isVerified, tokenVersion) {
         this.id = id;
@@ -44,7 +44,7 @@ class SessionUser {
     }
 }
 
-// Para el perfil publico (/u/username): nunca expone correo, hash ni intentos fallidos 
+// Perfil publico, nunca muestra correo, hash ni intentos fallidos
 class PublicProfile {
     constructor(
         id, fullName, username, bio, avatarPath, linkLinkedin, linkWebsite,

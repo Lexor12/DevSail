@@ -1,7 +1,7 @@
 import { Component, input, output } from '@angular/core';
 import { BadgeSnippet } from '../../shared/badge-snippet/badge-snippet';
 
-// M12 Insignia README se abre desde 09 ("Copiar insignia")
+// Ventana de la insignia para el README, se abre con Copiar insignia
 @Component({
   selector: 'app-badge-modal',
   imports: [BadgeSnippet],

@@ -1,8 +1,8 @@
-// Permite la gestión de los proyectos destacados de 7 o 30 dias
+// Manejo de los proyectos destacados de 7 o 30 dias
 const pool = require('../../config/db');
 const { FeaturedProject } = require('../../models/featured.model');
 
-// Esta función permite crear un nuevo proyecto destacado, si ya tiene un periodo vigente o programado, el nuevo empieza donde termina el ultimo (status = 'scheduled')
+// Crea un destacado, si ya hay uno vigente el nuevo empieza cuando termine
 async function createFeatured(projectId, durationDays, paymentId, db = pool) {
     const sentence = `
         WITH calc AS (
@@ -31,7 +31,7 @@ async function createFeatured(projectId, durationDays, paymentId, db = pool) {
     );
 }
 
-// Permite verificar si un proyecto tiene un destacado activo, devolviendo true o false
+// Dice si un proyecto tiene un destacado activo
 async function isProjectFeatured(projectId, db = pool) {
     const result = await db.query(
         `SELECT 1 FROM featured_projects WHERE project_id = $1 AND status = 'active' AND starts_at <= NOW() AND ends_at > NOW() LIMIT 1`,
@@ -40,7 +40,7 @@ async function isProjectFeatured(projectId, db = pool) {
     return result.rows.length > 0;
 }
 
-// Retira el destacado activo y borra los programados en cola
+// Quita el destacado activo y los que estaban en espera
 async function withdrawFeatured(projectId, reason, adminId, db = pool) {
     await db.query(`DELETE FROM featured_projects WHERE project_id = $1 AND status = 'scheduled'`, [projectId]);
     const result = await db.query(
@@ -53,7 +53,7 @@ async function withdrawFeatured(projectId, reason, adminId, db = pool) {
     return result.rows.map(r => r.id);
 }
 
-// Permite obtener la lista de proyectos destacados activos, ordenados por fecha de vencimiento ascendente
+// Destacados activos, primero los que vencen antes
 async function getActiveFeaturedList(db = pool) {
     const sentence = `
         SELECT f.id, f.project_id AS "projectId", f.payment_id AS "paymentId", f.duration_days AS "durationDays",
@@ -74,7 +74,7 @@ async function getActiveFeaturedList(db = pool) {
     ));
 }
 
-// Permite obtener la lista de proyectos destacados que vencen en las proximas 'hours' horas, ordenados por fecha de vencimiento ascendente
+// Destacados que vencen en las proximas horas que se indiquen
 async function getFeaturedEndingSoon(hours, db = pool) {
     const sentence = `
         SELECT f.id, f.project_id AS "projectId", f.payment_id AS "paymentId", f.duration_days AS "durationDays",
@@ -96,7 +96,7 @@ async function getFeaturedEndingSoon(hours, db = pool) {
     ));
 }
 
-// Tarea programada cada hora: expira los vencidos y activa los programados
+// Cada hora vence los terminados y activa los programados
 async function syncFeaturedLifecycle(db = pool) {
     await db.query(`UPDATE featured_projects SET status = 'expired' WHERE status = 'active' AND ends_at <= NOW()`);
     await db.query(`UPDATE featured_projects SET status = 'active' WHERE status = 'scheduled' AND starts_at <= NOW() AND ends_at > NOW()`);

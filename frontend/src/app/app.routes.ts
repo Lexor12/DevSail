@@ -15,7 +15,7 @@ import { Stats } from './components/pages/stats/stats';
 import { PaymentResult } from './components/pages/payment-result/payment-result';
 
 export const routes: Routes = [
-  //Landing Page
+  //Página principal
   {
     path: '',//Es la primera pagina asi que no ponemos alguna ruta
     title: 'DevSail',
@@ -47,7 +47,7 @@ export const routes: Routes = [
     component: VerifyCode
   },
 
-  // 06 y 07: se ven con o sin sesión
+  // Se ven con o sin sesión
   {
     path: 'projects/:id',
     title: 'Proyecto DevSail',
@@ -58,7 +58,7 @@ export const routes: Routes = [
     title: 'Perfil DevSail',
     component: PublicProfile
   },
-  // 08 a 12: Mi cuenta (piden sesión)
+  // Pantallas de Mi cuenta, piden sesión
   { path: 'my-account', redirectTo: 'my-account/data', pathMatch: 'full' },
   {
     path: 'my-account/data',
@@ -91,7 +91,7 @@ export const routes: Routes = [
     component: Stats
   },
 
-  // Regreso de PayPal (return_url y cancel_url del backend)
+  // Regreso de PayPal, ya sea que se complete o se cancele
   {
     path: 'payments/return',
     title: 'Resultado de pago DevSail',
@@ -107,6 +107,6 @@ export const routes: Routes = [
     component: PaymentResult
   },
 
-  // Cualquier otra dirección regresa al inicio (después la cambiamos por la pantalla 404)
+  // Cualquier otra dirección regresa al inicio, después la cambiamos por la pantalla 404
   { path: '**', redirectTo: '' }
 ];

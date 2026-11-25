@@ -10,7 +10,7 @@ export const appConfig: ApplicationConfig = {
     provideBrowserGlobalErrorListeners(),
     // Al cambiar de página se regresa al inicio de la pantalla
     provideRouter(routes, withInMemoryScrolling({ scrollPositionRestoration: 'top' })),
-    // HttpClient con el interceptor que manda la cookie de sesión en cada petición
+    // El interceptor hace que HttpClient mande la cookie de sesión en cada petición
     provideHttpClient(withInterceptors([credentialsInterceptor]))
   ]
 };

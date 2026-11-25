@@ -1,9 +1,9 @@
-// Esta clase permite gestionar toda la lista de proyectos guardados por un usuario en su perfil
+// Maneja los proyectos guardados de cada usuario
 const pool = require('../../config/db');
 const {ProjectCard}=require('../../models/project.model');
 
 
-// Condicion: el proyecto tiene un destacado activo justo ahora
+// Condicion para saber si el proyecto esta destacado ahora
 const FEATURED_CONDITION = `EXISTS (
     SELECT 1 FROM featured_projects f
     WHERE f.project_id = p.id
@@ -11,7 +11,7 @@ const FEATURED_CONDITION = `EXISTS (
     AND f.starts_at <= NOW()
     AND f.ends_at > NOW()
 )`;
-// Columnas de una tarjeta con alias en camelCase entre comillas dobles para que pg respete mayusculas
+// Columnas de las tarjetas, los alias van entre comillas para que pg respete mayusculas
 const CARD_SELECT = `
     p.id,
     p.title,
@@ -44,7 +44,7 @@ function mapProjectCard(r) {
         r.isFeatured, r.technologies, r.savesCount, r.publishedAt
     );
 }
-//Comprobamos que efectivamente un proyecto si este guardado por un usuario,
+//Revisa si el usuario ya guardo el proyecto
 async function isProjectSavedByUser(userId, projectId, db = pool) {
     const result = await db.query(
         `SELECT 1 FROM saved_projects WHERE user_id = $1 AND project_id = $2`,
@@ -53,7 +53,7 @@ async function isProjectSavedByUser(userId, projectId, db = pool) {
     return result.rows.length > 0;
 }
 
-//Permite guardar un proyecto en la lista de guardados del usuario, si ya estaba guardado no hace nada
+//Guarda un proyecto, si ya estaba no hace nada
 async function saveProject(userId, projectId, db = pool) {
     await db.query(
         `INSERT INTO saved_projects (user_id, project_id) VALUES ($1, $2) ON CONFLICT DO NOTHING`,
@@ -61,12 +61,12 @@ async function saveProject(userId, projectId, db = pool) {
     );
 }
 
-//Permite eliminar un proyecto de la lista de guardados del usuario
+//Quita un proyecto de guardados
 async function unsaveProject(userId, projectId, db = pool) {
     await db.query(`DELETE FROM saved_projects WHERE user_id = $1 AND project_id = $2`, [userId, projectId]);
 }
 
-// Lista de guardados del usuario: solo muestra proyectos publicados (no ocultos por otros usuarios)
+// Lista de guardados, solo muestra los que siguen publicados
 async function getSavedProjectsByUser(userId, sortBy = 'recent', db = pool) {
     const orderBy = sortBy === 'rated'
         ? 'p.avg_overall DESC NULLS LAST, p.ratings_count DESC'
@@ -82,5 +82,4 @@ async function getSavedProjectsByUser(userId, sortBy = 'recent', db = pool) {
     const result = await db.query(sentence, [userId]);
     return result.rows.map(mapProjectCard);
 }
-// Exportamos las funciones para que puedan ser usadas en otros archivos
 module.exports = { isProjectSavedByUser, saveProject, unsaveProject, getSavedProjectsByUser };

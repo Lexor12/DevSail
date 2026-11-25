@@ -1,10 +1,10 @@
 import { Component, computed, input, signal } from '@angular/core';
 import { API_URL } from '../../../config/api';
 
-// Insignia para el README: vista previa, Markdown/HTML y botón Copiar.
-// Se usa dentro de 06 (solo el dueño) y dentro de la ventana M12.
-// La imagen la genera shields.io leyendo el promedio desde la API, así se actualiza sola
-// (funciona cuando el backend ya esté publicado en internet; con localhost shields.io no lo alcanza).
+// Insignia para el README con vista previa, código para copiar y botón
+// La usan el detalle del proyecto, solo para el dueño, y la ventana de insignia
+// La imagen la genera shields.io leyendo el promedio de la API, así se actualiza sola
+// Funciona cuando el backend esté publicado porque shields.io no llega a localhost
 @Component({
   selector: 'app-badge-snippet',
   templateUrl: './badge-snippet.html',
