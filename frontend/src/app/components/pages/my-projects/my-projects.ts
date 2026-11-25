@@ -10,7 +10,7 @@ import { BadgeModal } from '../../modals/badge-modal/badge-modal';
 import { FeatureModal } from '../../modals/feature-modal/feature-modal';
 import { ProPlanModal } from '../../modals/pro-plan-modal/pro-plan-modal';
  
-// 09 Mi cuenta · Mis proyectos · ruta /my-account/projects
+// 09 Mi cuenta Mis proyectos ruta /my-account/projects
 @Component({
   selector: 'app-my-projects',
   imports: [RouterLink, AccountMenu, ProjectFormModal, DeleteProjectModal, BadgeModal, FeatureModal, ProPlanModal],

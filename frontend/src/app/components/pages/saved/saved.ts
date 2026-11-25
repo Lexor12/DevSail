@@ -5,7 +5,7 @@ import { ProjectSummary } from '../../../models/project.model';
 import { AccountMenu } from '../../shared/account-menu/account-menu';
 import { ProjectCard } from '../../cards/project-card/project-card';
 
-// 10 Mi cuenta · Guardados · ruta /my-account/saved
+// 10 Mi cuenta Guardados ruta /my-account/saved
 @Component({
   selector: 'app-saved',
   imports: [RouterLink, AccountMenu, ProjectCard],

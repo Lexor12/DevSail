@@ -39,7 +39,7 @@
             </div>
             @for (project of featured(); track project.id) {
             <p><span class="chip chip-yellow">Quedan {{ daysLeft(project.featuredEndsAt) }} días</span>
-                {{ project.nickname }} · {{ project.title }} — hasta el {{ formatDate(project.featuredEndsAt) }}</p>
+                {{ project.nickname }} {{ project.title }} — hasta el {{ formatDate(project.featuredEndsAt) }}</p>
             } @empty {
             <p class="text-muted">No tienes proyectos destacados en este momento.</p>
             }

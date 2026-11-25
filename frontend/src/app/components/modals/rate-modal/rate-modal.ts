@@ -2,7 +2,7 @@ import { Component, OnInit, computed, input, output, signal } from '@angular/cor
 import { RatingService } from '../../../services/rating.service';
 import { Rating } from '../../../models/rating.model';
  
-// M02 Calificar y comentar · se abre desde 06
+// M02 Calificar y comentar se abre desde 06
 @Component({
   selector: 'app-rate-modal',
   templateUrl: './rate-modal.html',

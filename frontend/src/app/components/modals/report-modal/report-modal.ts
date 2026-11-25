@@ -2,7 +2,7 @@ import { Component, OnInit, input, output, signal } from '@angular/core';
 import { ReportService } from '../../../services/report.service';
 import { ReportReason } from '../../../models/report.model';
  
-// M03 Reportar contenido · se abre desde 06 (proyecto o comentario)
+// M03 Reportar contenido se abre desde 06 (proyecto o comentario)
 @Component({
   selector: 'app-report-modal',
   templateUrl: './report-modal.html',

@@ -18,7 +18,7 @@
           <p>Plan gratuito: {{ d.publishedCount }} de {{ d.freeLimit }} proyectos publicados</p>
           <button type="button" class="btn btn-outline" (click)="showProPlan.set(true)">Contratar Plan Pro (sin límite)</button>
         }
-        <button type="button" class="btn btn-primary" (click)="openCreate()">+ Publicar proyecto</button>
+        <button type="button" class="btn btn-primary" (click)="openCreate()">Publicar proyecto</button>
       </div>
  
       @if (d.projects.length === 0) {
@@ -79,7 +79,7 @@
         </div>
       }
  
-      <p class="hint spaced-top">Estados: Publicado · Desactivado (lo apaga el dueño o el sistema al vencer el Plan Pro) · Oculto (moderación, muestra el motivo del administrador).</p>
+      <p class="hint spaced-top">Estados: Publicado Desactivado (lo apaga el dueño o el sistema al vencer el Plan Pro) Oculto (moderación, muestra el motivo del administrador).</p>
     }
   </section>
 </div>

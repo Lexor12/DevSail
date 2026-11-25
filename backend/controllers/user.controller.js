@@ -225,6 +225,7 @@ async function removeAvatar(req, res) {
 
 // Elimina la cuenta del desarrollador definitivamente pidiendo su contraseña actual
 async function deleteAccount(req, res) {
+    //Permite crear una transacción para poder o efectuar todo, o cancelar todo
     const client = await pool.connect();
     try {
         const { password } = req.body;

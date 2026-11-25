@@ -12,7 +12,7 @@ import { ReportModal } from '../../modals/report-modal/report-modal';
 import { ImageViewer } from '../../modals/image-viewer/image-viewer';
 import { FeatureModal } from '../../modals/feature-modal/feature-modal';
  
-// 06 Detalle de proyecto · ruta /projects/:id
+// 06 Detalle de proyecto ruta /projects/:id
 @Component({
   selector: 'app-project-detail',
   imports: [RouterLink, BadgeSnippet, RateModal, ReportModal, ImageViewer, FeatureModal],

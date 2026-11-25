@@ -1,102 +1,112 @@
 import { Routes } from '@angular/router';
 import { guestGuard } from './guards/guest-guard';
 import { authGuard } from './guards/auth-guard';
- 
-// Cada página se carga solo cuando se visita (loadComponent)
+import { Home } from './components/pages/home/home';
+import { Explore } from './components/pages/explore/explore';
+import { Auth } from './components/pages/auth/auth';
+import { VerifyCode } from './components/pages/verify-code/verify-code';
+import { ProjectDetail } from './components/pages/project-detail/project-detail';
+import { PublicProfile } from './components/pages/public-profile/public-profile';
+import { AccountData } from './components/pages/account-data/account-data';
+import { MyProjects } from './components/pages/my-projects/my-projects';
+import { Saved } from './components/pages/saved/saved';
+import { PlanPayments } from './components/pages/plan-payments/plan-payments';
+import { Stats } from './components/pages/stats/stats';
+import { PaymentResult } from './components/pages/payment-result/payment-result';
+
 export const routes: Routes = [
-  // 01 a 05
+  //Landing Page
   {
-    path: '',
+    path: '',//Es la primera pagina asi que no ponemos alguna ruta
     title: 'DevSail',
-    loadComponent: () => import('./components/pages/home/home').then(m => m.Home)
+    component: Home
   },
   {
     path: 'explore',
-    title: 'Explorar proyectos · DevSail',
-    loadComponent: () => import('./components/pages/explore/explore').then(m => m.Explore)
+    title: 'Explorar proyectos DevSail',
+    component: Explore
   },
   {
     path: 'auth/login',
-    title: 'Iniciar sesión · DevSail',
+    title: 'Iniciar sesión DevSail',
     canActivate: [guestGuard],
     data: { mode: 'login' },
-    loadComponent: () => import('./components/pages/auth/auth').then(m => m.Auth)
+    component: Auth
   },
   {
     path: 'auth/register',
-    title: 'Crear cuenta · DevSail',
+    title: 'Crear cuenta DevSail',
     canActivate: [guestGuard],
     data: { mode: 'register' },
-    loadComponent: () => import('./components/pages/auth/auth').then(m => m.Auth)
+    component: Auth
   },
   {
     path: 'auth/verify',
-    title: 'Verifica tu correo · DevSail',
+    title: 'Verifica tu correo DevSail',
     canActivate: [guestGuard],
-    loadComponent: () => import('./components/pages/verify-code/verify-code').then(m => m.VerifyCode)
+    component: VerifyCode
   },
- 
+
   // 06 y 07: se ven con o sin sesión
   {
     path: 'projects/:id',
-    title: 'Proyecto · DevSail',
-    loadComponent: () => import('./components/pages/project-detail/project-detail').then(m => m.ProjectDetail)
+    title: 'Proyecto DevSail',
+    component: ProjectDetail
   },
   {
     path: 'u/:username',
-    title: 'Perfil · DevSail',
-    loadComponent: () => import('./components/pages/public-profile/public-profile').then(m => m.PublicProfile)
+    title: 'Perfil DevSail',
+    component: PublicProfile
   },
- 
   // 08 a 12: Mi cuenta (piden sesión)
   { path: 'my-account', redirectTo: 'my-account/data', pathMatch: 'full' },
   {
     path: 'my-account/data',
-    title: 'Mis datos · DevSail',
+    title: 'Mis datos DevSail',
     canActivate: [authGuard],
-    loadComponent: () => import('./components/pages/account-data/account-data').then(m => m.AccountData)
+    component: AccountData
   },
   {
     path: 'my-account/projects',
-    title: 'Mis proyectos · DevSail',
+    title: 'Mis proyectos DevSail',
     canActivate: [authGuard],
-    loadComponent: () => import('./components/pages/my-projects/my-projects').then(m => m.MyProjects)
+    component: MyProjects
   },
   {
     path: 'my-account/saved',
-    title: 'Guardados · DevSail',
+    title: 'Guardados DevSail',
     canActivate: [authGuard],
-    loadComponent: () => import('./components/pages/saved/saved').then(m => m.Saved)
+    component: Saved
   },
   {
     path: 'my-account/plan',
-    title: 'Plan y pagos · DevSail',
+    title: 'Plan y pagos DevSail',
     canActivate: [authGuard],
-    loadComponent: () => import('./components/pages/plan-payments/plan-payments').then(m => m.PlanPayments)
+    component: PlanPayments
   },
   {
     path: 'my-account/stats',
-    title: 'Estadísticas · DevSail',
+    title: 'Estadísticas DevSail',
     canActivate: [authGuard],
-    loadComponent: () => import('./components/pages/stats/stats').then(m => m.Stats)
+    component: Stats
   },
- 
+
   // Regreso de PayPal (return_url y cancel_url del backend)
   {
     path: 'payments/return',
-    title: 'Resultado de pago · DevSail',
+    title: 'Resultado de pago DevSail',
     canActivate: [authGuard],
     data: { mode: 'return' },
-    loadComponent: () => import('./components/pages/payment-result/payment-result').then(m => m.PaymentResult)
+    component: PaymentResult
   },
   {
     path: 'payments/cancel',
-    title: 'Resultado de pago · DevSail',
+    title: 'Resultado de pago DevSail',
     canActivate: [authGuard],
     data: { mode: 'cancel' },
-    loadComponent: () => import('./components/pages/payment-result/payment-result').then(m => m.PaymentResult)
+    component: PaymentResult
   },
- 
+
   // Cualquier otra dirección regresa al inicio (después la cambiamos por la pantalla 404)
   { path: '**', redirectTo: '' }
 ];

@@ -22,7 +22,7 @@
                     <button type="button" class="btn btn-outline" (click)="removePhoto()">Quitar foto</button>
                 }
                 </div>
-                <p class="hint">jpg, png o webp · máximo 1 MB</p>
+                <p class="hint">jpg, png o webp máximo 1 MB</p>
                 @if (avatarError()) { <p class="hint error">{{ avatarError() }}</p> }
             </div>
             </div>
@@ -39,7 +39,7 @@
             <div>
                 <label class="label" for="username">Nombre de usuario *</label>
                 <input class="field" id="username" name="username" maxlength="20" [value]="a.username">
-                <p class="hint">Único · cambia la dirección de tu perfil</p>
+                <p class="hint">Único cambia la dirección de tu perfil</p>
             </div>
             <div>
                 <label class="label" for="email">Correo</label>
@@ -87,7 +87,7 @@
                 <input class="field" type="password" id="confirmPassword" name="confirmPassword" placeholder="••••••••" autocomplete="new-password">
             </div>
             </div>
-            <p class="hint">8 a 64, mayúscula, minúscula y número · Al cambiarla se cierran las sesiones en otros dispositivos.</p>
+            <p class="hint">8 a 64, mayúscula, minúscula y número Al cambiarla se cierran las sesiones en otros dispositivos.</p>
 
             @if (passwordMessage()) { <p class="alert-ok">{{ passwordMessage() }}</p> }
             @if (passwordError()) { <p class="alert-error">{{ passwordError() }}</p> }

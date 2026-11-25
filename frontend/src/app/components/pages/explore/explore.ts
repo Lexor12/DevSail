@@ -11,7 +11,7 @@ import { SearchFilters, SearchResult } from '../../../models/project.model';
 import { ProjectType, Technology } from '../../../models/catalog.model';
 import { EMPTY_FILTERS, formToQueryParams, queryParamsToFilters } from '../../../utils/filters';
  
-// 02 Resultados de búsqueda · ruta /explore
+// 02 Resultados de búsqueda ruta /explore
 // Todos los filtros viven en la dirección (/explore?q=...&type=...), así se pueden compartir y recargar
 @Component({
   selector: 'app-explore',

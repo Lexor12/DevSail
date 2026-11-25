@@ -17,13 +17,13 @@
   <app-project-section title="Proyectos destacados" kind="featured" [projects]="featured()"
                        [loading]="loading()" [seeAll]="{ featured: 'true' }">
     <span class="chip chip-yellow">Patrocinado</span>
-    <span class="note">Pagados · hasta 12 · orden aleatorio en cada carga</span>
+    <span class="note">Pagados hasta 12 orden aleatorio en cada carga</span>
   </app-project-section>
 
   <app-project-section title="Mejor valorados" kind="top-rated" [projects]="topRated()"
                        [loading]="loading() || loadingTopRated()" [seeAll]="{ sort: 'rated' }">
     <app-tabs [options]="periods" [selected]="period()" (changed)="changePeriod($event)" />
-    <span class="note">Mín. 3 calificaciones en el periodo · {{ topRated().length }} proyectos</span>
+    <span class="note">Mín. 3 calificaciones en el periodo {{ topRated().length }} proyectos</span>
   </app-project-section>
 
   <app-project-section title="Más recientes" kind="latest" [projects]="latest()"

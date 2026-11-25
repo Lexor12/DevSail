@@ -7,7 +7,7 @@ import { ProjectSummary } from '../../../models/project.model';
 import { imageUrl, initials, score } from '../../../utils/format';
 import { ProjectCard } from '../../cards/project-card/project-card';
 
-// 07 Perfil público · ruta /u/:username
+// 07 Perfil público ruta /u/:username
 @Component({
   selector: 'app-public-profile',
   imports: [RouterLink, ProjectCard],

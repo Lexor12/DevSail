@@ -26,12 +26,7 @@
     height: 40px; cursor: pointer; 
     list-style: none; 
 }
-.dropdown summary::after { 
-    content: '▾'; 
-    margin-left: auto; 
-    font-size: 11px; 
-    color: var(--text-muted); 
-}
+
 .dropdown-menu {
   position: absolute; 
   z-index: 5; 

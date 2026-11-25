@@ -8,7 +8,7 @@ import { AccountMenu } from '../../shared/account-menu/account-menu';
 import { ProPlanModal } from '../../modals/pro-plan-modal/pro-plan-modal';
 import { FeatureModal } from '../../modals/feature-modal/feature-modal';
 
-// 11 Mi cuenta · Plan y pagos · ruta /my-account/plan
+// 11 Mi cuenta Plan y pagos ruta /my-account/plan
 @Component({
   selector: 'app-plan-payments',
   imports: [AccountMenu, ProPlanModal, FeatureModal],

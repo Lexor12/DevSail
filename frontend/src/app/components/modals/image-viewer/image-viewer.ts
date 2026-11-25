@@ -1,6 +1,6 @@
 import { Component, OnInit, input, output, signal } from '@angular/core';
 
-// M04 Visor de imágenes · se abre desde 06 al hacer clic en la imagen grande
+// M04 Visor de imágenes se abre desde 06 al hacer clic en la imagen grande
 @Component({
   selector: 'app-image-viewer',
   templateUrl: './image-viewer.html',

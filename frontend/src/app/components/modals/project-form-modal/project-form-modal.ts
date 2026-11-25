@@ -9,7 +9,7 @@ const MAX_IMAGES = 4;
 const MAX_IMAGE_MB = 2;
 const MAX_TECHNOLOGIES = 5;
  
-// M05 Publicar / Editar proyecto · se abre desde 09 y desde "+ Publicar proyecto" del encabezado
+// M05 Publicar / Editar proyecto se abre desde 09 y desde "+ Publicar proyecto" del encabezado
 // Si projectId viene en null es "Publicar"; si trae un id es "Editar"
 @Component({
   selector: 'app-project-form-modal',

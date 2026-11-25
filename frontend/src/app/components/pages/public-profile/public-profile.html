@@ -14,13 +14,13 @@
 
       <div class="data">
         <h1 class="name">{{ p.fullName }} @if (p.isPro) { <span class="chip chip-yellow">PRO</span> }</h1>
-        <p class="text-muted">&#64;{{ p.username }} · Miembro desde {{ memberSince(p.createdAt) }}</p>
+        <p class="text-muted">&#64;{{ p.username }} Miembro desde {{ memberSince(p.createdAt) }}</p>
         @if (p.bio) { <p>{{ p.bio }}</p> }
         @if (links().length > 0) {
           <p class="links">
             @for (link of links(); track link.name; let last = $last) {
               <a [href]="link.url" target="_blank" rel="noopener">{{ link.name }}: {{ shortLink(link.url) }}</a>
-              @if (!last) { <span class="text-muted"> · </span> }
+              @if (!last) { <span class="text-muted"> </span> }
             }
           </p>
         }
@@ -44,7 +44,7 @@
         <div class="card box">
           <p class="box-title">Proyecto mejor valorado</p>
           @if (s.bestProject; as best) {
-            <a [routerLink]="['/projects', best.id]">{{ best.nickname }} · {{ best.title }} ★ {{ score(best.avgOverall) }}</a>
+            <a [routerLink]="['/projects', best.id]">{{ best.nickname }} {{ best.title }} ★ {{ score(best.avgOverall) }}</a>
           } @else {
             <p class="text-muted">Aún sin calificaciones</p>
           }
