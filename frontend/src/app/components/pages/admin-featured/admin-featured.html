@@ -1,0 +1,61 @@
+<div class="container">
+  <h1 class="page-title">Destacados</h1>
+
+  @if (message()) { <p class="alert-ok spaced">{{ message() }}</p> }
+  @if (error() && !removing()) { <p class="alert-error spaced">{{ error() }}</p> }
+
+  <!-- Caja para escribir el motivo antes de retirar -->
+  @if (removing(); as item) {
+    <div class="card reason-box">
+      <h2 class="reason-title">Retirar destacado de «{{ item.projectNickname }}»</h2>
+      <p class="text-muted">El dueño no recibe reembolso y le llega un correo con el motivo.</p>
+      <label class="label" for="reason">Motivo (5 a 300 caracteres) *</label>
+      <textarea class="field" id="reason" rows="3" maxlength="300" (input)="typeReason($event)"></textarea>
+      <p class="hint">{{ reason().length }}/300</p>
+      @if (error()) { <p class="alert-error">{{ error() }}</p> }
+      <div class="buttons">
+        <button type="button" class="btn btn-outline" (click)="removing.set(null)">Cancelar</button>
+        <button type="button" class="btn btn-danger" [disabled]="sending()" (click)="confirmRemove()">Retirar destacado</button>
+      </div>
+    </div>
+  }
+
+  @if (loading()) {
+    <p class="text-muted">Cargando destacados…</p>
+  } @else {
+    @if (endingSoon().length > 0) {
+      <section class="card soon">
+        <h2 class="section-title">Terminan en menos de 24 horas</h2>
+        @for (item of endingSoon(); track item.id) {
+          <p>{{ item.projectNickname }} <span class="text-muted">· &#64;{{ item.ownerUsername }} · quedan {{ hoursLeft(item.endsAt) }} h</span></p>
+        }
+      </section>
+    }
+
+    @if (activeList().length === 0) {
+      <div class="card empty"><p class="text-muted">No hay proyectos destacados en este momento.</p></div>
+    } @else {
+      <div class="table-wrap">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Proyecto</th><th>Dueño</th><th>Duración</th><th>Inicio</th><th>Termina</th><th></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (item of activeList(); track item.id) {
+              <tr>
+                <td><a [routerLink]="['/projects', item.projectId]">{{ item.projectNickname }}</a></td>
+                <td>&#64;{{ item.ownerUsername }}</td>
+                <td>{{ item.durationDays }} días</td>
+                <td>{{ formatDate(item.startsAt) }}</td>
+                <td>{{ formatDate(item.endsAt) }}</td>
+                <td><button type="button" class="btn btn-outline btn-sm danger" (click)="openRemove(item)">Retirar</button></td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  }
+</div>

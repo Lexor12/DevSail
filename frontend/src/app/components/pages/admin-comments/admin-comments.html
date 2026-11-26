@@ -1,0 +1,72 @@
+<div class="container">
+  <div class="head">
+    <h1 class="page-title">Comentarios</h1>
+    <select class="field filter" aria-label="Filtrar comentarios" (change)="changeFilter($event)">
+      <option value="" [selected]="hidden() === ''">Todos</option>
+      <option value="false" [selected]="hidden() === 'false'">Visibles</option>
+      <option value="true" [selected]="hidden() === 'true'">Ocultos</option>
+    </select>
+  </div>
+
+  @if (message()) { <p class="alert-ok spaced">{{ message() }}</p> }
+  @if (error() && !hiding()) { <p class="alert-error spaced">{{ error() }}</p> }
+
+  <!-- Caja para escribir el motivo antes de ocultar -->
+  @if (hiding(); as comment) {
+    <div class="card reason-box">
+      <h2 class="reason-title">Ocultar comentario de &#64;{{ comment.authorUsername }}</h2>
+      <p class="text-muted">«{{ comment.comment }}»</p>
+      <label class="label" for="reason">Motivo (5 a 300 caracteres) *</label>
+      <textarea class="field" id="reason" rows="3" maxlength="300" (input)="typeReason($event)"></textarea>
+      <p class="hint">{{ reason().length }}/300 · La calificación seguirá contando en el promedio.</p>
+      @if (error()) { <p class="alert-error">{{ error() }}</p> }
+      <div class="buttons">
+        <button type="button" class="btn btn-outline" (click)="hiding.set(null)">Cancelar</button>
+        <button type="button" class="btn btn-danger" [disabled]="sending()" (click)="confirmHide()">Ocultar comentario</button>
+      </div>
+    </div>
+  }
+
+  @if (loading()) {
+    <p class="text-muted">Cargando comentarios…</p>
+  } @else if (comments().length === 0) {
+    <div class="card empty"><p class="text-muted">No hay comentarios con ese filtro.</p></div>
+  } @else {
+    <div class="table-wrap">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Comentario</th><th>Autor</th><th>Proyecto</th><th>Fecha</th><th>Estado</th><th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (comment of comments(); track comment.id) {
+            <tr>
+              <td class="text">{{ comment.comment }}</td>
+              <td>&#64;{{ comment.authorUsername }}</td>
+              <td><a [routerLink]="['/projects', comment.projectId]">{{ comment.projectNickname }}</a></td>
+              <td>{{ formatDate(comment.createdAt) }}</td>
+              <td>
+                <span [class.hidden]="comment.commentHidden">{{ comment.commentHidden ? 'Oculto' : 'Visible' }}</span>
+                @if (comment.hiddenReason) { <p class="hint">{{ comment.hiddenReason }}</p> }
+              </td>
+              <td>
+                @if (comment.commentHidden) {
+                  <button type="button" class="btn btn-outline btn-sm" (click)="show(comment)">Mostrar</button>
+                } @else {
+                  <button type="button" class="btn btn-outline btn-sm danger" (click)="openHide(comment)">Ocultar</button>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <div class="pager">
+      <button type="button" class="btn btn-outline btn-sm" [disabled]="page() === 1" (click)="changePage(page() - 1)">Anterior</button>
+      <span class="text-muted">Página {{ page() }} de {{ lastPage() }} · {{ total() }} comentarios</span>
+      <button type="button" class="btn btn-outline btn-sm" [disabled]="page() >= lastPage()" (click)="changePage(page() + 1)">Siguiente</button>
+    </div>
+  }
+</div>

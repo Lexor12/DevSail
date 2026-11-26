@@ -1,0 +1,82 @@
+<div class="container">
+  <h1 class="page-title">Proyectos</h1>
+
+  <form class="card filters" (submit)="applyFilters($event)">
+    <label class="grow">
+      <span class="label">Buscar</span>
+      <input class="field" type="text" name="text" placeholder="Título o nombre corto" [value]="text()">
+    </label>
+    <label>
+      <span class="label">Estado</span>
+      <select class="field" name="status">
+        <option value="" [selected]="status() === ''">Todos</option>
+        <option value="published" [selected]="status() === 'published'">Publicados</option>
+        <option value="deactivated" [selected]="status() === 'deactivated'">Desactivados</option>
+        <option value="hidden" [selected]="status() === 'hidden'">Ocultos</option>
+      </select>
+    </label>
+    <button type="submit" class="btn btn-primary">Filtrar</button>
+  </form>
+
+  @if (message()) { <p class="alert-ok spaced">{{ message() }}</p> }
+  @if (error() && !hiding()) { <p class="alert-error spaced">{{ error() }}</p> }
+
+  <!-- Caja para escribir el motivo antes de ocultar -->
+  @if (hiding(); as project) {
+    <div class="card reason-box">
+      <h2 class="reason-title">Ocultar «{{ project.title }}»</h2>
+      <label class="label" for="reason">Motivo (5 a 300 caracteres) *</label>
+      <textarea class="field" id="reason" rows="3" maxlength="300" (input)="typeReason($event)"></textarea>
+      <p class="hint">{{ reason().length }}/300 · El autor recibirá un correo con este motivo.</p>
+      @if (error()) { <p class="alert-error">{{ error() }}</p> }
+      <div class="buttons">
+        <button type="button" class="btn btn-outline" (click)="hiding.set(null)">Cancelar</button>
+        <button type="button" class="btn btn-danger" [disabled]="sending()" (click)="confirmHide()">Ocultar proyecto</button>
+      </div>
+    </div>
+  }
+
+  @if (loading()) {
+    <p class="text-muted">Cargando proyectos…</p>
+  } @else if (projects().length === 0) {
+    <div class="card empty"><p class="text-muted">No hay proyectos con esos filtros.</p></div>
+  } @else {
+    <div class="table-wrap">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Proyecto</th><th>Dueño</th><th>Estado</th><th>Promedio</th><th>Reportes pendientes</th><th>Publicado</th><th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (project of projects(); track project.id) {
+            <tr>
+              <td><a [routerLink]="['/projects', project.id]">{{ project.title }}</a> <span class="text-muted">({{ project.nickname }})</span></td>
+              <td>&#64;{{ project.ownerUsername }}</td>
+              <td>
+                <span [class.hidden]="project.status === 'hidden'">{{ statusText(project.status) }}</span>
+                @if (project.hiddenReason) { <p class="hint">{{ project.hiddenReason }}</p> }
+              </td>
+              <td>{{ project.ratingsCount > 0 ? score(project.avgOverall) + ' ★' : '—' }}</td>
+              <td [class.warning]="project.pendingReports > 0">{{ project.pendingReports }}</td>
+              <td>{{ formatDate(project.publishedAt) }}</td>
+              <td>
+                @if (project.status === 'hidden') {
+                  <button type="button" class="btn btn-outline btn-sm" (click)="show(project)">Mostrar</button>
+                } @else {
+                  <button type="button" class="btn btn-outline btn-sm danger" (click)="openHide(project)">Ocultar</button>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <div class="pager">
+      <button type="button" class="btn btn-outline btn-sm" [disabled]="page() === 1" (click)="changePage(page() - 1)">Anterior</button>
+      <span class="text-muted">Página {{ page() }} de {{ lastPage() }} · {{ total() }} proyectos</span>
+      <button type="button" class="btn btn-outline btn-sm" [disabled]="page() >= lastPage()" (click)="changePage(page() + 1)">Siguiente</button>
+    </div>
+  }
+</div>
