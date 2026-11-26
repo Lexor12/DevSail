@@ -1,0 +1,17 @@
+.link {
+  color: var(--text);
+  transition: border-color 0.15s;
+}
+ 
+.link:hover {
+  border-color: var(--primary);
+  text-decoration: none;
+}
+ 
+.warning {
+  color: var(--yellow);
+}
+ 
+.spaced {
+  margin-top: 22px;
+}

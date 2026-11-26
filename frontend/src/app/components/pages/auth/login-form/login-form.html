@@ -17,8 +17,8 @@
     </div>
   </div>
 
-  <!-- Aquí se abrirá la ventana de recuperar contraseña cuando se programe -->
-  <button type="button" class="btn-text forgot">¿Olvidaste tu contraseña?</button>
+  <!-- Lleva a la pantalla para recuperar la contraseña (HU-04) -->
+  <a routerLink="/auth/recover" class="btn-text forgot">¿Olvidaste tu contraseña?</a>
 
   @if (error()) {
     <p class="alert-error">{{ error() }}</p>

@@ -1,0 +1,38 @@
+<div class="container">
+  <h1 class="page-title">Panel del administrador</h1>
+ 
+  @if (loading()) {
+    <p class="text-muted">Cargando resumen…</p>
+  } @else if (error()) {
+    <p class="alert-error">{{ error() }}</p>
+  } @else if (summary(); as s) {
+    <div class="stats-row">
+      <a routerLink="/admin/reports" [queryParams]="{ status: 'pending' }" class="card stat link">
+        <p class="stat-value" [class.warning]="s.pendingReports > 0">{{ s.pendingReports }}</p>
+        <p class="stat-label">Reportes pendientes</p>
+      </a>
+      <a routerLink="/admin/projects" [queryParams]="{ status: 'hidden' }" class="card stat link">
+        <p class="stat-value">{{ s.hiddenProjects }}</p>
+        <p class="stat-label">Proyectos ocultos</p>
+      </a>
+      <a routerLink="/admin/comments" [queryParams]="{ hidden: 'true' }" class="card stat link">
+        <p class="stat-value">{{ s.hiddenComments }}</p>
+        <p class="stat-label">Comentarios ocultos</p>
+      </a>
+      <a routerLink="/admin/featured" class="card stat link">
+        <p class="stat-value">{{ s.activeFeatured }}</p>
+        <p class="stat-label">Destacados vigentes</p>
+      </a>
+      <a routerLink="/admin/income" class="card stat link">
+        <p class="stat-value">{{ s.activeProPlans }}</p>
+        <p class="stat-label">Planes Pro activos</p>
+      </a>
+      <a routerLink="/admin/income" class="card stat link">
+        <p class="stat-value">{{ money(s.monthIncome) }}</p>
+        <p class="stat-label">Ingresos del mes (MXN)</p>
+      </a>
+    </div>
+ 
+    <p class="hint spaced">Da clic en una tarjeta para ver el detalle. Toda acción de moderación pide un motivo y se le avisa al autor por correo.</p>
+  }
+</div>

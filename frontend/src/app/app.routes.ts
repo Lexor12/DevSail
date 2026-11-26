@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { guestGuard } from './guards/guest-guard';
 import { authGuard } from './guards/auth-guard';
+import { adminGuard } from './guards/admin-guard';
 import { Home } from './components/pages/home/home';
 import { Explore } from './components/pages/explore/explore';
 import { Auth } from './components/pages/auth/auth';
@@ -13,7 +14,18 @@ import { Saved } from './components/pages/saved/saved';
 import { PlanPayments } from './components/pages/plan-payments/plan-payments';
 import { Stats } from './components/pages/stats/stats';
 import { PaymentResult } from './components/pages/payment-result/payment-result';
-
+import { RecoverPassword } from './components/pages/recover-password/recover-password';
+import { DeleteAccount } from './components/pages/delete-account/delete-account';
+import { Legal } from './components/pages/legal/legal';
+import { NotFound } from './components/pages/not-found/not-found';
+import { AdminDashboard } from './components/pages/admin-dashboard/admin-dashboard';
+import { AdminReports } from './components/pages/admin-reports/admin-reports';
+import { AdminReportDetail } from './components/pages/admin-report-detail/admin-report-detail';
+import { AdminProjects } from './components/pages/admin-projects/admin-projects';
+import { AdminComments } from './components/pages/admin-comments/admin-comments';
+import { AdminFeatured } from './components/pages/admin-featured/admin-featured';
+import { AdminIncome } from './components/pages/admin-income/admin-income';
+ 
 export const routes: Routes = [
   //Página principal
   {
@@ -46,7 +58,13 @@ export const routes: Routes = [
     canActivate: [guestGuard],
     component: VerifyCode
   },
-
+  {
+    path: 'auth/recover',
+    title: 'Recuperar contraseña DevSail',
+    canActivate: [guestGuard],
+    component: RecoverPassword
+  },
+ 
   // Se ven con o sin sesión
   {
     path: 'projects/:id',
@@ -90,7 +108,13 @@ export const routes: Routes = [
     canActivate: [authGuard],
     component: Stats
   },
-
+  {
+    path: 'my-account/delete',
+    title: 'Zona de peligro DevSail',
+    canActivate: [authGuard],
+    component: DeleteAccount
+  },
+ 
   // Regreso de PayPal, ya sea que se complete o se cancele
   {
     path: 'payments/return',
@@ -106,7 +130,62 @@ export const routes: Routes = [
     data: { mode: 'cancel' },
     component: PaymentResult
   },
-
-  // Cualquier otra dirección regresa al inicio, después la cambiamos por la pantalla 404
-  { path: '**', redirectTo: '' }
+ 
+  // Avisos legales, se abren desde el pie de página
+  {
+    path: 'legal/:page',
+    title: 'Avisos legales DevSail',
+    component: Legal
+  },
+ 
+  // Panel del administrador, solo con rol admin
+  {
+    path: 'admin',
+    title: 'Panel DevSail',
+    canActivate: [adminGuard],
+    component: AdminDashboard
+  },
+  {
+    path: 'admin/reports',
+    title: 'Reportes DevSail',
+    canActivate: [adminGuard],
+    component: AdminReports
+  },
+  {
+    path: 'admin/reports/:id',
+    title: 'Detalle del reporte DevSail',
+    canActivate: [adminGuard],
+    component: AdminReportDetail
+  },
+  {
+    path: 'admin/projects',
+    title: 'Proyectos DevSail',
+    canActivate: [adminGuard],
+    component: AdminProjects
+  },
+  {
+    path: 'admin/comments',
+    title: 'Comentarios DevSail',
+    canActivate: [adminGuard],
+    component: AdminComments
+  },
+  {
+    path: 'admin/featured',
+    title: 'Destacados DevSail',
+    canActivate: [adminGuard],
+    component: AdminFeatured
+  },
+  {
+    path: 'admin/income',
+    title: 'Ingresos DevSail',
+    canActivate: [adminGuard],
+    component: AdminIncome
+  },
+ 
+  // Cualquier otra dirección muestra la pantalla 404
+  {
+    path: '**',
+    title: 'Página no encontrada DevSail',
+    component: NotFound
+  }
 ];

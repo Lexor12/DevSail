@@ -1,0 +1,61 @@
+<div class="container">
+  <h1 class="page-title">Reportes</h1>
+ 
+  <form class="card filters" (submit)="applyFilters($event)">
+    <label>
+      <span class="label">Estado</span>
+      <select class="field" name="status">
+        <option value="" [selected]="filters().status === ''">Todos</option>
+        <option value="pending" [selected]="filters().status === 'pending'">Pendientes</option>
+        <option value="resolved_hidden" [selected]="filters().status === 'resolved_hidden'">Contenido oculto</option>
+        <option value="dismissed" [selected]="filters().status === 'dismissed'">Descartados</option>
+      </select>
+    </label>
+    <label>
+      <span class="label">Tipo</span>
+      <select class="field" name="targetType">
+        <option value="" [selected]="filters().targetType === ''">Proyectos y comentarios</option>
+        <option value="project" [selected]="filters().targetType === 'project'">Proyectos</option>
+        <option value="comment" [selected]="filters().targetType === 'comment'">Comentarios</option>
+      </select>
+    </label>
+    <button type="submit" class="btn btn-primary">Filtrar</button>
+  </form>
+ 
+  @if (loading()) {
+    <p class="text-muted">Cargando reportes…</p>
+  } @else if (error()) {
+    <p class="alert-error">{{ error() }}</p>
+  } @else if (reports().length === 0) {
+    <div class="card empty"><p class="text-muted">No hay reportes con esos filtros.</p></div>
+  } @else {
+    <div class="table-wrap">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Tipo</th><th>Contenido</th><th>Último motivo</th><th>Reportes</th><th>Estado</th><th>Fecha</th><th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (report of reports(); track report.id) {
+            <tr>
+              <td><span class="chip chip-tech">{{ report.targetType === 'project' ? 'Proyecto' : 'Comentario' }}</span></td>
+              <td class="summary">{{ report.contentSummary || '(sin texto)' }}</td>
+              <td>{{ report.lastReasonName || '—' }}</td>
+              <td>{{ report.reportsCount }}</td>
+              <td [class.pending]="report.status === 'pending'">{{ statusText(report.status) }}</td>
+              <td>{{ formatDate(report.createdAt) }}</td>
+              <td><a [routerLink]="['/admin/reports', report.id]" class="btn btn-outline btn-sm">Revisar</a></td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+ 
+    <div class="pager">
+      <button type="button" class="btn btn-outline btn-sm" [disabled]="filters().page === 1" (click)="changePage(filters().page - 1)">Anterior</button>
+      <span class="text-muted">Página {{ filters().page }} de {{ lastPage() }} · {{ total() }} reportes</span>
+      <button type="button" class="btn btn-outline btn-sm" [disabled]="filters().page >= lastPage()" (click)="changePage(filters().page + 1)">Siguiente</button>
+    </div>
+  }
+</div>

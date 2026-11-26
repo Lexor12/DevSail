@@ -9,7 +9,7 @@
           <option [value]="type.code" [selected]="type.code === filters().type">{{ type.name }}</option>
         }
       </select>
-
+ 
       <!-- Tecnologías -->
       <details class="dropdown">
         <summary class="field">Tecnologías ({{ selected().length }}/{{ max }})</summary>
@@ -29,7 +29,7 @@
           @if (maxWarning()) { <p class="hint error">Máximo {{ max }} tecnologías.</p> }
         </div>
       </details>
-
+ 
       <!-- Calificación mínima y máxima -->
       <details class="dropdown">
         <summary class="field">Calificación {{ minRating() }} – {{ maxRating() }}</summary>
@@ -49,7 +49,7 @@
           </div>
         </div>
       </details>
-
+ 
       <!-- Orden -->
       <select class="field sort" name="sort" aria-label="Ordenar">
         @for (option of sortOptions; track option.value) {
@@ -57,7 +57,7 @@
         }
       </select>
     </div>
-
+ 
     <!-- Etiquetas -->
     <div class="row checkboxes">
       <label class="checkbox"><input type="checkbox" name="feedback" value="true" [checked]="filters().feedback"> Busco retroalimentación</label>
@@ -70,7 +70,7 @@
   <!-- Explorar: panel lateral -->
   <aside class="card sidebar">
     <h2 class="title">Filtros</h2>
-
+ 
     <!-- Tipo de proyecto -->
     <div class="group">
       <span class="label">Tipo de proyecto</span>
@@ -81,7 +81,7 @@
         }
       </select>
     </div>
-
+ 
     <!-- Tecnologías -->
     <div class="group">
       <span class="label">Tecnologías (máx. {{ max }})</span>
@@ -106,7 +106,7 @@
       </div>
       <p class="hint" [class.error]="maxWarning()">{{ selected().length }} de {{ max }} seleccionadas</p>
     </div>
-
+ 
     <!-- Calificación mínima y máxima -->
     <div class="group">
       <span class="label">Calificación promedio</span>
@@ -125,7 +125,7 @@
       </div>
       <p class="hint">Pasos de 0.5</p>
     </div>
-
+ 
     <!-- Etiquetas -->
     <div class="group column">
       <span class="label">Etiquetas</span>
@@ -134,7 +134,7 @@
       <label class="checkbox"><input type="checkbox" name="demo" value="true" [checked]="filters().demo"> Con demostración</label>
       <label class="checkbox"><input type="checkbox" name="featured" value="true" [checked]="filters().featured"> Solo destacados</label>
     </div>
-
+ 
     <button type="submit" class="btn btn-primary btn-block">Aplicar filtros</button>
     <button type="button" class="btn btn-outline btn-block" (click)="clear.emit()">Limpiar filtros</button>
   </aside>
