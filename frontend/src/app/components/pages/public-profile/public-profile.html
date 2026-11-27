@@ -6,8 +6,8 @@
     </div>
   } @else if (profile(); as p) {
     <div class="card header-card">
-      @if (p.avatarUrl) {
-        <img class="avatar big" [src]="p.avatarUrl" [alt]="p.fullName">
+      @if (showImage(p.avatarUrl)) {
+        <img class="avatar big" [src]="p.avatarUrl" [alt]="initials(p.fullName)" (error)="markBroken(p.avatarUrl)">
       } @else {
         <span class="avatar big">{{ initials(p.fullName) }}</span>
       }
@@ -61,8 +61,6 @@
         </div>
       </div>
     }
-
-    <p class="hint">No se muestran: correo, pagos, guardados, visitas ni proyectos ocultos.</p>
 
     <div class="portfolio-head">
       <h2 class="portfolio-title">Portafolio ({{ projects().length }})</h2>

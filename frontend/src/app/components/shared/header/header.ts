@@ -1,7 +1,9 @@
 import { Component, computed, signal } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../../services/auth.service';
- 
+
+//Bueno, todo este componente refiere al Header que se tiene en el sitio
+//este se muestra en todo momento ya que se encuentra por defecto como componente principal en el app.html
 @Component({
   selector: 'app-header',
   imports: [RouterLink, RouterLinkActive],
@@ -11,17 +13,17 @@ import { AuthService } from '../../../services/auth.service';
 export class Header {
   // En celular el menú se abre con un botón
   menuOpen = signal(false);
- 
+
   // El administrador ve los enlaces del panel en lugar de los del sitio
   isAdmin = computed(() => this.authService.user()?.role === 'admin');
- 
+
   constructor(public authService: AuthService, private router: Router) {}
- 
+
   toggleMenu(): void {
     this.menuOpen.update(open => !open);
   }
- 
-  // Cerrar sesión (HU-03): el backend borra la cookie y aquí se olvida al usuario
+
+  // Cerrar sesión: el backend borra la cookie y aquí se olvida al usuario
   logout(): void {
     this.authService.logout().subscribe({
       next: () => this.finishLogout(),
@@ -29,7 +31,7 @@ export class Header {
       error: () => this.finishLogout()
     });
   }
- 
+
   private finishLogout(): void {
     this.authService.user.set(null);
     this.router.navigate(['/']);

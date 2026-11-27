@@ -25,9 +25,9 @@
   @if (hiding(); as project) {
     <div class="card reason-box">
       <h2 class="reason-title">Ocultar «{{ project.title }}»</h2>
-      <label class="label" for="reason">Motivo (5 a 300 caracteres) *</label>
+      <label class="label" for="reason">Motivo (10 a 300 caracteres) *</label>
       <textarea class="field" id="reason" rows="3" maxlength="300" (input)="typeReason($event)"></textarea>
-      <p class="hint">{{ reason().length }}/300 · El autor recibirá un correo con este motivo.</p>
+      <p class="hint">{{ reason().length }}/300  El autor recibirá un correo con este motivo.</p>
       @if (error()) { <p class="alert-error">{{ error() }}</p> }
       <div class="buttons">
         <button type="button" class="btn btn-outline" (click)="hiding.set(null)">Cancelar</button>
@@ -75,7 +75,7 @@
 
     <div class="pager">
       <button type="button" class="btn btn-outline btn-sm" [disabled]="page() === 1" (click)="changePage(page() - 1)">Anterior</button>
-      <span class="text-muted">Página {{ page() }} de {{ lastPage() }} · {{ total() }} proyectos</span>
+      <span class="text-muted">Página {{ page() }} de {{ lastPage() }}  {{ total() }} proyectos</span>
       <button type="button" class="btn btn-outline btn-sm" [disabled]="page() >= lastPage()" (click)="changePage(page() + 1)">Siguiente</button>
     </div>
   }

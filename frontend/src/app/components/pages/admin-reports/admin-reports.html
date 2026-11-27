@@ -1,6 +1,5 @@
 <div class="container">
   <h1 class="page-title">Reportes</h1>
- 
   <form class="card filters" (submit)="applyFilters($event)">
     <label>
       <span class="label">Estado</span>
@@ -21,7 +20,6 @@
     </label>
     <button type="submit" class="btn btn-primary">Filtrar</button>
   </form>
- 
   @if (loading()) {
     <p class="text-muted">Cargando reportes…</p>
   } @else if (error()) {
@@ -51,10 +49,9 @@
         </tbody>
       </table>
     </div>
- 
     <div class="pager">
       <button type="button" class="btn btn-outline btn-sm" [disabled]="filters().page === 1" (click)="changePage(filters().page - 1)">Anterior</button>
-      <span class="text-muted">Página {{ filters().page }} de {{ lastPage() }} · {{ total() }} reportes</span>
+      <span class="text-muted">Página {{ filters().page }} de {{ lastPage() }}  {{ total() }} reportes</span>
       <button type="button" class="btn btn-outline btn-sm" [disabled]="filters().page >= lastPage()" (click)="changePage(filters().page + 1)">Siguiente</button>
     </div>
   }

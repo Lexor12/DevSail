@@ -50,6 +50,19 @@
   font-size: 20px;
 }
 
+/* El menú del administrador tiene más enlaces, se hace un poco más compacto */
+.menu.admin {
+  gap: 22px;
+}
+
+.menu.admin > a {
+  font-size: 16px;
+}
+
+.menu.admin .actions {
+  gap: 12px;
+}
+
 /* En celular el logo es más chico y el menú es desplegable */
 @media (max-width: 860px) {
   .header {

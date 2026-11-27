@@ -59,3 +59,16 @@
     padding: 20px;
   }
 }
+
+.intro {
+  line-height: 1.6;
+}
+
+.list {
+  padding-left: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  color: var(--text-muted);
+  line-height: 1.6;
+}

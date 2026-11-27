@@ -20,6 +20,7 @@ export class AccountData implements OnInit {
   profileMessage = signal('');
   profileError = signal('');
   avatarError = signal('');
+  brokenImages = signal<string[]>([]);
   passwordMessage = signal('');
   passwordError = signal('');
   saving = signal(false);
@@ -149,4 +150,14 @@ export class AccountData implements OnInit {
       error: (error) => this.passwordError.set(error.error?.message || 'No se pudo cambiar la contraseña.')
     });
   }
+
+  // Direcciones de fotos que no cargaron (no existen o se borraron): en su lugar van las iniciales
+  showImage(url: string | null | undefined): boolean {
+    return !!url && !this.brokenImages().includes(url);
+  }
+
+  markBroken(url: string | null | undefined): void {
+    if (url) this.brokenImages.update(list => [...list, url]);
+  }
 }
+

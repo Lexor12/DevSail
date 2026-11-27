@@ -3,8 +3,7 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ModerationService } from '../../../services/moderation.service';
 import { AdminProject } from '../../../models/moderation.model';
 import { formatDate, score } from '../../../utils/format';
-
-// Moderación de proyectos: ocultar con motivo o volver a mostrar (HU-16 criterio 2)
+//Este componente permite a un administrador moderar los proyectos, es decir que ocultar o desocultarlos, para ocultarlos pide un motivo,el cual se notifica al usuario
 @Component({
   selector: 'app-admin-projects',
   imports: [RouterLink],
@@ -79,12 +78,12 @@ export class AdminProjects implements OnInit {
     this.reason.set((event.target as HTMLTextAreaElement).value);
   }
 
-  // Ocultar pide motivo de 5 a 300 caracteres, el autor lo recibe por correo
+  // Ocultar pide motivo de 10 a 300 caracteres, el autor lo recibe por correo
   confirmHide(): void {
     const project = this.hiding();
     if (!project) return;
-    if (this.reason().trim().length < 5) {
-      this.error.set('Escribe un motivo de al menos 5 caracteres.');
+    if (this.reason().trim().length < 10) {
+      this.error.set('Escribe un motivo de al menos 10 caracteres.');
       return;
     }
     this.send(project.id, 'hide', this.reason().trim());
@@ -117,3 +116,4 @@ export class AdminProjects implements OnInit {
     return 'Oculto';
   }
 }
+

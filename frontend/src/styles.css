@@ -334,6 +334,10 @@ textarea.field {
   font-weight: 600;
 }
 
+img.avatar {
+  object-fit: cover;
+}
+
 .avatar.small {
   width: 32px;
   height: 32px;

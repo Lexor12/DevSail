@@ -21,18 +21,15 @@ export class ReportModal implements OnInit {
   sending = signal(false);
  
   constructor(private reportService: ReportService) {}
- 
   ngOnInit(): void {
     this.reportService.getReasons().subscribe({
       next: (response) => this.reasons.set(response.reasons),
       error: () => this.error.set('No se pudieron cargar los motivos.')
     });
   }
- 
   countDetail(event: Event): void {
     this.detailLength.set((event.target as HTMLTextAreaElement).value.length);
   }
- 
   submit(event: Event): void {
     event.preventDefault();
     const data = new FormData(event.target as HTMLFormElement);
@@ -42,7 +39,6 @@ export class ReportModal implements OnInit {
       this.error.set('Elige un motivo.');
       return;
     }
- 
     this.sending.set(true);
     this.error.set('');
     this.reportService.create({

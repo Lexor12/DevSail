@@ -41,7 +41,6 @@ export function formToQueryParams(data: FormData): Params {
   if (sort && sort !== 'recent') params['sort'] = sort;
   return params;
 }
- 
 // Lee la dirección y arma los filtros que usan la página y el servicio
 export function queryParamsToFilters(params: ParamMap): SearchFilters {
   const toNumber = (value: string | null, fallback: number) => {

@@ -7,8 +7,8 @@
         <div class="card box">
             <!-- Foto -->
             <div class="photo">
-            @if (a.avatarUrl) {
-                <img class="avatar big" [src]="a.avatarUrl" alt="Foto de perfil">
+            @if (showImage(a.avatarUrl)) {
+                <img class="avatar big" [src]="a.avatarUrl" [alt]="initials(a.fullName)" (error)="markBroken(a.avatarUrl)">
             } @else {
                 <span class="avatar big">{{ initials(a.fullName) }}</span>
             }

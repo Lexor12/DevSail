@@ -22,11 +22,9 @@ export class DeleteProjectModal {
   readonly formatDate = formatDate;
  
   constructor(private projectService: ProjectService) {}
- 
   type(event: Event): void {
     this.typed.set((event.target as HTMLInputElement).value.trim());
   }
- 
   confirmDelete(): void {
     this.sending.set(true);
     this.projectService.delete(this.project().id).subscribe({

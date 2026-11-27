@@ -1,11 +1,8 @@
 <div class="container account">
   <app-account-menu active="projects" />
- 
   <section>
     <h1 class="page-title">Mis proyectos</h1>
- 
     @if (message()) { <p class="alert-ok spaced">{{ message() }}</p> }
- 
     @if (loading()) {
       <p class="text-muted">Cargando…</p>
     } @else if (error()) {
@@ -20,7 +17,6 @@
         }
         <button type="button" class="btn btn-primary" (click)="openCreate()">Publicar proyecto</button>
       </div>
- 
       @if (d.projects.length === 0) {
         <div class="card empty">
           <p>Todavía no publicas proyectos.</p>
@@ -78,12 +74,10 @@
           </table>
         </div>
       }
- 
       <p class="hint spaced-top">Estados: Publicado Desactivado (lo apaga el dueño o el sistema al vencer el Plan Pro) Oculto (moderación, muestra el motivo del administrador).</p>
     }
   </section>
 </div>
- 
 @if (showForm()) {
   <app-project-form-modal [projectId]="editingId()" (closed)="showForm.set(false)" (saved)="done($event)" />
 }

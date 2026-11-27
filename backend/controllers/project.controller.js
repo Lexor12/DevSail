@@ -768,7 +768,7 @@ async function getProjectBadge(req, res) {
         if (project.ratingsCount > 0) {
             const average = Number(project.avgOverall).toFixed(1);
             const word = project.ratingsCount === 1 ? 'calificación' : 'calificaciones';
-            badge.message = `${average} ★ · ${project.ratingsCount} ${word}`;
+            badge.message = `${average} ★  ${project.ratingsCount} ${word}`;
         } else {
             badge.message = 'sin calificaciones';
         }

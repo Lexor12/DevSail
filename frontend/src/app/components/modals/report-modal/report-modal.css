@@ -3,11 +3,9 @@
   flex-direction: column;
   gap: 12px;
 }
- 
 .reasons .label {
   margin: 0;
 }
- 
 .count {
   text-align: right;
 }

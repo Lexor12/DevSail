@@ -9,7 +9,6 @@ export interface DashboardSummary {
   activeProPlans: number;
   monthIncome: number;
 }
- 
 export type ReportStatus = 'pending' | 'resolved_hidden' | 'dismissed';
 export type ReportTargetType = 'project' | 'comment';
  
@@ -26,21 +25,18 @@ export interface ReportListItem {
   createdAt: string;
   updatedAt: string;
 }
- 
 export interface ReportList {
   reports: ReportListItem[];
   total: number;
   page: number;
   pageSize: number;
 }
- 
 // Filtros de la lista de reportes
 export interface ReportFilters {
   status: string;
   targetType: string;
   page: number;
 }
- 
 // Datos generales de un reporte
 export interface Report {
   id: string;
@@ -53,7 +49,6 @@ export interface Report {
   resolvedAt: string | null;
   createdAt: string;
 }
- 
 // Cada persona que reportó
 export interface ReportEntry {
   id: string;
@@ -62,7 +57,6 @@ export interface ReportEntry {
   detail: string | null;
   createdAt: string;
 }
- 
 // Lo reportado: un proyecto o una calificación con comentario
 // Los campos cambian según el tipo, por eso casi todos son opcionales
 export interface ReportTarget {
@@ -77,7 +71,6 @@ export interface ReportTarget {
   average?: number | string;
   commentHidden?: boolean;
 }
- 
 export interface ReportDetail {
   report: Report;
   entries: ReportEntry[];

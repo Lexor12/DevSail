@@ -4,7 +4,7 @@ import { ModerationService } from '../../../services/moderation.service';
 import { AdminComment } from '../../../models/moderation.model';
 import { formatDate } from '../../../utils/format';
 
-// Moderación de comentarios: ocultar con motivo o volver a mostrar (HU-16 criterio 2)
+//Este componente muestra la seccion de moderacion de componentes para el administrador, este muestra todos los componentes actuales, el total, filtros, y permite ocultarlos
 // Al ocultar un comentario la calificación sigue contando en el promedio
 @Component({
   selector: 'app-admin-comments',
@@ -78,8 +78,8 @@ export class AdminComments implements OnInit {
   confirmHide(): void {
     const comment = this.hiding();
     if (!comment) return;
-    if (this.reason().trim().length < 5) {
-      this.error.set('Escribe un motivo de al menos 5 caracteres.');
+    if (this.reason().trim().length < 10) {
+      this.error.set('Escribe un motivo de al menos 10 caracteres.');
       return;
     }
     this.send(comment.id, 'hide', this.reason().trim());
@@ -106,3 +106,4 @@ export class AdminComments implements OnInit {
     });
   }
 }
+

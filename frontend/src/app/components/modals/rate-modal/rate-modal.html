@@ -4,9 +4,7 @@
       <h2 class="modal-title">Calificar «{{ projectTitle() }}»</h2>
       <button type="button" class="modal-close" (click)="closed.emit()">✕</button>
     </div>
- 
     <p class="text-muted">Elige de 1 a 5 estrellas en cada criterio. Los 5 son obligatorios.</p>
- 
     <div class="criteria">
       @for (criterion of criteria; track criterion.name; let i = $index) {
         <div class="criterion">
@@ -23,18 +21,14 @@
         </div>
       }
     </div>
- 
     <p>Promedio de tu calificación: <strong class="average">{{ average() }}</strong></p>
- 
     <div>
       <label class="label" for="comment">Comentario (opcional)</label>
       <textarea class="field" id="comment" name="comment" maxlength="500" rows="4"
                 placeholder="Cuéntale al autor qué te gustó y qué mejorarías…" [value]="myRating()?.comment ?? ''" (input)="countComment($event)"></textarea>
       <p class="hint row"><span>Vacío o de 10 a 500 caracteres. Sin HTML.</span><span>{{ commentLength() }}/500</span></p>
     </div>
- 
     @if (error()) { <p class="alert-error">{{ error() }}</p> }
- 
     <div class="modal-actions">
       @if (myRating()) {
         <button type="button" class="btn-text delete" (click)="deleteRating()">Borrar mi calificación</button>

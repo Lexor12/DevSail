@@ -34,7 +34,6 @@ export class RateModal implements OnInit {
   average = computed(() => (this.complete() ? (this.scores().reduce((a, b) => a + b, 0) / 5).toFixed(1) : '—'));
  
   constructor(private ratingService: RatingService) {}
- 
   ngOnInit(): void {
     // Si ya había calificado se cargan sus estrellas
     const mine = this.myRating();
@@ -43,15 +42,12 @@ export class RateModal implements OnInit {
       this.commentLength.set(mine.comment?.length ?? 0);
     }
   }
- 
   setScore(index: number, value: number): void {
     this.scores.update(list => list.map((s, i) => (i === index ? value : s)));
   }
- 
   countComment(event: Event): void {
     this.commentLength.set((event.target as HTMLTextAreaElement).value.length);
   }
- 
   submit(event: Event): void {
     event.preventDefault();
     if (!this.complete()) return;
@@ -76,7 +72,6 @@ export class RateModal implements OnInit {
       }
     });
   }
- 
   deleteRating(): void {
     if (!confirm('¿Seguro que quieres borrar tu calificación?')) return;
     this.ratingService.deleteMyRating(this.projectId()).subscribe({

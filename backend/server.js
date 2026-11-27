@@ -1,7 +1,9 @@
 // Aqui arranca el servidor con Express, CORS, las rutas y la revision de planes y destacados
 const express = require('express');
 const cors = require('cors');
-const cookieParser = require('cookie-parser');//El proyecto usa cookies httpOnly para protegerse de XSS
+const helmet = require('helmet');//Encabezados de seguridad en todas las respuestas
+const { rateLimit } = require('express-rate-limit');//Limita cuantas peticiones puede hacer cada IP
+const cookieParser = require('cookie-parser');//El sitio debe usar cookies httpOnly para protegerse de XSS
 const { env } = require('./config/env');
 const swaggerUi = require('swagger-ui-express');
 
@@ -14,25 +16,23 @@ const ratingRoutes = require('./routes/rating.route');
 const reportRoutes = require('./routes/report.route');
 const paymentRoutes = require('./routes/payment.route');
 const adminRoutes = require('./routes/admin.route');
-
-//Aqui corregi los nombres de las rutas de los archivos, ya que no es repository, sino service
 const proRepo = require('./services/repositories/proSubscription.service');
 const featuredRepo = require('./services/repositories/featured.service');
 const projectRepo = require('./services/repositories/project.service');
 
 //Swagger necesita una configuracion, este archivo define las rutas, esquemas y descripciones para hacer pruebas
+//asi que aqui lo importo para poder utilizarlo más adelante
 const { swaggerDocument } = require('./config/swagger');
 
-//Creamos el objeto app para levantar la API
-const app = express();
+const app = express();//Creamos el objeto app para levantar la API
 
-//Podemos correr el proyecto en desarrollo o en produccion, eso se define en el .env
+//Podemos correr el proyecto en desarrollo o en produccion, eso se define en el .env, de esta forma podemos usar en modo desarrollo funcionalidades únicas (o sea el Swagger)
 if (env.isProduction) {
     // En Render hace falta para que Express confie en el proxy HTTPS y funcionen las cookies secure
     app.set('trust proxy', 1);
 }
 
-// Swagger solo se activa en desarrollo
+// Swagger solo se activa en desarrollo, para evitar que atacantes vean fácilmente 
 if (!env.isProduction) {
     app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));//Aqui usamos el swaggerDocument que importamos
 }
@@ -43,12 +43,45 @@ app.use(cors({
     credentials: true//Para que se puedan manejar las cookies
 }));
 
-// Subimos el limite a 30mb porque las imagenes del proyecto se mandan en base64
-app.use(express.json({ limit: '30mb' }));
+//Para poder desplegar un proyecto, este debe tener seguridad básica, asi que obte por usar Helmet, que evita ataques como XSS, clickjacking, sniffing de MIME y filtraciones
+app.use(helmet({
+    contentSecurityPolicy: false,// (y asi Swagger sigue funcionando en desarrollo)
+    crossOriginResourcePolicy: { policy: 'cross-origin' }
+}));
+
+//Ponemos un limite de 300 peticiones cada 15 minutos por IP para que no tumben el servidor, mediante algún ataque
+app.use('/api', rateLimit({
+    windowMs: 15 * 60 * 1000,
+    limit: 300,
+    standardHeaders: 'draft-8',
+    legacyHeaders: false,
+    message: { message: 'Demasiadas peticiones. Espera unos minutos e intenta de nuevo.' }
+}));
+
+//Para evitar que atacantes hagan fuerza bruta con credenciales varias, aquí defini un limite de 20 peticiones en estos endpoints cada 15 minutos
+//de esta forma no aplica los 300, siino 20 haciendo que un ataque de varios intentos no funcione debido a que tomaria muucho tiempo
+app.use([
+    '/api/auth/login',
+    '/api/auth/register',
+    '/api/auth/verify-email',
+    '/api/auth/resend-code',
+    '/api/auth/forgot-password',
+    '/api/auth/reset-password'
+], rateLimit({
+    windowMs: 15 * 60 * 1000,
+    limit: 20,
+    standardHeaders: 'draft-8',
+    legacyHeaders: false,
+    message: { message: 'Demasiados intentos. Espera 15 minutos e intenta de nuevo.' }
+}));
+
+//Como se tiene permitido adjuntar máximo 4 imagenes de 2 MB en base64 para los proyectos, estos en teoria pesan unos 11 MB, con 12mb alcanza de sobra
+// Un limite mas alto dejaria que alguien mande cuerpos enormes para saturar la memoria
+app.use(express.json({ limit: '12mb' }));
 app.use(cookieParser());//Permite leer las cookies que manda el navegador
 //las separa en req.cookies y en req.signedCookies que son las firmadas
 
-// Ruta para revisar que el servidor esta vivo
+//Esta ruta permite ser usada para indicar el estado actual del servidor (si esta activo o no)
 app.get('/api/health', (req, res) => {
     res.status(200).json({ status: 'ok' });
 });
@@ -77,7 +110,6 @@ app.use((err, req, res, next) => {
 });
 
 //Necesitamos tareas cada 60 minutos, asi que usamos una funcion async
-
 async function runLifecycleMaintenance() {
     try {
         // Vence planes Pro y destacados, y desactiva los proyectos que pasan del limite gratuito

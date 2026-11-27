@@ -35,7 +35,6 @@ export class MyProjects implements OnInit {
   readonly formatDate = formatDate;
  
   constructor(private projectService: ProjectService, private route: ActivatedRoute, private router: Router) {}
- 
   ngOnInit(): void {
     this.load();
     // El botón de publicar del encabezado llega con new en la dirección
@@ -44,7 +43,6 @@ export class MyProjects implements OnInit {
       this.router.navigate([], { queryParams: {} });
     }
   }
- 
   load(): void {
     this.projectService.getMyProjects().subscribe({
       next: (response) => {
@@ -57,17 +55,14 @@ export class MyProjects implements OnInit {
       }
     });
   }
- 
   openCreate(): void {
     this.editingId.set(null);
     this.showForm.set(true);
   }
- 
   openEdit(project: OwnerProject): void {
     this.editingId.set(project.id);
     this.showForm.set(true);
   }
- 
   // Después de cualquier cambio se recarga la tabla y se muestra el mensaje del backend
   done(text: string): void {
     this.showForm.set(false);
@@ -75,7 +70,6 @@ export class MyProjects implements OnInit {
     this.message.set(text);
     this.load();
   }
- 
   toggleStatus(project: OwnerProject): void {
     const newStatus = project.status === 'published' ? 'deactivated' : 'published';
     this.projectService.changeStatus(project.id, newStatus).subscribe({
@@ -83,7 +77,6 @@ export class MyProjects implements OnInit {
       error: (error) => this.message.set(error.error?.message || 'No se pudo cambiar el estado.')
     });
   }
- 
   statusText(project: OwnerProject): string {
     if (project.status === 'published') return 'Publicado';
     if (project.status === 'deactivated') return 'Desactivado';

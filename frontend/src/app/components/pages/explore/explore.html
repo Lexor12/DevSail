@@ -1,9 +1,7 @@
 <form class="container explore" (submit)="apply($event)">
   <app-filter-panel mode="sidebar" [filters]="filters()" (clear)="clearFilters()" />
- 
   <section class="results">
     <app-search-bar [value]="filters().q" />
- 
     <div class="heading">
       <h1 class="count">
         @if (result(); as r) {
@@ -15,7 +13,6 @@
           Resultados
         }
       </h1>
- 
       <label class="sort">
         <span class="text-muted">Ordenar por</span>
         <select class="field" name="sort" (change)="changeSort($event)">
@@ -25,9 +22,7 @@
         </select>
       </label>
     </div>
- 
     <app-active-filters [filters]="activeFilters()" (remove)="removeFilter($event)" (clearAll)="clearFilters()" />
- 
     @if (error()) {
       <p class="alert-error">{{ error() }}</p>
     } @else if (loading()) {

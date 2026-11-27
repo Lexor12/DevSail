@@ -19,6 +19,7 @@ export class PublicProfile implements OnInit {
   stats = signal<ProfileStats | null>(null);
   projects = signal<ProjectSummary[]>([]);
   error = signal('');
+  brokenImages = signal<string[]>([]);
   username = '';
   sort = 'recent';
 
@@ -75,4 +76,14 @@ export class PublicProfile implements OnInit {
   shortLink(url: string | null): string {
     return (url ?? '').replace('https://', '').replace('www.', '');
   }
+
+  // Direcciones de fotos que no cargaron (no existen o se borraron): en su lugar van las iniciales
+  showImage(url: string | null | undefined): boolean {
+    return !!url && !this.brokenImages().includes(url);
+  }
+
+  markBroken(url: string | null | undefined): void {
+    if (url) this.brokenImages.update(list => [...list, url]);
+  }
 }
+

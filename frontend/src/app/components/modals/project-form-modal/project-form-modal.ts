@@ -39,7 +39,6 @@ export class ProjectFormModal implements OnInit {
   readonly maxTechs = MAX_TECHNOLOGIES;
  
   constructor(private projectService: ProjectService, private catalogService: CatalogService) {}
- 
   ngOnInit(): void {
     this.catalogService.getProjectCatalogs().subscribe({
       next: (catalogs) => {
@@ -64,31 +63,25 @@ export class ProjectFormModal implements OnInit {
       });
     }
   }
- 
   isEditing(): boolean {
     return this.projectId() !== null;
   }
- 
   count(event: Event, field: 'title' | 'description'): void {
     const length = (event.target as HTMLInputElement).value.length;
     if (field === 'title') this.titleLength.set(length);
     else this.descriptionLength.set(length);
   }
- 
   // Tecnologías
  
   searchTech(event: Event): void {
     this.techSearch.set((event.target as HTMLInputElement).value.toLowerCase());
   }
- 
   matches(technology: Technology): boolean {
     return technology.name.toLowerCase().includes(this.techSearch());
   }
- 
   isSelected(id: string): boolean {
     return this.selectedTechs().includes(id);
   }
- 
   toggleTech(event: Event, id: string): void {
     const checkbox = event.target as HTMLInputElement;
     if (checkbox.checked && this.selectedTechs().length >= MAX_TECHNOLOGIES) {
@@ -98,17 +91,14 @@ export class ProjectFormModal implements OnInit {
     if (checkbox.checked) this.selectedTechs.update(list => [...list, id]);
     else this.selectedTechs.update(list => list.filter(t => t !== id));
   }
- 
   techName(id: string): string {
     return this.technologies().find(t => t.id === id)?.name ?? '';
   }
- 
   // Imágenes
  
   totalImages(): number {
     return this.isEditing() ? this.currentImages().length : this.newImages().length;
   }
- 
   async pickImages(event: Event): Promise<void> {
     const fileInput = event.target as HTMLInputElement;
     const files = Array.from(fileInput.files ?? []);
@@ -128,7 +118,6 @@ export class ProjectFormModal implements OnInit {
         this.imageError.set(`«${file.name}» pesa más de ${MAX_IMAGE_MB} MB.`);
         continue;
       }
- 
       const base64 = await readFileAsBase64(file);
       if (this.isEditing()) {
         // Al editar, cada imagen nueva se sube de inmediato
@@ -141,24 +130,20 @@ export class ProjectFormModal implements OnInit {
       }
     }
   }
- 
   removeNewImage(index: number): void {
     this.newImages.update(list => list.filter((_, i) => i !== index));
   }
- 
   removeCurrentImage(image: ProjectImage): void {
     this.projectService.deleteImage(this.projectId()!, image.id).subscribe({
       next: () => this.reloadImages(),
       error: (error) => this.imageError.set(error.error?.message || 'No se pudo quitar la imagen.')
     });
   }
- 
   private reloadImages(): void {
     this.projectService.getDetail(this.projectId()!).subscribe({
       next: (response) => this.currentImages.set(response.project.images)
     });
   }
- 
   // Guardar
  
   submit(event: Event): void {
@@ -174,7 +159,6 @@ export class ProjectFormModal implements OnInit {
       this.error.set('Sube al menos 1 imagen.');
       return;
     }
- 
     const project = {
       projectTypeId: data.get('projectTypeId') as string,
       title: (data.get('title') as string).trim(),

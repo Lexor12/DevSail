@@ -3,6 +3,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ProjectService } from '../../../services/project.service';
 import { RatingService } from '../../../services/rating.service';
 import { AuthService } from '../../../services/auth.service';
+import { ModerationService } from '../../../services/moderation.service';
 import { ProjectDetailData } from '../../../models/project-detail.model';
 import { Rating, RatingItem } from '../../../models/rating.model';
 import { formatDate, initials, score, stars } from '../../../utils/format';
@@ -43,6 +44,14 @@ export class ProjectDetail implements OnInit {
   showFeature = signal(false);
   report = signal<{ type: 'project' | 'comment'; id: string; label: string } | null>(null);
 
+  // Moderación del administrador desde la misma página
+  isAdmin = computed(() => this.authService.user()?.role === 'admin');
+  adminHiding = signal(false);
+  adminReason = signal('');
+  adminError = signal('');
+  adminSending = signal(false);
+  brokenImages = signal<string[]>([]);
+
   // Funciones de format para usarlas en el HTML
   readonly stars = stars;
   readonly score = score;
@@ -67,6 +76,7 @@ export class ProjectDetail implements OnInit {
     private router: Router,
     private projectService: ProjectService,
     private ratingService: RatingService,
+    private moderationService: ModerationService,
     public authService: AuthService
   ) {}
 
@@ -174,4 +184,60 @@ export class ProjectDetail implements OnInit {
   imageUrls(): (string | null)[] {
     return (this.project()?.images ?? []).map(image => image.url);
   }
+
+  typeAdminReason(event: Event): void {
+    this.adminReason.set((event.target as HTMLTextAreaElement).value);
+  }
+
+  // El administrador oculta el proyecto con motivo (10 a 300), el dueño recibe un correo
+  // Si tenía un reporte pendiente, el backend lo cierra solo
+  hideProject(): void {
+    const p = this.project();
+    if (!p) return;
+    const reason = this.adminReason().trim();
+    if (reason.length < 10) {
+      this.adminError.set('Escribe un motivo de al menos 10 caracteres.');
+      return;
+    }
+    this.adminSending.set(true);
+    this.moderationService.setProjectVisibility(p.id, 'hide', reason).subscribe({
+      next: (response) => this.adminDone(response.message),
+      error: (error) => this.adminFail(error.error?.message || 'No se pudo ocultar el proyecto.')
+    });
+  }
+
+  // Deshace el ocultamiento
+  showProject(): void {
+    const p = this.project();
+    if (!p || !confirm('¿Volver a mostrar este proyecto a todos?')) return;
+    this.adminSending.set(true);
+    this.moderationService.setProjectVisibility(p.id, 'show', '').subscribe({
+      next: (response) => this.adminDone(response.message),
+      error: (error) => this.adminFail(error.error?.message || 'No se pudo mostrar el proyecto.')
+    });
+  }
+
+  private adminDone(text: string): void {
+    this.adminSending.set(false);
+    this.adminHiding.set(false);
+    this.adminReason.set('');
+    this.adminError.set('');
+    this.message.set(text);
+    this.loadProject(this.project()!.id);
+  }
+
+  private adminFail(text: string): void {
+    this.adminSending.set(false);
+    this.adminError.set(text);
+  }
+
+  // Direcciones de fotos que no cargaron (no existen o se borraron): en su lugar van las iniciales
+  showImage(url: string | null | undefined): boolean {
+    return !!url && !this.brokenImages().includes(url);
+  }
+
+  markBroken(url: string | null | undefined): void {
+    if (url) this.brokenImages.update(list => [...list, url]);
+  }
 }
+

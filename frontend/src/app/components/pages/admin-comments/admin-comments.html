@@ -16,9 +16,9 @@
     <div class="card reason-box">
       <h2 class="reason-title">Ocultar comentario de &#64;{{ comment.authorUsername }}</h2>
       <p class="text-muted">«{{ comment.comment }}»</p>
-      <label class="label" for="reason">Motivo (5 a 300 caracteres) *</label>
+      <label class="label" for="reason">Motivo (10 a 300 caracteres) *</label>
       <textarea class="field" id="reason" rows="3" maxlength="300" (input)="typeReason($event)"></textarea>
-      <p class="hint">{{ reason().length }}/300 · La calificación seguirá contando en el promedio.</p>
+      <p class="hint">{{ reason().length }}/300  La calificación seguirá contando en el promedio.</p>
       @if (error()) { <p class="alert-error">{{ error() }}</p> }
       <div class="buttons">
         <button type="button" class="btn btn-outline" (click)="hiding.set(null)">Cancelar</button>
@@ -65,7 +65,7 @@
 
     <div class="pager">
       <button type="button" class="btn btn-outline btn-sm" [disabled]="page() === 1" (click)="changePage(page() - 1)">Anterior</button>
-      <span class="text-muted">Página {{ page() }} de {{ lastPage() }} · {{ total() }} comentarios</span>
+      <span class="text-muted">Página {{ page() }} de {{ lastPage() }}  {{ total() }} comentarios</span>
       <button type="button" class="btn btn-outline btn-sm" [disabled]="page() >= lastPage()" (click)="changePage(page() + 1)">Siguiente</button>
     </div>
   }

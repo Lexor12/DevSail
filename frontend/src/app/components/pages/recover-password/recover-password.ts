@@ -3,13 +3,13 @@ import { RouterLink } from '@angular/router';
 import { CodeInput } from '../../shared/code-input/code-input';
 import { Countdown } from '../../shared/countdown/countdown';
 import { AuthService } from '../../../services/auth.service';
- 
+
 const CODE_MINUTES = 15;
 const RESEND_SECONDS = 60;
- 
-// Recuperar contraseña (HU-04) en dos pasos
-// Paso 1: escribe su correo y le llega un código
-// Paso 2: escribe el código y su nueva contraseña
+
+//Este componente permite recuperar la contraseña de un usuario en dos pasos
+//1. escribe su correo y le llega un código
+//2. escribe el código y su nueva contraseña
 @Component({
   selector: 'app-recover-password',
   imports: [RouterLink, CodeInput, Countdown],
@@ -29,12 +29,12 @@ export class RecoverPassword {
   expired = signal(false);
   canResend = signal(false);
   restart = signal(0);
- 
+
   readonly codeSeconds = CODE_MINUTES * 60;
   readonly resendSeconds = RESEND_SECONDS;
- 
+
   private codeInput = viewChild(CodeInput);
- 
+
   // Las mismas reglas que pide el backend para la contraseña
   rules = computed(() => {
     const p = this.password();
@@ -45,18 +45,18 @@ export class RecoverPassword {
       { text: 'Un número', ok: /[0-9]/.test(p) }
     ];
   });
- 
+
   mismatch = computed(() => this.confirmPassword() !== '' && this.confirmPassword() !== this.password());
- 
+
   isValid = computed(() =>
     this.code().length === 6 &&
     this.rules().every(rule => rule.ok) &&
     this.confirmPassword() === this.password() &&
     !this.expired()
   );
- 
+
   constructor(private authService: AuthService) {}
- 
+
   // Paso 1: pide el código
   sendCode(event: Event): void {
     event.preventDefault();
@@ -66,7 +66,7 @@ export class RecoverPassword {
       this.error.set('Escribe tu correo.');
       return;
     }
- 
+
     this.error.set('');
     this.sending.set(true);
     this.authService.forgotPassword(email).subscribe({
@@ -83,19 +83,19 @@ export class RecoverPassword {
       }
     });
   }
- 
+
   // Lee los campos de contraseña en cada tecla para validar en vivo
   check(form: HTMLFormElement): void {
     const data = new FormData(form);
     this.password.set((data.get('password') as string) || '');
     this.confirmPassword.set((data.get('confirmPassword') as string) || '');
   }
- 
+
   // Paso 2: cambia la contraseña
   reset(event: Event): void {
     event.preventDefault();
     if (!this.isValid()) return;
- 
+
     this.error.set('');
     this.message.set('');
     this.sending.set(true);
@@ -112,7 +112,6 @@ export class RecoverPassword {
       }
     });
   }
- 
   resend(): void {
     if (!this.canResend()) return;
     this.error.set('');
@@ -128,7 +127,6 @@ export class RecoverPassword {
       error: (error) => this.error.set(error.error?.message || 'No se pudo reenviar el código.')
     });
   }
- 
   // Regresa al paso 1 por si escribió mal el correo
   changeEmail(): void {
     this.step.set('email');

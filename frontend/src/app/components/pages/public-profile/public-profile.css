@@ -35,6 +35,10 @@
 }
 
 .links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 14px;
   font-size: 15px;
 }
 

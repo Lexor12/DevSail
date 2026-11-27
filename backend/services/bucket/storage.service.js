@@ -2,7 +2,7 @@
 const crypto = require('crypto');
 const { createClient } = require('@supabase/supabase-js');
 const { env } = require('../../config/env');
-const sizeOf = require('image-size');
+const { imageSize } = require('image-size');//Version 2: corrige fallas que podian congelar el servidor
 
 const supabase = createClient(env.supabase.url, env.supabase.serviceKey);
 
@@ -49,7 +49,7 @@ function decodeAndValidateImage(dataUrlBase64, maxBytes,minSize = null) {
     if (minSize) {
         let dimensions;
         try {
-            dimensions = sizeOf(buffer);
+            dimensions = imageSize(buffer);
         } catch (error) {
             throw new Error('No se pudo leer el tamaño de la imagen.');
         }

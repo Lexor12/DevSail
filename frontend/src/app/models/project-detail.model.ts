@@ -6,12 +6,10 @@ export interface ProjectImage {
   url: string | null;
   position: number;
 }
- 
 export interface ProjectTechnology {
   id: string;
   name: string;
 }
- 
 // Detalle completo de un proyecto, igual que ProjectDetail del backend
 export interface ProjectDetailData {
   id: string;
@@ -45,7 +43,6 @@ export interface ProjectDetailData {
   images: ProjectImage[];
   technologies: ProjectTechnology[];
 }
- 
 // Respuesta del detalle
 export interface ProjectDetailResponse {
   project: ProjectDetailData;
@@ -53,7 +50,6 @@ export interface ProjectDetailResponse {
   isSaved: boolean;
   myRating: Rating | null;
 }
- 
 // Fila de Mis proyectos, igual que OwnerProject del backend
 export interface OwnerProject {
   id: string;
@@ -69,7 +65,6 @@ export interface OwnerProject {
   featuredEndsAt: string | null;
   publishedAt: string;
 }
- 
 // Respuesta de Mis proyectos
 export interface MyProjectsResponse {
   projects: OwnerProject[];
@@ -77,7 +72,6 @@ export interface MyProjectsResponse {
   publishedCount: number;
   freeLimit: number;
 }
- 
 // Datos que se mandan al crear o editar un proyecto
 export interface ProjectData {
   projectTypeId: string;

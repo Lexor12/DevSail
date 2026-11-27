@@ -12,6 +12,19 @@ const logRepo = require('../services/repositories/moderationLog.service');
 const mailService = require('../services/mail/mail.service');
 const { isValidUuid, isValidLength, isValidPositiveInteger, isValidDate } = require('../utils/validators');
 
+// La base de datos pide que los motivos de moderacion tengan de 10 a 300 caracteres
+const MIN_REASON = 10;
+const MAX_REASON = 300;
+
+// Cierra el reporte pendiente de un proyecto o comentario cuando el admin lo oculta por aparte
+// Asi no queda un reporte "pendiente" de algo que ya se oculto
+async function closePendingReport(targetType, targetId, reason, adminId, client) {
+    const pending = await reportRepo.getPendingReportByTarget(targetType, targetId, client);
+    if (pending) {
+        await reportRepo.resolveReport(pending.id, 'resolved_hidden', reason, adminId, client);
+    }
+}
+
 // Las 6 tarjetas del resumen del administrador
 async function getDashboard(req, res) {
     try {
@@ -99,8 +112,8 @@ async function resolveReport(req, res) {
         if (decision !== 'hide' && decision !== 'dismiss') {
             return res.status(400).json({ message: 'La decisión debe ser hide o dismiss.' });
         }
-        if (!isValidLength(reason, 5, 300)) {
-            return res.status(400).json({ message: 'Debes escribir una justificación de 5 a 300 caracteres.' });
+        if (!isValidLength(reason, MIN_REASON, MAX_REASON)) {
+            return res.status(400).json({ message: `Debes escribir una justificación de ${MIN_REASON} a ${MAX_REASON} caracteres.` });
         }
 
         const report = await reportRepo.getReportById(reportId);
@@ -120,7 +133,8 @@ async function resolveReport(req, res) {
         if (decision === 'hide') {
             if (report.targetType === 'project' && report.projectId) {
                 const project = await projectRepo.getProjectById(report.projectId);
-                if (project) {
+                // Si el admin ya lo habia ocultado por aparte, solo se cierra el reporte
+                if (project && project.status !== 'hidden') {
                     await projectRepo.setProjectStatus(project.id, 'hidden', {
                         hiddenReason: cleanReason,
                         hiddenBy: req.user.id
@@ -132,7 +146,8 @@ async function resolveReport(req, res) {
                 }
             } else if (report.targetType === 'comment' && report.ratingId) {
                 const rating = await ratingRepo.getRatingById(report.ratingId);
-                if (rating) {
+                // Si el admin ya lo habia ocultado por aparte, solo se cierra el reporte
+                if (rating && !rating.commentHidden) {
                     await ratingRepo.hideRatingComment(rating.id, cleanReason, req.user.id, client);
                     ownerToNotify = await userRepo.getUserById(rating.userId);
                     targetName = 'Comentario en proyecto';
@@ -218,13 +233,19 @@ async function toggleProjectVisibility(req, res) {
         if (action !== 'hide' && action !== 'show') {
             return res.status(400).json({ message: 'La acción debe ser hide o show.' });
         }
-        if (action === 'hide' && !isValidLength(reason, 5, 300)) {
-            return res.status(400).json({ message: 'Debes escribir un motivo de 5 a 300 caracteres para ocultar el proyecto.' });
+        if (action === 'hide' && !isValidLength(reason, MIN_REASON, MAX_REASON)) {
+            return res.status(400).json({ message: `Debes escribir un motivo de ${MIN_REASON} a ${MAX_REASON} caracteres para ocultar el proyecto.` });
         }
 
         const project = await projectRepo.getProjectById(projectId);
         if (!project) {
             return res.status(404).json({ message: 'Proyecto no encontrado.' });
+        }
+        if (action === 'hide' && project.status === 'hidden') {
+            return res.status(400).json({ message: 'Este proyecto ya está oculto.' });
+        }
+        if (action === 'show' && project.status !== 'hidden') {
+            return res.status(400).json({ message: 'Este proyecto no está oculto.' });
         }
 
         const cleanReason = typeof reason === 'string' && reason.trim() !== '' ? reason.trim() : null;
@@ -237,6 +258,8 @@ async function toggleProjectVisibility(req, res) {
                 hiddenBy: req.user.id
             }, client);
             await featuredRepo.withdrawFeatured(projectId, cleanReason, req.user.id, client);
+            // Si tenia un reporte pendiente, se cierra con el mismo motivo
+            await closePendingReport('project', projectId, cleanReason, req.user.id, client);
             await logRepo.createModerationLog({
                 adminId: req.user.id,
                 action: 'hide_project',
@@ -323,13 +346,19 @@ async function toggleCommentVisibility(req, res) {
         if (action !== 'hide' && action !== 'show') {
             return res.status(400).json({ message: 'La acción debe ser hide o show.' });
         }
-        if (action === 'hide' && !isValidLength(reason, 5, 300)) {
-            return res.status(400).json({ message: 'Debes escribir un motivo de 5 a 300 caracteres para ocultar el comentario.' });
+        if (action === 'hide' && !isValidLength(reason, MIN_REASON, MAX_REASON)) {
+            return res.status(400).json({ message: `Debes escribir un motivo de ${MIN_REASON} a ${MAX_REASON} caracteres para ocultar el comentario.` });
         }
 
         const rating = await ratingRepo.getRatingById(ratingId);
         if (!rating || !rating.comment) {
             return res.status(404).json({ message: 'Comentario no encontrado.' });
+        }
+        if (action === 'hide' && rating.commentHidden) {
+            return res.status(400).json({ message: 'Este comentario ya está oculto.' });
+        }
+        if (action === 'show' && !rating.commentHidden) {
+            return res.status(400).json({ message: 'Este comentario no está oculto.' });
         }
 
         const cleanReason = typeof reason === 'string' && reason.trim() !== '' ? reason.trim() : null;
@@ -338,6 +367,8 @@ async function toggleCommentVisibility(req, res) {
 
         if (action === 'hide') {
             await ratingRepo.hideRatingComment(ratingId, cleanReason, req.user.id, client);
+            // Si tenia un reporte pendiente, se cierra con el mismo motivo
+            await closePendingReport('comment', ratingId, cleanReason, req.user.id, client);
             await logRepo.createModerationLog({
                 adminId: req.user.id,
                 action: 'hide_comment',
@@ -411,8 +442,8 @@ async function removeFeaturedProject(req, res) {
         if (!isValidUuid(projectId)) {
             return res.status(400).json({ message: 'El ID del proyecto no es válido.' });
         }
-        if (!isValidLength(reason, 5, 300)) {
-            return res.status(400).json({ message: 'Debes escribir el motivo de retiro (5 a 300 caracteres).' });
+        if (!isValidLength(reason, MIN_REASON, MAX_REASON)) {
+            return res.status(400).json({ message: `Debes escribir el motivo de retiro (${MIN_REASON} a ${MAX_REASON} caracteres).` });
         }
 
         const project = await projectRepo.getProjectById(projectId);
@@ -507,3 +538,4 @@ module.exports = {
     removeFeaturedProject,
     getIncomeReport
 };
+

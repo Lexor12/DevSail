@@ -4,7 +4,6 @@
       <h2 class="modal-title">¿Eliminar «{{ project().title }}»?</h2>
       <button type="button" class="modal-close" (click)="closed.emit()">✕</button>
     </div>
- 
     <div>
       <p>Se borrarán para siempre:</p>
       <ul class="list text-muted">
@@ -13,18 +12,14 @@
         <li>{{ project().savesCount }} guardados y las estadísticas de visitas</li>
       </ul>
     </div>
- 
     @if (project().featuredEndsAt) {
       <p class="alert-error">Tiene un destacado vigente hasta el {{ formatDate(project().featuredEndsAt) }}. No se puede eliminar hasta que termine.</p>
     }
- 
     <div>
       <label class="label" for="confirm">Escribe {{ project().nickname }} para confirmar</label>
       <input class="field" id="confirm" autocomplete="off" (input)="type($event)">
     </div>
- 
     @if (error()) { <p class="alert-error">{{ error() }}</p> }
- 
     <div class="modal-actions">
       <button type="button" class="btn btn-outline" (click)="closed.emit()">Cancelar</button>
       <button type="button" class="btn btn-danger" [disabled]="typed() !== project().nickname || sending()" (click)="confirmDelete()">Eliminar proyecto</button>

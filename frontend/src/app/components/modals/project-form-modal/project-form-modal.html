@@ -4,7 +4,6 @@
       <h2 class="modal-title">{{ isEditing() ? 'Editar proyecto' : 'Publicar proyecto' }}</h2>
       <button type="button" class="modal-close" (click)="closed.emit()">✕</button>
     </div>
- 
     @if (isEditing() && !project()) {
       <p class="text-muted">Cargando datos del proyecto…</p>
     } @else {
@@ -14,7 +13,6 @@
                [value]="project()?.title ?? ''" (input)="count($event, 'title')">
         <p class="hint row"><span>5 a 80 caracteres</span><span>{{ titleLength() }}/80</span></p>
       </div>
- 
       <div class="two">
         <div>
           <label class="label" for="nickname">Apodo o abreviatura *</label>
@@ -31,7 +29,6 @@
           </select>
         </div>
       </div>
- 
       <div>
         <label class="label" for="description">Descripción *</label>
         <textarea class="field" id="description" name="description" maxlength="2000" rows="5"
@@ -39,19 +36,16 @@
                   (input)="count($event, 'description')"></textarea>
         <p class="hint row"><span>Mínimo 50 caracteres</span><span>{{ descriptionLength() }}/2000</span></p>
       </div>
- 
       <div>
         <label class="label" for="repositoryUrl">Enlace del repositorio público *</label>
         <input class="field" id="repositoryUrl" name="repositoryUrl" placeholder="https://github.com/usuario/repositorio" [value]="project()?.repositoryUrl ?? ''">
         <p class="hint">Solo github.com, gitlab.com o bitbucket.org un repositorio solo se publica una vez</p>
       </div>
- 
       <div>
         <label class="label" for="demoUrl">Enlace de demostración (opcional)</label>
         <input class="field" id="demoUrl" name="demoUrl" placeholder="https://…" [value]="project()?.demoUrl ?? ''">
         <p class="hint">https, distinto al repositorio</p>
       </div>
- 
       <!-- Imágenes -->
       <div>
         <span class="label">Imágenes * <span class="hint inline">(1 a 4 jpg, png o webp máx. 2 MB c/u mín. 400 × 300 px)</span></span>
@@ -85,7 +79,6 @@
         @if (imageError()) { <p class="hint error">{{ imageError() }}</p> }
         <p class="hint">La primera imagen es la portada.</p>
       </div>
- 
       <!-- Tecnologías -->
       <div>
         <span class="label">Tecnologías (1 a {{ maxTechs }}) {{ selectedTechs().length }} de {{ maxTechs }}</span>
@@ -103,19 +96,15 @@
           }
         </div>
       </div>
- 
       <div class="tags">
         <span class="label">Etiquetas</span>
         <label class="checkbox"><input type="checkbox" name="seekingFeedback" [checked]="project()?.seekingFeedback ?? false"> Busco retroalimentación</label>
         <label class="checkbox"><input type="checkbox" name="openToCollaborate" [checked]="project()?.openToCollaborate ?? false"> Abierto a colaborar</label>
       </div>
- 
       @if (!isEditing()) {
         <label class="checkbox"><input type="checkbox" name="authorship"> Confirmo que el proyecto es mío o tengo permiso para mostrarlo *</label>
       }
- 
       @if (error()) { <p class="alert-error">{{ error() }}</p> }
- 
       <div class="modal-actions">
         <button type="button" class="btn btn-outline" (click)="closed.emit()">Cancelar</button>
         <button type="submit" class="btn btn-primary" [disabled]="sending()">{{ isEditing() ? 'Guardar cambios' : 'Publicar proyecto' }}</button>

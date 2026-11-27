@@ -1,6 +1,6 @@
 <div class="container">
   <p class="breadcrumb text-muted"><a routerLink="/admin">Panel</a> › <a routerLink="/admin/reports">Reportes</a> › Detalle</p>
- 
+
   @if (loading()) {
     <p class="text-muted">Cargando reporte…</p>
   } @else if (detail(); as d) {
@@ -10,9 +10,9 @@
         {{ statusText(d.report.status) }}
       </span>
     </h1>
- 
+
     @if (message()) { <p class="alert-ok spaced">{{ message() }}</p> }
- 
+
     <div class="layout">
       <div class="column">
         <!-- Lo que se reportó -->
@@ -21,11 +21,11 @@
           @if (d.targetContent; as t) {
             @if (d.report.targetType === 'project') {
               <p class="big">{{ t.title }} <span class="text-muted">({{ t.nickname }})</span></p>
-              <p class="text-muted">Autor: &#64;{{ t.ownerUsername }} · Estado: {{ t.status === 'published' ? 'Publicado' : t.status === 'hidden' ? 'Oculto' : 'Desactivado' }}</p>
+              <p class="text-muted">Autor: &#64;{{ t.ownerUsername }}  Estado: {{ t.status === 'published' ? 'Publicado' : t.status === 'hidden' ? 'Oculto' : 'Desactivado' }}</p>
               <p class="description">{{ t.description }}</p>
               <a [routerLink]="['/projects', t.id]" class="btn btn-outline btn-sm">Ver proyecto</a>
             } @else {
-              <p class="text-muted">Calificación de {{ score(t.average) }} ★{{ t.commentHidden ? ' · comentario oculto' : '' }}</p>
+              <p class="text-muted">Calificación de {{ score(t.average) }} ★{{ t.commentHidden ? '  comentario oculto' : '' }}</p>
               <p class="description">«{{ t.comment }}»</p>
               <a [routerLink]="['/projects', t.projectId]" class="btn btn-outline btn-sm">Ver proyecto del comentario</a>
             }
@@ -33,32 +33,36 @@
             <p class="text-muted">El contenido ya no existe (se eliminó).</p>
           }
         </section>
- 
+
         <!-- Quién reportó y por qué -->
         <section class="card section">
           <h2 class="section-title">Reportes recibidos ({{ d.report.reportsCount }})</h2>
           @for (entry of d.entries; track entry.id) {
             <div class="entry">
-              <p><strong>{{ entry.reasonName }}</strong> <span class="text-muted">· &#64;{{ entry.reporterUsername || 'cuenta eliminada' }} · {{ formatDate(entry.createdAt) }}</span></p>
+              <p><strong>{{ entry.reasonName }}</strong> <span class="text-muted"> &#64;{{ entry.reporterUsername || 'cuenta eliminada' }}  {{ formatDate(entry.createdAt) }}</span></p>
               @if (entry.detail) { <p class="text-muted">{{ entry.detail }}</p> }
             </div>
           }
         </section>
       </div>
- 
+
       <!-- Decisión del administrador -->
       <aside class="card section decision">
         <h2 class="section-title">Decisión</h2>
         @if (d.report.status === 'pending') {
-          <label class="label" for="reason">Motivo (5 a 300 caracteres) *</label>
-          <textarea class="field" id="reason" rows="4" maxlength="300"
-                    placeholder="Ej. El repositorio no existe o es privado" (input)="typeReason($event)"></textarea>
-          <p class="hint">{{ reason().length }}/300 · El autor lo verá en el correo si ocultas el contenido.</p>
- 
-          @if (error()) { <p class="alert-error">{{ error() }}</p> }
- 
+          @if (targetHidden()) {
+            <p class="text-muted">El contenido ya está oculto. Puedes cerrar el reporte o descartarlo.</p>
+          }
+          <label class="label" for="reason">Motivo ({{ minReason }} a 300 caracteres) *</label>
+          <textarea class="field" id="reason" rows="4" maxlength="300" placeholder="Ej. El repositorio no existe o es privado" (input)="typeReason($event)"></textarea>
+          <p class="hint">{{ reason().length }}/300  El autor lo verá en el correo si ocultas el contenido.</p>
+
           <button type="button" class="btn btn-danger btn-block" [disabled]="sending()" (click)="resolve('hide')">
-            Ocultar {{ d.report.targetType === 'project' ? 'proyecto' : 'comentario' }}
+            @if (targetHidden()) {
+              Cerrar reporte (ya está oculto)
+            } @else {
+              Ocultar {{ d.report.targetType === 'project' ? 'proyecto' : 'comentario' }}
+            }
           </button>
           <button type="button" class="btn btn-outline btn-block" [disabled]="sending()" (click)="resolve('dismiss')">
             Descartar reporte
@@ -67,6 +71,15 @@
           <p>Resuelto el {{ formatDate(d.report.resolvedAt) }}.</p>
           <p class="text-muted">Nota: {{ d.report.resolutionNote || '—' }}</p>
         }
+
+        <!-- Deshacer: el contenido oculto se puede volver a mostrar aunque el reporte ya esté resuelto -->
+        @if (targetHidden()) {
+          <button type="button" class="btn btn-outline btn-block" [disabled]="sending()" (click)="showAgain()">
+            Volver a mostrar {{ d.report.targetType === 'project' ? 'proyecto' : 'comentario' }}
+          </button>
+        }
+
+        @if (error()) { <p class="alert-error">{{ error() }}</p> }
       </aside>
     </div>
   } @else {

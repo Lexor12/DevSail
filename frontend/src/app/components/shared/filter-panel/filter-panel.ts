@@ -45,7 +45,6 @@ export class FilterPanel implements OnInit {
   );
  
   constructor(private catalogService: CatalogService) {}
- 
   ngOnInit(): void {
     this.catalogService.getProjectCatalogs().subscribe({
       next: (catalogs) => {
@@ -55,20 +54,16 @@ export class FilterPanel implements OnInit {
       error: (error) => console.error('No se pudieron cargar los catálogos', error)
     });
   }
- 
   isSelected(id: string): boolean {
     return this.selected().includes(id);
   }
- 
   // Esconde las tecnologías que no coinciden sin quitarlas del formulario
   matches(technology: Technology): boolean {
     return technology.name.toLowerCase().includes(this.techSearch().toLowerCase());
   }
- 
   searchTechnology(event: Event): void {
     this.techSearch.set((event.target as HTMLInputElement).value);
   }
- 
   toggleTechnology(event: Event, id: string): void {
     const checkbox = event.target as HTMLInputElement;
     this.maxWarning.set(false);
@@ -85,11 +80,9 @@ export class FilterPanel implements OnInit {
       this.selected.update(list => list.filter(t => t !== id));
     }
   }
- 
   removeTechnology(id: string): void {
     this.selected.update(list => list.filter(t => t !== id));
   }
- 
   changeRating(event: Event, end: 'min' | 'max'): void {
     const value = Number((event.target as HTMLSelectElement).value);
     if (end === 'min') this.minRating.set(value);

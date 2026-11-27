@@ -2,8 +2,8 @@
   <a [routerLink]="isAdmin() ? '/admin' : '/'" class="logo" (click)="menuOpen.set(false)">
     <img src="logo-devsail.svg" alt="DevSail" width="112" height="73">
   </a>
- 
-  <nav class="menu" [class.open]="menuOpen()" (click)="menuOpen.set(false)">
+
+  <nav class="menu" [class.open]="menuOpen()" [class.admin]="isAdmin()" (click)="menuOpen.set(false)">
     @if (isAdmin()) {
       <!-- Enlaces del panel del administrador -->
       <a routerLink="/admin" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Panel</a>
@@ -17,11 +17,13 @@
       <a routerLink="/explore" [queryParams]="{ featured: 'true' }">Destacados</a>
       <a routerLink="/my-account/plan">Plan Pro</a>
     }
- 
+
     <div class="actions">
-      @if (authService.user()) {
+      @if (authService.user(); as user) {
+        <!-- Perfil público y Mi cuenta los ven el desarrollador y el administrador -->
+        <a [routerLink]="['/u', user.username]" class="btn btn-outline">Mi perfil</a>
+        <a routerLink="/my-account/data" class="btn btn-outline">Mi cuenta</a>
         @if (!isAdmin()) {
-          <a routerLink="/my-account/data" class="btn btn-outline">Mi cuenta</a>
           <a routerLink="/my-account/projects" [queryParams]="{ new: 'true' }" class="btn btn-primary">Publicar proyecto</a>
         }
         <button type="button" class="btn btn-outline" (click)="logout()">Cerrar sesión</button>
@@ -31,6 +33,6 @@
       }
     </div>
   </nav>
- 
+
   <button type="button" class="btn btn-outline menu-button" aria-label="Abrir menú" (click)="toggleMenu()">☰</button>
 </header>

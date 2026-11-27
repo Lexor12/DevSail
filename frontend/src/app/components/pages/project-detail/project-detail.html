@@ -45,7 +45,11 @@
         <p class="text-muted">{{ p.nickname }} {{ p.typeName }}</p>
  
         <p class="owner">
-          <span class="avatar small">{{ initials(p.ownerFullName) }}</span>
+          @if (showImage(p.ownerAvatarUrl)) {
+            <img class="avatar small" [src]="p.ownerAvatarUrl" [alt]="initials(p.ownerFullName)" (error)="markBroken(p.ownerAvatarUrl)">
+          } @else {
+            <span class="avatar small">{{ initials(p.ownerFullName) }}</span>
+          }
           <a [routerLink]="['/u', p.ownerUsername]">&#64;{{ p.ownerUsername }}</a>
           <span class="text-muted">· Publicado el {{ formatDate(p.publishedAt) }}</span>
         </p>
@@ -77,6 +81,27 @@
             @if (p.status === 'published') {
               <button type="button" class="btn btn-outline" (click)="showFeature.set(true)">Destacar</button>
             }
+          </div>
+        } @else if (isAdmin()) {
+          <!-- El administrador modera el proyecto desde aquí -->
+          <div class="admin-box">
+            <p class="admin-title">Moderación</p>
+            @if (p.status === 'hidden') {
+              <p class="text-muted">Oculto. Motivo: {{ p.hiddenReason || '—' }}</p>
+              <button type="button" class="btn btn-outline btn-block" [disabled]="adminSending()" (click)="showProject()">Volver a mostrar proyecto</button>
+            } @else if (adminHiding()) {
+              <label class="label" for="adminReason">Motivo (10 a 300 caracteres) *</label>
+              <textarea class="field" id="adminReason" rows="3" maxlength="300" (input)="typeAdminReason($event)"></textarea>
+              <p class="hint">{{ adminReason().length }}/300 · El dueño recibirá un correo con el motivo.</p>
+              <div class="actions">
+                <button type="button" class="btn btn-outline" (click)="adminHiding.set(false)">Cancelar</button>
+                <button type="button" class="btn btn-danger" [disabled]="adminSending()" (click)="hideProject()">Ocultar</button>
+              </div>
+            } @else {
+              <button type="button" class="btn btn-danger btn-block" (click)="adminHiding.set(true)">Ocultar proyecto</button>
+            }
+            @if (adminError()) { <p class="alert-error">{{ adminError() }}</p> }
+            <a routerLink="/admin/reports" class="btn-text">Ver reportes</a>
           </div>
         } @else {
           <div class="actions">
@@ -124,7 +149,7 @@
         </select>
       </div>
  
-      @if (!isOwner()) {
+      @if (!isOwner() && !isAdmin()) {
         <div class="cta">
           <p>¿Ya lo probaste? Califícalo en 5 criterios y deja tu comentario.</p>
           <button type="button" class="btn btn-primary" (click)="openRate()">Calificar</button>
@@ -133,14 +158,18 @@
  
       @for (item of ratings(); track item.id) {
         <div class="comment">
-          <span class="avatar small">{{ initials(item.authorFullName) }}</span>
+          @if (showImage(item.authorAvatarUrl)) {
+            <img class="avatar small" [src]="item.authorAvatarUrl" [alt]="initials(item.authorFullName)" (error)="markBroken(item.authorAvatarUrl)">
+          } @else {
+            <span class="avatar small">{{ initials(item.authorFullName) }}</span>
+          }
           <div class="comment-body">
             <p class="comment-head">
               <a [routerLink]="['/u', item.authorUsername]">&#64;{{ item.authorUsername }}</a>
               <span class="stars">{{ stars(item.average) }}</span>
               <strong>{{ score(item.average) }}</strong>
               <span class="text-muted">· {{ formatDate(item.createdAt) }}{{ item.isEdited ? ' (editado)' : '' }}</span>
-              @if (item.comment && !item.commentHidden && item.userId !== authService.user()?.id) {
+              @if (item.comment && !item.commentHidden && !isAdmin() && item.userId !== authService.user()?.id) {
                 <button type="button" class="btn-text report-link" (click)="openReport('comment', item.id, 'Comentario de @' + item.authorUsername)">⚑ Reportar</button>
               }
             </p>

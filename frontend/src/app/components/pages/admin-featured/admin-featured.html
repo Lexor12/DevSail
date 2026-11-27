@@ -9,7 +9,7 @@
     <div class="card reason-box">
       <h2 class="reason-title">Retirar destacado de «{{ item.projectNickname }}»</h2>
       <p class="text-muted">El dueño no recibe reembolso y le llega un correo con el motivo.</p>
-      <label class="label" for="reason">Motivo (5 a 300 caracteres) *</label>
+      <label class="label" for="reason">Motivo (10 a 300 caracteres) *</label>
       <textarea class="field" id="reason" rows="3" maxlength="300" (input)="typeReason($event)"></textarea>
       <p class="hint">{{ reason().length }}/300</p>
       @if (error()) { <p class="alert-error">{{ error() }}</p> }
@@ -27,7 +27,7 @@
       <section class="card soon">
         <h2 class="section-title">Terminan en menos de 24 horas</h2>
         @for (item of endingSoon(); track item.id) {
-          <p>{{ item.projectNickname }} <span class="text-muted">· &#64;{{ item.ownerUsername }} · quedan {{ hoursLeft(item.endsAt) }} h</span></p>
+          <p>{{ item.projectNickname }} <span class="text-muted"> &#64;{{ item.ownerUsername }}  quedan {{ hoursLeft(item.endsAt) }} h</span></p>
         }
       </section>
     }

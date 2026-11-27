@@ -4,27 +4,21 @@
       <h2 class="modal-title">Reportar contenido</h2>
       <button type="button" class="modal-close" (click)="closed.emit()">✕</button>
     </div>
- 
     <p class="text-muted">{{ targetType() === 'project' ? 'Proyecto' : 'Comentario' }}: {{ targetLabel() }}</p>
- 
     <div class="reasons">
       <span class="label">Motivo *</span>
       @for (reason of reasons(); track reason.id) {
         <label class="checkbox"><input type="radio" name="reasonId" [value]="reason.id"> {{ reason.name }}</label>
       }
     </div>
- 
     <div>
       <label class="label" for="detail">Detalle (obligatorio si eliges «Otro»)</label>
       <textarea class="field" id="detail" name="detail" maxlength="300" rows="3"
                 placeholder="Describe el problema…" (input)="countDetail($event)"></textarea>
       <p class="hint count">{{ detailLength() }}/300</p>
     </div>
- 
     <p class="hint">El administrador revisará el reporte. El autor no ve tu nombre.</p>
- 
     @if (error()) { <p class="alert-error">{{ error() }}</p> }
- 
     <div class="modal-actions">
       <button type="button" class="btn btn-outline" (click)="closed.emit()">Cancelar</button>
       <button type="submit" class="btn btn-primary" [disabled]="sending()">Enviar reporte</button>

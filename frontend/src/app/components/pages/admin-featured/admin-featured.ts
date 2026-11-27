@@ -3,8 +3,7 @@ import { RouterLink } from '@angular/router';
 import { ModerationService } from '../../../services/moderation.service';
 import { FeaturedItem } from '../../../models/moderation.model';
 import { formatDate } from '../../../utils/format';
-
-// Destacados vigentes y retiro con motivo (HU-16 criterio 2)
+//Este componente muestra los destacados y permite ocultarlos mediante motivo, este es solo del administrador al igual que todos los componentes que inician con admin"
 @Component({
   selector: 'app-admin-featured',
   imports: [RouterLink],
@@ -59,8 +58,8 @@ export class AdminFeatured implements OnInit {
   confirmRemove(): void {
     const item = this.removing();
     if (!item) return;
-    if (this.reason().trim().length < 5) {
-      this.error.set('Escribe un motivo de al menos 5 caracteres.');
+    if (this.reason().trim().length < 10) {
+      this.error.set('Escribe un motivo de al menos 10 caracteres.');
       return;
     }
     this.sending.set(true);
@@ -83,3 +82,4 @@ export class AdminFeatured implements OnInit {
     return Math.max(0, Math.ceil((new Date(endsAt).getTime() - Date.now()) / (60 * 60 * 1000)));
   }
 }
+

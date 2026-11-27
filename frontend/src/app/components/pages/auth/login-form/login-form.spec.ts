@@ -14,7 +14,6 @@ export class LoginForm {
   showPassword = signal(false);
  
   constructor(private authService: AuthService, private router: Router) {}
- 
   login(event: Event): void {
     event.preventDefault();
     this.error.set('');
@@ -28,7 +27,6 @@ export class LoginForm {
       this.error.set('Ingresa tu correo y contraseña.');
       return;
     }
- 
     this.sending.set(true);
     this.authService.login(email, password).subscribe({
       next: (response) => {

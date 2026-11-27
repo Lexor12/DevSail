@@ -10,7 +10,6 @@ export interface Rating {
   comment: string | null;
   commentHidden: boolean;
 }
- 
 // Calificación de otra persona en la lista de comentarios
 export interface RatingItem {
   id: string;
@@ -24,7 +23,6 @@ export interface RatingItem {
   commentHidden: boolean;
   createdAt: string;
 }
- 
 // Respuesta de la lista de calificaciones
 export interface RatingsResponse {
   ratings: RatingItem[];
@@ -32,7 +30,6 @@ export interface RatingsResponse {
   page: number;
   pageSize: number;
 }
- 
 // Datos que se mandan al calificar
 export interface RatingData {
   scoreDesign: number;
