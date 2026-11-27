@@ -27,5 +27,9 @@
     "nodemailer": "^10.6.1",
     "pg": "^8.23.1",
     "swagger-ui-express": "^5.0.1"
+  },
+  "allowScripts": {
+    "bcrypt@6.0.0": true,
+    "@scarf/scarf": false
   }
 }

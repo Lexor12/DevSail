@@ -21,7 +21,7 @@
       <p class="hint">{{ reason().length }}/300  La calificación seguirá contando en el promedio.</p>
       @if (error()) { <p class="alert-error">{{ error() }}</p> }
       <div class="buttons">
-        <button type="button" class="btn btn-outline" (click)="hiding.set(null)">Cancelar</button>
+        <button type="button" class="btn btn-outline" (click)="hiding.set(null); error.set('')">Cancelar</button>
         <button type="button" class="btn btn-danger" [disabled]="sending()" (click)="confirmHide()">Ocultar comentario</button>
       </div>
     </div>

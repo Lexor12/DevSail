@@ -14,7 +14,7 @@
       <details class="dropdown">
         <summary class="field">Tecnologías ({{ selected().length }}/{{ max }})</summary>
         <div class="dropdown-menu">
-          <input class="field" type="text" placeholder="Buscar tecnología…" (input)="searchTechnology($event)">
+          <input class="field" type="text" placeholder="Buscar tecnología…" (input)="searchTechnology($event)" (keydown.enter)="$event.preventDefault()">
           <div class="list">
             @for (technology of technologies(); track technology.id) {
               <label class="checkbox option" [hidden]="!matches(technology)">
@@ -82,7 +82,7 @@
     <!-- Tecnologías -->
     <div class="group">
       <span class="label">Tecnologías (máx. {{ max }})</span>
-      <input class="field" type="text" placeholder="Buscar tecnología…" (input)="searchTechnology($event)">
+      <input class="field" type="text" placeholder="Buscar tecnología…" (input)="searchTechnology($event)" (keydown.enter)="$event.preventDefault()">
       @if (selectedTechnologies().length > 0) {
         <div class="chips">
           @for (technology of selectedTechnologies(); track technology.id) {

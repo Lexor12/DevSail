@@ -48,7 +48,8 @@ export function queryParamsToFilters(params: ParamMap): SearchFilters {
     return value !== null && !isNaN(n) ? n : fallback;
   };
   const pageSize = toNumber(params.get('pageSize'), 12);
- 
+  const page = toNumber(params.get('page'), 1);
+
   return {
     q: params.get('q') ?? '',
     type: params.get('type') ?? '',
@@ -60,7 +61,7 @@ export function queryParamsToFilters(params: ParamMap): SearchFilters {
     demo: params.get('demo') === 'true',
     featured: params.get('featured') === 'true',
     sort: params.get('sort') ?? 'recent',
-    page: Math.max(1, toNumber(params.get('page'), 1)),
+    page: Number.isSafeInteger(page) && page > 0 ? page : 1,
     pageSize: [12, 24, 48].includes(pageSize) ? pageSize : 12
   };
 }

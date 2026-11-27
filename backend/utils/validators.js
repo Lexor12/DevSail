@@ -142,7 +142,8 @@ function isValidScore(value) {
 function isValidPositiveInteger(value) {
     if (value === null || value === undefined || value === '') return false;
     const number = Number(value);
-    if (!Number.isInteger(number) || number <= 0) {
+    // Los números gigantes se rechazan porque hacen fallar la consulta
+    if (!Number.isSafeInteger(number) || number <= 0) {
         return false;
     }
     return true;

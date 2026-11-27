@@ -1,6 +1,7 @@
 // Consultas de la tabla projects
 const pool = require('../../config/db');
 const { Project, ProjectDetail, OwnerProject,ProjectCard } = require('../../models/project.model');
+const { escapeLike } = require('../../utils/escapeLike');
 
 // Condicion para saber si el proyecto esta destacado ahora
 const FEATURED_CONDITION = `EXISTS (
@@ -300,14 +301,11 @@ async function getLatestProjects(limit, db = pool) {
     return result.rows.map(mapProjectCard);
 }
 
-function escapeLike(text) {
-    return text.replace(/[\\%_]/g, '\\$&');
-}
-
+// El id al final desempata para que las paginas no repitan ni se salten proyectos
 const SORTS = {
-    recent: 'p.published_at DESC',
-    rated: 'p.avg_overall DESC NULLS LAST, p.ratings_count DESC',
-    saved: 'p.saves_count DESC, p.published_at DESC'
+    recent: 'p.published_at DESC, p.id',
+    rated: 'p.avg_overall DESC NULLS LAST, p.ratings_count DESC, p.published_at DESC, p.id',
+    saved: 'p.saves_count DESC, p.published_at DESC, p.id'
 };
 
 // Busqueda con filtros, orden y paginas
@@ -344,7 +342,8 @@ async function searchProjects(filters, db = pool) {
     if (filters.hasDemo) conditions.push(`p.demo_url IS NOT NULL`);
     if (filters.onlyFeatured) conditions.push(FEATURED_CONDITION);
 
-    const orderBy = SORTS[filters.sortBy] || SORTS.recent;
+    // Solo se aceptan los nombres de la lista, no los que heredan todos los objetos
+    const orderBy = Object.hasOwn(SORTS, filters.sortBy) ? SORTS[filters.sortBy] : SORTS.recent;
     const page = filters.page || 1;
     const pageSize = filters.pageSize || 12;
     const limit = add(pageSize);

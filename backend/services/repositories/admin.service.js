@@ -3,6 +3,7 @@
 const pool = require('../../config/db');
 const { MX_TIMEZONE } = require('./supabase.config.js');
 const { DashboardSummary, AdminProject, AdminComment } = require('../../models/admin.model');
+const { escapeLike } = require('../../utils/escapeLike');
 
 // Numeros del resumen del panel
 async function getDashboardSummary(db = pool) {
@@ -34,8 +35,8 @@ async function getAdminProjects(filters, db = pool) {
 
     if (filters.status) conditions.push(`p.status = ${add(filters.status)}`);
     if (filters.text) {
-        const like = add(`%${filters.text}%`);
-        conditions.push(`(p.title ILIKE ${like} OR p.nickname ILIKE ${like} OR u.username ILIKE ${like})`);
+        const like = add(`%${escapeLike(filters.text)}%`);
+        conditions.push(`(unaccent(p.title) ILIKE unaccent(${like}) OR unaccent(p.nickname) ILIKE unaccent(${like}) OR u.username ILIKE unaccent(${like}))`);
     }
 
     const page = filters.page || 1;

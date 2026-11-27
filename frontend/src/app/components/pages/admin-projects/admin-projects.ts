@@ -41,8 +41,14 @@ export class AdminProjects implements OnInit {
 
   load(): void {
     this.loading.set(true);
+    this.error.set('');
     this.moderationService.getProjects(this.status(), this.text(), this.page()).subscribe({
       next: (response) => {
+        // Si la página se quedó vacía al moderar se regresa a la anterior
+        if (response.projects.length === 0 && this.page() > 1) {
+          this.changePage(this.page() - 1);
+          return;
+        }
         this.projects.set(response.projects);
         this.total.set(response.total);
         this.loading.set(false);

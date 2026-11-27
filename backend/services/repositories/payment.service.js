@@ -2,6 +2,7 @@
 const pool = require('../../config/db');
 const { MX_TIMEZONE } = require('./supabase.config.js');
 const { Payment } = require('../../models/payment.model');
+const { escapeLike } = require('../../utils/escapeLike');
 // Columnas que se piden de la tabla de pagos para no repetirlas
 const PAYMENT_COLUMNS = `
     pay.id, pay.user_id AS "userId", pay.concept, pay.project_id AS "projectId",
@@ -77,7 +78,7 @@ function buildPaymentFilters(filters) {
     if (filters.dateTo) conditions.push(`(pay.created_at AT TIME ZONE ${MX_TIMEZONE})::date <= ${add(filters.dateTo)}::date`);
     if (filters.concept) conditions.push(`pay.concept = ${add(filters.concept)}`);
     if (filters.status) conditions.push(`pay.status = ${add(filters.status)}`);
-    if (filters.username) conditions.push(`u.username ILIKE ${add(`%${filters.username}%`)}`);
+    if (filters.username) conditions.push(`u.username ILIKE ${add(`%${escapeLike(filters.username)}%`)}`);
     return { where: conditions.join(' AND '), params, add };
 }
 

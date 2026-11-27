@@ -87,7 +87,7 @@
             @for (id of selectedTechs(); track id) { <span class="chip chip-blue">{{ techName(id) }}</span> }
           </div>
         }
-        <input class="field search" type="text" placeholder="Buscar en el catálogo: Angular, Python, Docker…" (input)="searchTech($event)">
+        <input class="field search" type="text" placeholder="Buscar en el catálogo: Angular, Python, Docker…" (input)="searchTech($event)" (keydown.enter)="$event.preventDefault()">
         <div class="tech-list">
           @for (technology of technologies(); track technology.id) {
             <label class="checkbox" [hidden]="!matches(technology)">

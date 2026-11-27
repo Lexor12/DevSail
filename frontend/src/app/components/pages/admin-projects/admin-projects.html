@@ -4,7 +4,7 @@
   <form class="card filters" (submit)="applyFilters($event)">
     <label class="grow">
       <span class="label">Buscar</span>
-      <input class="field" type="text" name="text" placeholder="Título o nombre corto" [value]="text()">
+      <input class="field" type="text" name="text" placeholder="Título, nombre corto o usuario" [value]="text()">
     </label>
     <label>
       <span class="label">Estado</span>
@@ -30,7 +30,7 @@
       <p class="hint">{{ reason().length }}/300  El autor recibirá un correo con este motivo.</p>
       @if (error()) { <p class="alert-error">{{ error() }}</p> }
       <div class="buttons">
-        <button type="button" class="btn btn-outline" (click)="hiding.set(null)">Cancelar</button>
+        <button type="button" class="btn btn-outline" (click)="hiding.set(null); error.set('')">Cancelar</button>
         <button type="button" class="btn btn-danger" [disabled]="sending()" (click)="confirmHide()">Ocultar proyecto</button>
       </div>
     </div>

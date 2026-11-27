@@ -184,6 +184,11 @@ select.field option {
   color: var(--text);
 }
 
+/* Sin esto las clases que traen su propio display dejan visible lo que lleva hidden */
+[hidden] {
+  display: none !important;
+}
+
 .checkbox {
   display: inline-flex;
   align-items: center;

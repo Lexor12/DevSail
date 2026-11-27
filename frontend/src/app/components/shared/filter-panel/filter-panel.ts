@@ -1,4 +1,4 @@
-import { Component, OnInit, computed, input, linkedSignal, output, signal } from '@angular/core';
+import { Component, ElementRef, OnInit, computed, input, linkedSignal, output, signal } from '@angular/core';
 import { CatalogService } from '../../../services/catalog.service';
 import { ProjectType, Technology } from '../../../models/catalog.model';
 import { SearchFilters } from '../../../models/project.model';
@@ -44,7 +44,7 @@ export class FilterPanel implements OnInit {
     this.technologies().filter(t => this.selected().includes(t.id))
   );
  
-  constructor(private catalogService: CatalogService) {}
+  constructor(private catalogService: CatalogService, private host: ElementRef<HTMLElement>) {}
   ngOnInit(): void {
     this.catalogService.getProjectCatalogs().subscribe({
       next: (catalogs) => {
@@ -53,6 +53,23 @@ export class FilterPanel implements OnInit {
       },
       error: (error) => console.error('No se pudieron cargar los catálogos', error)
     });
+  }
+  // Descarta lo marcado sin aplicar y deja los controles como los filtros actuales
+  reset(): void {
+    const filters = this.filters();
+    this.selected.set(filters.technologies);
+    this.minRating.set(filters.minRating);
+    this.maxRating.set(filters.maxRating);
+    this.maxWarning.set(false);
+
+    // El tipo y las etiquetas no tienen signal propia, así que se cambian directo
+    const panel = this.host.nativeElement;
+    const type = panel.querySelector<HTMLSelectElement>('select[name="type"]');
+    if (type) type.value = filters.type;
+    for (const name of ['feedback', 'collaborate', 'demo', 'featured'] as const) {
+      const checkbox = panel.querySelector<HTMLInputElement>(`input[name="${name}"]`);
+      if (checkbox) checkbox.checked = filters[name];
+    }
   }
   isSelected(id: string): boolean {
     return this.selected().includes(id);

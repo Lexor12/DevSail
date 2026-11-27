@@ -1,5 +1,7 @@
-import { Component, OnInit, computed, signal } from '@angular/core';
+import { Component, DestroyRef, OnInit, computed, inject, signal, viewChild } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Params, Router } from '@angular/router';
+import { Observable, catchError, map, of, switchMap, tap } from 'rxjs';
 import { SearchBar } from '../../shared/search-bar/search-bar';
 import { FilterPanel } from '../../shared/filter-panel/filter-panel';
 import { ActiveFilter, ActiveFilters } from '../../shared/active-filters/active-filters';
@@ -27,6 +29,8 @@ export class Explore implements OnInit {
 
   private types = signal<ProjectType[]>([]);
   private technologies = signal<Technology[]>([]);
+  private panel = viewChild.required(FilterPanel);
+  private destroyRef = inject(DestroyRef);
 
   readonly sortOptions = [
     { value: 'recent', text: 'Más recientes' },
@@ -71,27 +75,37 @@ export class Explore implements OnInit {
     });
 
     // Cada vez que cambia la dirección se vuelve a buscar
-    this.route.queryParamMap.subscribe(params => {
-      const filters = queryParamsToFilters(params);
-      this.filters.set(filters);
-      this.search(filters);
-    });
+    // switchMap cancela la búsqueda anterior para que no pise a la nueva
+    this.route.queryParamMap.pipe(
+      map(params => queryParamsToFilters(params)),
+      tap(filters => {
+        this.filters.set(filters);
+        this.loading.set(true);
+        this.error.set('');
+      }),
+      switchMap(filters => this.search(filters)),
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe(result => this.showResult(result));
   }
 
-  private search(filters: SearchFilters): void {
-    this.loading.set(true);
-    this.error.set('');
-    this.projectService.search(filters).subscribe({
-      next: (result) => {
-        this.result.set(result);
-        this.loading.set(false);
-      },
-      error: (error) => {
+  // El error se atrapa aquí para que las siguientes búsquedas sigan funcionando
+  private search(filters: SearchFilters): Observable<SearchResult | null> {
+    return this.projectService.search(filters).pipe(
+      catchError(error => {
         this.error.set(error.error?.message || 'No se pudo hacer la búsqueda.');
-        this.result.set(null);
-        this.loading.set(false);
-      }
-    });
+        return of(null);
+      })
+    );
+  }
+
+  private showResult(result: SearchResult | null): void {
+    // Si la página pedida ya no existe se regresa a la primera
+    if (result && result.projects.length === 0 && this.filters().page > 1) {
+      this.router.navigate(['/explore'], { queryParams: { page: null }, queryParamsHandling: 'merge', replaceUrl: true });
+      return;
+    }
+    this.result.set(result);
+    this.loading.set(false);
   }
 
   // Al buscar, aplicar filtros o cambiar el orden se lee todo el formulario
@@ -108,6 +122,7 @@ export class Explore implements OnInit {
   }
 
   removeFilter(filter: ActiveFilter): void {
+    this.panel().reset();
     const params: Params = { ...this.route.snapshot.queryParams, page: null };
     if (filter.key === 'technologies') {
       const rest = this.filters().technologies.filter(id => id !== filter.value);
@@ -123,6 +138,8 @@ export class Explore implements OnInit {
 
   // Quita los filtros pero conserva el texto buscado
   clearFilters(): void {
+    // Hace falta porque si la dirección no cambia el panel no se actualiza solo
+    this.panel().reset();
     const q = this.filters().q;
     this.router.navigate(['/explore'], { queryParams: q ? { q } : {} });
   }

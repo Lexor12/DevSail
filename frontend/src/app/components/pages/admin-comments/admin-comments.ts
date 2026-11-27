@@ -41,8 +41,14 @@ export class AdminComments implements OnInit {
 
   load(): void {
     this.loading.set(true);
+    this.error.set('');
     this.moderationService.getComments(this.hidden(), this.page()).subscribe({
       next: (response) => {
+        // Si la página se quedó vacía al moderar se regresa a la anterior
+        if (response.comments.length === 0 && this.page() > 1) {
+          this.changePage(this.page() - 1);
+          return;
+        }
         this.comments.set(response.comments);
         this.total.set(response.total);
         this.loading.set(false);
